@@ -1,59 +1,34 @@
 // src/navigation/RoleBasedNavigator.js
-// FULL UPDATED FILE
-// Clean + Exact Folder Match + Safe Role Routing
-// Fixed User Flow Uses UserNavigator
 
 import React from 'react';
 
 import OwnerStackNavigator from './OwnerStackNavigator';
 import AdminStackNavigator from './AdminStackNavigator';
 import UserNavigator from './UserNavigator';
+import BottomTabs from './BottomTabs';
+export default function RoleBasedNavigator({ role }) {
+  /* NORMALIZE ROLE */
+  
+  let safeRole = String(role || '')
+    .trim()
+    .toUpperCase()
+    .replace('ROLE_', '');
 
-export default function RoleBasedNavigator({
-  role,
-}) {
-  const safeRole =
-    String(
-      role || 'USER'
-    )
-      .trim()
-      .toUpperCase();
+  console.log("NAV ROLE:", safeRole);
 
   /* ================= ADMIN ================= */
-
-  if (
-    safeRole ===
-      'ADMIN' ||
-    safeRole ===
-      'ROLE_ADMIN'
-  ) {
-    return (
-      <AdminStackNavigator />
-    );
+  // if (safeRole === 'ADMIN') {
+  //   return <AdminStackNavigator />;
+  // }
+  if (safeRole === 'ADMIN') {
+    return <BottomTabs />;
   }
 
   /* ================= OWNER ================= */
-
-  if (
-    safeRole ===
-      'OWNER' ||
-    safeRole ===
-      'PROPERTY_OWNER' ||
-    safeRole ===
-      'PROPERTYOWNER' ||
-    safeRole ===
-      'ROLE_OWNER' ||
-    safeRole ===
-      'ROLE_PROPERTY_OWNER'
-  ) {
-    return (
-      <OwnerStackNavigator />
-    );
+  if (safeRole === 'PROPERTY_OWNER') {
+    return <OwnerStackNavigator />;
   }
 
-  /* ================= USER ================= */
-
-  return (
-    <UserNavigator />
-  );
+  /* ================= USER (DEFAULT) ================= */
+  return <UserNavigator />;
 }

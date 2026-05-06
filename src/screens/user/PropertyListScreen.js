@@ -1,13 +1,5 @@
-// src/screens/user/PropertyListScreen.js
-// UPDATED PREMIUM VERSION
-// Caryanam Broker - Rental Listings Only
-
-import React, {
-  useState,
-} from 'react';
-
+import React, { useState, useEffect } from 'react';
 import {
-  SafeAreaView,
   StatusBar,
   ScrollView,
   View,
@@ -15,433 +7,636 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
+  Image,
+  Alert,
 } from 'react-native';
 
-export default function PropertyListScreen({
-  navigation,
-}) {
-  const [search, setSearch] =
-    useState('');
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getProperties, filterProperties} from '../../api/propertyApi';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-  const rentals = [
-    {
-      id: 1,
-      title: '2 BHK Apartment',
-      price: '₹18,000 / month',
-      location: 'Baner, Pune',
-      bhk: '2 BHK',
-      tag: 'Family',
-    },
-    {
-      id: 2,
-      title: '1 BHK Flat',
-      price: '₹13,500 / month',
-      location: 'Wakad, Pune',
-      bhk: '1 BHK',
-      tag: 'Bachelor',
-    },
-    {
-      id: 3,
-      title: 'PG Room',
-      price: '₹8,000 / month',
-      location: 'Hinjewadi',
-      bhk: 'Single',
-      tag: 'Boys PG',
-    },
-    {
-      id: 4,
-      title: 'Studio Room',
-      price: '₹11,000 / month',
-      location: 'Kothrud',
-      bhk: 'Studio',
-      tag: 'Working',
-    },
-  ];
+const BASE_URL = 'http://192.168.1.13:8080';
 
-  const filtered =
-    rentals.filter(item =>
-      item.title
-        .toLowerCase()
-        .includes(
-          search.toLowerCase()
-        ) ||
-      item.location
-        .toLowerCase()
-        .includes(
-          search.toLowerCase()
-        )
+export default function PropertyListScreen({ navigation }) {
+
+  const [search, setSearch] = useState('');
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ IMAGE PARSER
+  const parseImages = (imgString) => {
+
+      try {
+
+        if (
+          !imgString ||
+          imgString === '[]'
+        ) {
+          return [];
+        }
+
+        // already array
+        if (Array.isArray(imgString)) {
+          return imgString;
+        }
+
+        const cleaned = String(imgString)
+
+          .replace(/^\[/, '')
+          .replace(/\]$/, '')
+          .replace(/"/g, '')
+          .trim();
+
+        if (!cleaned) {
+          return [];
+        }
+
+        return cleaned
+          .split(',')
+          .map(img =>
+            img
+              .trim()
+              .replace(/^\/+/, '')
+          )
+          .filter(Boolean);
+
+      } catch (e) {
+
+        console.log(
+          'PARSE IMAGE ERROR:',
+          e
+        );
+
+        return [];
+      }
+    };
+
+  // ✅ SAME AS WEB PROJECT
+  const mapBackendToUi = (dto) => {
+
+    console.log("DTO:", dto);
+    const images = parseImages(dto?.doctypeImages);
+  
+    console.log(
+      'PROPERTY IMAGES:',
+      images
     );
 
+    const imagePath = images[0];
+
+    const imageUrl = imagePath
+      ? `${BASE_URL}/${String(imagePath).replace(/^\/+/, '')}`
+      : '';
+
+    return {
+
+        id:
+          dto?.id ||
+          null,
+
+        title:
+          dto?.title ||
+          'Untitled Property',
+
+        location:
+          dto?.location ||
+          '',
+
+        city:
+          dto?.city ||
+          '',
+
+        price:
+          dto?.price ??
+          dto?.rent ??
+          null,
+
+        bhkType:
+          dto?.bhkType
+            ? String(dto.bhkType)
+                .replace(/_/g, ' ')
+            : null,
+
+        propertyType:
+          dto?.propertyType ||
+          'N/A',
+
+        furnishing:
+
+          dto?.furnishing ||
+
+          dto?.furnishingType ||
+
+          dto?.furnishedStatus ||
+
+          null,
+
+        carpetArea:
+
+          dto?.carpetArea ||
+
+          dto?.builtupArea ||
+
+          dto?.area ||
+
+          dto?.squareFeet ||
+
+          null,
+
+        description:
+
+          dto?.description ||
+
+          dto?.about ||
+
+          dto?.propertyDescription ||
+
+          dto?.details ||
+
+          null,
+
+        image: imageUrl,
+
+        doctypeImages:
+          dto?.doctypeImages ||
+          null,
+
+        raw: dto,
+      };
+  };
+
+  // ✅ FETCH PROPERTIES
+  const fetchProperties = async () => {
+
+    try {
+
+      setLoading(true);
+
+      const token = await AsyncStorage.getItem('userToken');
+
+      console.log("TOKEN:", token);
+
+      if (!token) {
+        console.log("NO TOKEN FOUND");
+        return;
+      }
+
+      let userId = null;
+
+      try {
+
+        const payload = JSON.parse(
+          atob(token.split('.')[1])
+        );
+
+        userId = payload.id;
+
+        console.log("EXTRACTED USER ID:", userId);
+
+      } catch (e) {
+
+        console.log("TOKEN PARSE ERROR:", e);
+        return;
+      }
+
+      if (!userId) {
+        console.log("USER ID NOT FOUND IN TOKEN");
+        return;
+      }
+
+      const basicRes = await getProperties(userId);
+
+      console.log("BASIC RESPONSE:", basicRes);
+
+      const basicList = Array.isArray(basicRes)
+        ? basicRes
+        : Array.isArray(basicRes?.data)
+        ? basicRes.data
+        : [];
+
+      let detailedList = [];
+
+        if (basicList.length > 0) {
+
+          const propertyType =
+            basicList[0]?.propertyType || "APARTMENT";
+
+          const detailedRes = await filterProperties(userId, {
+            propertyType
+          });
+
+          console.log("DETAIL RESPONSE:", detailedRes);
+
+          detailedList = Array.isArray(detailedRes?.data)
+            ? detailedRes.data
+            : [];
+        }
+
+      console.log("BASIC LIST:", basicList);
+      console.log("DETAIL LIST:", detailedList);
+
+      // ✅ MERGE BOTH API RESPONSES
+      const merged = basicList.map((basic) => {
+
+      const detailed = detailedList.find(
+        item =>
+          item?.title === basic?.title &&
+          item?.propertyType === basic?.propertyType
+      ) || {};
+
+      return {
+
+          ...basic,
+
+          ...detailed,
+
+          doctypeImages:
+            basic?.doctypeImages ||
+            detailed?.doctypeImages,
+
+          title:
+            detailed?.title ||
+            basic?.title,
+
+          propertyType:
+            detailed?.propertyType ||
+            basic?.propertyType,
+
+          furnishing:
+
+            detailed?.furnishing ||
+
+            detailed?.furnishingType ||
+
+            basic?.furnishing ||
+
+            basic?.furnishingType ||
+
+            null,
+
+          carpetArea:
+
+            detailed?.carpetArea ||
+
+            detailed?.builtupArea ||
+
+            detailed?.area ||
+
+            basic?.carpetArea ||
+
+            basic?.builtupArea ||
+
+            basic?.area ||
+
+            null,
+
+          description:
+
+            detailed?.description ||
+
+            detailed?.about ||
+
+            detailed?.propertyDescription ||
+
+            basic?.description ||
+
+            basic?.about ||
+
+            basic?.propertyDescription ||
+
+            null,
+
+          id:
+            detailed?.id ||
+            basic?.id ||
+            null,
+        };
+    });
+
+      console.log("MERGED DATA:", merged);
+
+      const mappedProperties = merged.map(mapBackendToUi);
+
+      console.log("MAPPED PROPERTIES:", mappedProperties);
+
+      setProperties(mappedProperties);
+
+    } catch (error) {
+
+      console.log(
+        "FETCH ERROR:",
+        error?.response?.data || error.message
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  // ✅ SEARCH FILTER
+  const filtered = properties.filter(item =>
+    item.title?.toLowerCase().includes(search.toLowerCase()) ||
+    item.location?.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'left', 'right']}
+    >
+
       <StatusBar
-        backgroundColor="#F8FAFF"
+        backgroundColor="#F8FAFC"
         barStyle="dark-content"
       />
 
-      {/* HEADER */}
-      <View style={styles.header}>
-        <Text style={styles.title}>
-          Rental Homes
-        </Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
 
-        <TouchableOpacity
-          style={styles.filterBtn}
-        >
-          <Text
-            style={
-              styles.filterTxt
-            }
-          >
-            Filter
-          </Text>
-        </TouchableOpacity>
-      </View>
+        {/* HEADER */}
+        <View style={styles.header}>
 
-      {/* SEARCH */}
-      <View style={styles.searchWrap}>
-        <TextInput
-          placeholder="Search area, city, locality"
-          placeholderTextColor="#94A3B8"
-          value={search}
-          onChangeText={setSearch}
-          style={styles.input}
-        />
-      </View>
+          <View>
+            <Text style={styles.brand}>
+              Rental Homes
+            </Text>
 
-      {/* QUICK FILTERS */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          paddingHorizontal: 18,
-          paddingBottom: 8,
-        }}
-      >
-        {[
-          '1 BHK',
-          '2 BHK',
-          'PG',
-          'Family',
-          'Bachelor',
-        ].map(item => (
-          <TouchableOpacity
-            key={item}
-            style={styles.chip}
-          >
-            <Text
-              style={
-                styles.chipTxt
-              }
-            >
-              {item}
+            <Text style={styles.sub}>
+              Find your perfect stay
+            </Text>
+          </View>
+
+          <TouchableOpacity style={styles.filterBtn}>
+            <Text style={styles.filterTxt}>
+              Filter
             </Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
 
-      {/* LIST */}
-      <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          paddingBottom: 110,
-        }}
-      >
-        <View
-          style={{
-            paddingHorizontal: 18,
-            paddingTop: 8,
-          }}
-        >
-          {filtered.map(item => (
+        </View>
+
+        {/* SEARCH */}
+        <View style={styles.searchWrap}>
+
+          <TextInput
+            placeholder="Search city, area, locality"
+            placeholderTextColor="#94A3B8"
+            value={search}
+            onChangeText={setSearch}
+            style={styles.input}
+          />
+
+        </View>
+
+        {/* LOADING */}
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color="#4338CA"
+            style={{ marginTop: 20 }}
+          />
+        )}
+
+        {/* LIST */}
+        <View style={styles.list}>
+
+          {!loading && filtered.map((item, index) => (
+
             <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              onPress={() =>
-                navigation.navigate(
-                  'PropertyDetails',
-                  {
-                    property:
-                      item,
-                  }
-                )
+            key={`${item.id || index}-${index}`}
+            style={styles.card}
+           onPress={() => {
+
+            navigation.navigate(
+              'PropertyDetails',
+              {
+                property: item,
               }
+            );
+          }}
             >
+
               {/* IMAGE */}
-              <View
-                style={
-                  styles.imageBox
-                }
-              >
-                <Text
-                  style={
-                    styles.imageTxt
-                  }
-                >
-                  Rental Image
-                </Text>
-              </View>
+              {item.image ? (
+               <Image
+                source={{
+                  uri: item.image,
+                }}
+                style={styles.image}
+                resizeMode="cover"
+
+                onError={() => {
+
+                  console.log(
+                    'FAILED IMAGE:',
+                    item.image
+                  );
+                }}
+
+                defaultSource={require('../../assets/images/no-image.png')}
+              />
+              ) : (
+                <View style={styles.imageBox}>
+                  <Text style={styles.imageTxt}>
+                    No Image
+                  </Text>
+                </View>
+              )}
 
               {/* DETAILS */}
-              <Text
-                style={
-                  styles.cardTitle
-                }
-              >
-                {item.title}
-              </Text>
+              <View style={{ flex: 1 }}>
 
-              <Text
-                style={
-                  styles.price
-                }
-              >
-                {item.price}
-              </Text>
-
-              <Text
-                style={
-                  styles.location
-                }
-              >
-                {item.location}
-              </Text>
-
-              <View
-                style={
-                  styles.row
-                }
-              >
-                <Text
-                  style={
-                    styles.tag
-                  }
-                >
-                  {item.bhk}
+                <Text style={styles.cardTitle}>
+                  {item.title}
                 </Text>
 
-                <Text
-                  style={
-                    styles.tag2
-                  }
-                >
-                  {item.tag}
+                <Text style={styles.price}>
+                  {item.price
+                ? `₹${Number(item.price).toLocaleString()}`
+                : 'Price Not Available'}
                 </Text>
 
-                <TouchableOpacity
-                  style={
-                    styles.btn
-                  }
-                >
-                  <Text
-                    style={
-                      styles.btnTxt
-                    }
-                  >
-                    View
+                <Text style={styles.location}>
+                  {item.location || item.city
+                  ? `${item.location || ''} ${item.city || ''}`
+                  : 'Location Not Available'}
+                </Text>
+
+                <View style={styles.row}>
+
+                  <Text style={styles.tag}>
+                    {item.bhkType || item.propertyType}
                   </Text>
-                </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.btn}>
+                    <Text style={styles.btnTxt}>
+                      View
+                    </Text>
+                  </TouchableOpacity>
+
+                </View>
+
               </View>
+
             </TouchableOpacity>
+
           ))}
 
-          {filtered.length ===
-            0 && (
-            <Text
-              style={
-                styles.empty
-              }
-            >
+          {!loading && filtered.length === 0 && (
+            <Text style={styles.empty}>
               No rentals found
             </Text>
           )}
+
         </View>
+
       </ScrollView>
+
     </SafeAreaView>
   );
 }
 
-/* ================= STYLES ================= */
+const styles = StyleSheet.create({
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFF',
-    },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
 
-    header: {
-      paddingTop: 16,
-      paddingHorizontal: 18,
-      paddingBottom: 10,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-    },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    title: {
-      fontSize: 24,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  brand: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
 
-    filterBtn: {
-      backgroundColor:
-        '#EAF2FF',
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 20,
-    },
+  sub: {
+    color: '#64748B',
+    marginTop: 4,
+  },
 
-    filterTxt: {
-      color: '#1565FF',
-      fontWeight: '800',
-      fontSize: 12,
-    },
+  filterBtn: {
+    backgroundColor: '#4338CA',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
 
-    searchWrap: {
-      paddingHorizontal: 18,
-      paddingBottom: 10,
-    },
+  filterTxt: {
+    color: '#fff',
+    fontWeight: '600',
+  },
 
-    input: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-      paddingHorizontal: 16,
-      paddingVertical: 14,
-      color: '#111827',
-      fontSize: 14,
-    },
+  searchWrap: {
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
 
-    chip: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 20,
-      paddingHorizontal: 14,
-      paddingVertical: 9,
-      marginRight: 10,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
 
-    chipTxt: {
-      color: '#334155',
-      fontWeight: '700',
-      fontSize: 13,
-    },
+  list: {
+    padding: 20,
+  },
 
-    card: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 20,
-      padding: 16,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 12,
+    marginBottom: 18,
+    flexDirection: 'row',
+    gap: 14,
+    elevation: 3,
+  },
 
-    imageBox: {
-      height: 160,
-      borderRadius: 18,
-      backgroundColor:
-        '#EAF2FF',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-      marginBottom: 14,
-    },
+  image: {
+    width: 110,
+    height: 110,
+    borderRadius: 14,
+  },
 
-    imageTxt: {
-      color: '#1565FF',
-      fontWeight: '800',
-    },
+  imageBox: {
+    width: 110,
+    height: 110,
+    borderRadius: 14,
+    backgroundColor: '#CBD5E1',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    cardTitle: {
-      fontSize: 18,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  imageTxt: {
+    color: '#334155',
+    fontWeight: '600',
+  },
 
-    price: {
-      marginTop: 8,
-      color: '#1565FF',
-      fontWeight: '900',
-      fontSize: 16,
-    },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
 
-    location: {
-      marginTop: 6,
-      color: '#64748B',
-      fontSize: 14,
-    },
+  price: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#4338CA',
+    marginTop: 6,
+  },
 
-    row: {
-      marginTop: 14,
-      flexDirection: 'row',
-      alignItems: 'center',
-      flexWrap: 'wrap',
-    },
+  location: {
+    marginTop: 6,
+    color: '#64748B',
+  },
 
-    tag: {
-      backgroundColor:
-        '#EAF2FF',
-      color: '#1565FF',
-      paddingHorizontal: 12,
-      paddingVertical: 7,
-      borderRadius: 20,
-      fontWeight: '800',
-      marginRight: 8,
-      marginBottom: 8,
-      overflow: 'hidden',
-      fontSize: 12,
-    },
+  row: {
+    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    tag2: {
-      backgroundColor:
-        '#F1F5F9',
-      color: '#334155',
-      paddingHorizontal: 12,
-      paddingVertical: 7,
-      borderRadius: 20,
-      fontWeight: '800',
-      marginRight: 8,
-      marginBottom: 8,
-      overflow: 'hidden',
-      fontSize: 12,
-    },
+  tag: {
+    backgroundColor: '#DBEAFE',
+    color: '#4338CA',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    fontWeight: '600',
+  },
 
-    btn: {
-      marginLeft: 'auto',
-      backgroundColor:
-        '#1565FF',
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: 12,
-    },
+  btn: {
+    backgroundColor: '#4338CA',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
 
-    btnTxt: {
-      color: '#fff',
-      fontWeight: '800',
-      fontSize: 13,
-    },
+  btnTxt: {
+    color: '#fff',
+    fontWeight: '600',
+  },
 
-    empty: {
-      textAlign: 'center',
-      marginTop: 40,
-      color: '#64748B',
-      fontSize: 15,
-    },
-  });
+  empty: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#64748B',
+    fontSize: 16,
+  },
+
+});

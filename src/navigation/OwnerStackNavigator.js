@@ -11,8 +11,9 @@ import {
 /* 🔥 IMPORTANT */
 import BottomTabs from './BottomTabs';
 
-/* OWNER (ONLY FULL SCREENS HERE) */
+
 import EditPropertyScreen from '../screens/owner/EditPropertyScreen';
+import PreviewPropertyScreen from '../screens/owner/PreviewPropertyScreen';
 
 /* SHARED FULL SCREENS */
 import PropertyDetailsScreen from '../screens/user/PropertyDetailsScreen';
@@ -43,6 +44,11 @@ export default function OwnerStackNavigator() {
 
       {/* 🔥 FULL SCREENS (NO TABS) */}
 
+      <Stack.Screen
+        name="PreviewProperty"
+        component={PreviewPropertyScreen}
+      />
+      
       <Stack.Screen
         name="PropertyDetails"
         component={PropertyDetailsScreen}

@@ -1,389 +1,270 @@
 // src/screens/user/PremiumScreen.js
-// UPDATED PREMIUM VERSION
-// Caryanam Broker - Premium Plans
+// CLEAN QR PAYMENT SCREEN (API CONNECTED)
 
-import React, {
-  useState,
-} from 'react';
+import React from 'react';
 
 import {
   SafeAreaView,
   StatusBar,
-  ScrollView,
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
+  Image,
   Alert,
 } from 'react-native';
 
-export default function PremiumScreen({
-  navigation,
-}) {
-  const [selectedPlan,
-    setSelectedPlan] =
-    useState('Gold');
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { buyPremiumOwner,buyPremiumUser } from '../../api/propertyApi'; 
 
-  const plans = [
-    {
-      name: 'Silver',
-      price: '₹499',
-      duration: '1 Month',
-      badge: 'Starter',
-      features: [
-        '5 Tenant Leads',
-        'Priority Listing',
-        'Basic Support',
-      ],
-    },
-    {
-      name: 'Gold',
-      price: '₹999',
-      duration: '3 Months',
-      badge: 'Popular',
-      features: [
-        'Unlimited Leads',
-        'Top Search Rank',
-        'Verified Badge',
-      ],
-    },
-    {
-      name: 'Platinum',
-      price: '₹1499',
-      duration: '6 Months',
-      badge: 'Best Value',
-      features: [
-        'Unlimited Leads',
-        'Top Placement',
-        'Dedicated Support',
-      ],
-    },
-  ];
+export default function PremiumScreen({ navigation, route }) {
 
-  const buyPlan =
-    () => {
-      Alert.alert(
-        'Premium Request',
-        `${selectedPlan} plan request sent for admin approval.`
+  const handleDone = async () => {
+
+    try {
+
+      const isUserPremium =
+        route?.params?.isUserPremium;
+
+      // USER PREMIUM FLOW
+      if (isUserPremium) {
+
+        const token =
+          await AsyncStorage.getItem('userToken');
+
+        if (!token) {
+
+          Alert.alert(
+            'Error',
+            'Please login again'
+          );
+
+          return;
+        }
+
+        let userId = null;
+
+        try {
+
+          const payload = JSON.parse(
+            atob(token.split('.')[1])
+          );
+
+          userId = payload.id;
+
+        } catch {
+
+          Alert.alert(
+            'Error',
+            'Invalid session'
+          );
+
+          return;
+        }
+
+        const response =
+          await buyPremiumUser(userId);
+
+        console.log(
+          'USER PREMIUM RESPONSE:',
+          response
+        );
+
+        Alert.alert(
+          'Success',
+          'Premium request sent',
+          [
+            {
+              text: 'OK',
+              onPress: () =>
+                navigation.goBack(),
+            },
+          ]
+        );
+
+        return;
+      }
+
+      // OWNER PREMIUM FLOW
+      const ownerId =
+        await AsyncStorage.getItem('ownerId');
+
+      console.log('OWNER ID:', ownerId);
+
+      if (!ownerId) {
+
+        Alert.alert(
+          'Error',
+          'Please login again'
+        );
+
+        return;
+      }
+
+      const response =
+        await buyPremiumOwner(ownerId);
+
+      console.log(
+        'PREMIUM RESPONSE:',
+        response.data
       );
-    };
+
+      Alert.alert(
+        'Success',
+        'Premium request sent',
+        [
+          {
+            text: 'OK',
+            onPress: () =>
+              navigation.reset({
+                index: 0,
+                routes: [
+                  { name: 'OwnerHome' }
+                ],
+              }),
+          },
+        ]
+      );
+
+    } catch (error) {
+
+      console.log(
+        'ERROR:',
+        error.response?.data || error.message
+      );
+
+      Alert.alert(
+        'Error',
+        error.response?.data?.message ||
+        'Failed to send request'
+      );
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="#F8FAFF"
-        barStyle="dark-content"
-      />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar backgroundColor="#F8FAFF" barStyle="dark-content" />
 
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.goBack()
-          }
-        >
-          <Text style={styles.back}>
-            ←
+      <View style={styles.container}>
+
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.back}>←</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.title}>Scan & Pay</Text>
+
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* CONTENT */}
+        <View style={styles.content}>
+
+          {/* QR CODE */}
+          <View style={styles.qrContainer}>
+            <Image
+              source={{
+                uri: 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=PAYMENT_LINK',
+              }}
+              style={styles.qr}
+            />
+          </View>
+
+          {/* INSTRUCTION */}
+          <Text style={styles.instructions}>
+            Scan this QR using any UPI app and complete your payment
           </Text>
-        </TouchableOpacity>
 
-        <Text style={styles.title}>
-          Premium Plans
-        </Text>
+        </View>
 
-        <View
-          style={{ width: 24 }}
-        />
+        {/* DONE BUTTON */}
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.doneBtn} onPress={handleDone}>
+            <Text style={styles.doneTxt}>Done</Text>
+          </TouchableOpacity>
+        </View>
+
       </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          paddingBottom: 40,
-        }}
-      >
-        {/* HERO */}
-        <View style={styles.hero}>
-          <Text style={styles.heroTitle}>
-            Grow Faster with
-            Premium
-          </Text>
-
-          <Text style={styles.heroSub}>
-            Boost rental listings,
-            get more leads and rank
-            higher in search.
-          </Text>
-        </View>
-
-        {/* PLANS */}
-        <View
-          style={{
-            paddingHorizontal: 18,
-            marginTop: 18,
-          }}
-        >
-          {plans.map(plan => {
-            const active =
-              selectedPlan ===
-              plan.name;
-
-            return (
-              <TouchableOpacity
-                key={plan.name}
-                style={[
-                  styles.card,
-                  active &&
-                    styles.activeCard,
-                ]}
-                onPress={() =>
-                  setSelectedPlan(
-                    plan.name
-                  )
-                }
-              >
-                <View
-                  style={
-                    styles.topRow
-                  }
-                >
-                  <Text
-                    style={
-                      styles.planName
-                    }
-                  >
-                    {plan.name}
-                  </Text>
-
-                  <View
-                    style={
-                      styles.badge
-                    }
-                  >
-                    <Text
-                      style={
-                        styles.badgeTxt
-                      }
-                    >
-                      {
-                        plan.badge
-                      }
-                    </Text>
-                  </View>
-                </View>
-
-                <Text
-                  style={
-                    styles.price
-                  }
-                >
-                  {plan.price}
-                </Text>
-
-                <Text
-                  style={
-                    styles.duration
-                  }
-                >
-                  {plan.duration}
-                </Text>
-
-                <View
-                  style={
-                    styles.line
-                  }
-                />
-
-                {plan.features.map(
-                  (
-                    item,
-                    index
-                  ) => (
-                    <Text
-                      key={
-                        index
-                      }
-                      style={
-                        styles.feature
-                      }
-                    >
-                      ✓ {item}
-                    </Text>
-                  )
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* CTA */}
-        <TouchableOpacity
-          style={styles.buyBtn}
-          onPress={buyPlan}
-        >
-          <Text style={styles.buyTxt}>
-            Activate {selectedPlan}
-          </Text>
-        </TouchableOpacity>
-
-        <Text style={styles.note}>
-          Current Flow: Admin
-          approval enabled now.
-          Payment gateway can be
-          added later.
-        </Text>
-      </ScrollView>
     </SafeAreaView>
   );
 }
 
 /* ================= STYLES ================= */
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFF',
-    },
+const styles = StyleSheet.create({
 
-    header: {
-      paddingHorizontal: 18,
-      paddingVertical: 16,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-    },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8FAFF',
+  },
 
-    back: {
-      fontSize: 26,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
 
-    title: {
-      fontSize: 22,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  header: {
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    hero: {
-      backgroundColor:
-        '#1565FF',
-      marginHorizontal: 18,
-      borderRadius: 24,
-      padding: 22,
-    },
+  back: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    heroTitle: {
-      color: '#fff',
-      fontSize: 28,
-      fontWeight: '900',
-      lineHeight: 36,
-    },
+  title: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    heroSub: {
-      marginTop: 10,
-      color: '#EAF2FF',
-      lineHeight: 22,
-      fontSize: 14,
-    },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
 
-    card: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 22,
-      padding: 18,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  qrContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    borderRadius: 24,
+    elevation: 5,
+  },
 
-    activeCard: {
-      borderWidth: 2,
-      borderColor:
-        '#1565FF',
-    },
+  qr: {
+    width: 220,
+    height: 220,
+  },
 
-    topRow: {
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-    },
+  instructions: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#64748B',
+    fontSize: 14,
+    lineHeight: 20,
+  },
 
-    planName: {
-      fontSize: 20,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  footer: {
+    padding: 18,
+  },
 
-    badge: {
-      backgroundColor:
-        '#EAF2FF',
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 20,
-    },
+  doneBtn: {
+    backgroundColor: '#1565FF',
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
 
-    badgeTxt: {
-      color: '#1565FF',
-      fontWeight: '800',
-      fontSize: 12,
-    },
-
-    price: {
-      marginTop: 12,
-      fontSize: 28,
-      fontWeight: '900',
-      color: '#1565FF',
-    },
-
-    duration: {
-      marginTop: 4,
-      color: '#64748B',
-      fontSize: 13,
-    },
-
-    line: {
-      height: 1,
-      backgroundColor:
-        '#EEF2F7',
-      marginVertical: 14,
-    },
-
-    feature: {
-      color: '#0F172A',
-      marginBottom: 9,
-      fontSize: 14,
-    },
-
-    buyBtn: {
-      backgroundColor:
-        '#1565FF',
-      marginHorizontal: 18,
-      marginTop: 10,
-      paddingVertical: 16,
-      borderRadius: 16,
-      alignItems: 'center',
-    },
-
-    buyTxt: {
-      color: '#fff',
-      fontWeight: '900',
-      fontSize: 16,
-    },
-
-    note: {
-      marginTop: 14,
-      textAlign: 'center',
-      color: '#64748B',
-      fontSize: 13,
-      paddingHorizontal: 20,
-      lineHeight: 20,
-    },
-  });
+  doneTxt: {
+    color: '#fff',
+    fontWeight: '900',
+    fontSize: 16,
+  },
+});

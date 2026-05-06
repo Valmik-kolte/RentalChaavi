@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { getOwnerProperties, deleteProperty } from '../../api/ownerApi';
+import { getPropertyById, deleteProperty } from '../../api/propertyApi';
+import { getOwnerProperties } from '../../api/ownerApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Image } from 'react-native';
 
 import {
-  SafeAreaView,
   StatusBar,
   ScrollView,
   View,
@@ -14,6 +16,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 export default function MyListingsScreen({ navigation }) {
   const { userData } = useContext(AuthContext);
 
@@ -22,34 +26,63 @@ export default function MyListingsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchListings();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', fetchListings);
+    return unsubscribe;
+  }, [navigation]);
 
   const fetchListings = async () => {
-    try {
-      const ownerId = userData?.id || 1;
-      const res = await getOwnerProperties(ownerId);
-      const data = res?.data;
+  try {
+    const ownerId = userData?.id;
 
-      setListings(data?.properties || []);
-    } catch (e) {
-      console.log('API ERROR:', e?.response?.data || e.message);
-    } finally {
-      setLoading(false);
+    if (!ownerId) {
+      console.log(" NO OWNER ID");
+      return;
     }
-  };
+
+    setLoading(true);
+
+    const res = await getOwnerProperties(ownerId);
+
+    console.log("✅ FULL API RESPONSE:", res);
+
+        
+        let data = [];
+
+        if (Array.isArray(res)) {
+          data = res;
+        } else if (res?.properties) {
+          data = res.properties;
+        } else if (res?.data?.properties) {
+          data = res.data.properties;
+        } else {
+          console.log("⚠️ Unexpected API structure:", res);
+        }
+
+        setListings(data);
+
+      } catch (e) {
+        console.log("❌ API ERROR:", e?.response?.data || e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const tabs = ['All', 'Active', 'Pending', 'Rented'];
 
   const filtered =
     activeTab === 'All'
       ? listings
-      : listings.filter(item => item.status === activeTab);
+      : listings.filter(
+          item =>
+            item.status?.toLowerCase() === activeTab.toLowerCase()
+        );
 
   const statusColor = status => {
-    if (status === 'Active') return '#16A34A';
-    if (status === 'Pending') return '#F59E0B';
-    return '#1565FF';
+    const s = status?.toLowerCase();
+
+    if (s === 'active') return '#16A34A';
+    if (s === 'pending') return '#F59E0B';
+    return '#4338CA';
   };
 
   const handleDelete = item => {
@@ -74,8 +107,8 @@ export default function MyListingsScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#F8FAFF" barStyle="dark-content" />
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -87,16 +120,28 @@ export default function MyListingsScreen({ navigation }) {
         <View style={{ width: 24 }} />
       </View>
 
-      {/* 🔥 FIXED FILTER */}
+      {/* Tabs */}
       <View style={styles.tabWrapper}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tabContainer}
+        >
           {tabs.map(tab => (
             <TouchableOpacity
               key={tab}
-              style={[styles.tabBtn, activeTab === tab && styles.activeTab]}
+              style={[
+                styles.tabBtn,
+                activeTab === tab && styles.activeTab,
+              ]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text style={[styles.tabTxt, activeTab === tab && styles.activeTabTxt]}>
+              <Text
+                style={[
+                  styles.tabTxt,
+                  activeTab === tab && styles.activeTabTxt,
+                ]}
+              >
                 {tab}
               </Text>
             </TouchableOpacity>
@@ -105,7 +150,7 @@ export default function MyListingsScreen({ navigation }) {
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#1565FF" />
+        <ActivityIndicator size="large" color="#4338CA" />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ paddingHorizontal: 18 }}>
@@ -116,9 +161,16 @@ export default function MyListingsScreen({ navigation }) {
             ) : (
               filtered.map(item => (
                 <View key={item.id} style={styles.card}>
-
+                  
                   <View style={styles.imageBox}>
-                    <Text style={styles.imageTxt}>Rental</Text>
+                    <Image
+                      source={{
+                        uri: item.imageUrls?.[0]
+                          ? `http://192.168.1.13:8080/uploads/${item.imageUrls[0]}`
+                          : 'https://via.placeholder.com/150',
+                      }}
+                      style={styles.image}
+                    />
                   </View>
 
                   <Text style={styles.cardTitle}>
@@ -133,9 +185,19 @@ export default function MyListingsScreen({ navigation }) {
                     {item.city || 'Location'}
                   </Text>
 
-                  <View style={styles.metaRow}>
-                    <Text style={[styles.status, { color: statusColor(item.status) }]}>
-                      {item.status || 'Active'}
+                  <View
+                    style={[
+                      styles.statusBox,
+                      { backgroundColor: statusColor(item.status) + '20' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.status,
+                        { color: statusColor(item.status) },
+                      ]}
+                    >
+                      {item.status?.toUpperCase() || 'ACTIVE'}
                     </Text>
 
                     <Text style={styles.metaTxt}>
@@ -176,7 +238,7 @@ export default function MyListingsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFF' },
+  container: { flex: 1, backgroundColor: '#F8FAFC' },
 
   header: {
     paddingHorizontal: 18,
@@ -216,7 +278,7 @@ const styles = StyleSheet.create({
   },
 
   activeTab: {
-    backgroundColor: '#1565FF',
+    backgroundColor: '#4338CA',
   },
 
   tabTxt: {
@@ -241,15 +303,14 @@ const styles = StyleSheet.create({
   imageBox: {
     height: 145,
     borderRadius: 18,
-    backgroundColor: '#EAF2FF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#E0E7FF',
     marginBottom: 14,
+    overflow: 'hidden',
   },
 
-  imageTxt: {
-    color: '#1565FF',
-    fontWeight: '900',
+  image: {
+    width: '100%',
+    height: '100%',
   },
 
   cardTitle: {
@@ -260,7 +321,7 @@ const styles = StyleSheet.create({
 
   price: {
     marginTop: 8,
-    color: '#1565FF',
+    color: '#4338CA',
     fontWeight: '900',
     fontSize: 16,
   },
@@ -271,10 +332,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  metaRow: {
-    marginTop: 14,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  statusBox: {
+    marginTop: 12,
+    padding: 10,
+    borderRadius: 10,
   },
 
   status: {
@@ -285,6 +346,7 @@ const styles = StyleSheet.create({
   metaTxt: {
     color: '#64748B',
     fontSize: 12,
+    marginTop: 2,
   },
 
   actionRow: {
@@ -295,14 +357,14 @@ const styles = StyleSheet.create({
 
   editBtn: {
     width: '48%',
-    backgroundColor: '#EAF2FF',
+    backgroundColor: '#E0E7FF',
     paddingVertical: 13,
     borderRadius: 14,
     alignItems: 'center',
   },
 
   editTxt: {
-    color: '#1565FF',
+    color: '#4338CA',
     fontWeight: '900',
   },
 

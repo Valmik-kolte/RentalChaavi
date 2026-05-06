@@ -1,5 +1,5 @@
 // src/screens/auth/LoginScreen.js
-
+import { jwtDecode } from 'jwt-decode';
 import React, {
   useState,
   useContext,
@@ -18,7 +18,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   SafeAreaView,
 } from 'react-native-safe-area-context';
@@ -53,50 +53,79 @@ export default function LoginScreen({
       );
     };
 
-  const handleLogin =
-    async () => {
-      if (
-        !email.trim() ||
-        !password.trim()
-      ) {
-        Alert.alert(
-          'Required',
-          'Please enter email and password.'
-        );
-        return;
-      }
-
-      if (
-        !validateEmail(
-          email
-        )
-      ) {
-        Alert.alert(
-          'Invalid Email',
-          'Please enter valid email address.'
-        );
-        return;
-      }
-
+    const handleLogin = async () => {
       try {
         setLoading(true);
 
-        const response =
-          await login({
-            email:
-              email.trim(),
-            password,
-          });
+        const response = await login({
+          email: email.trim(),
+          password,
+        });
 
-        if (
-          !response?.success
-        ) {
+        console.log("FULL LOGIN RESPONSE:");
+        console.log(JSON.stringify(response, null, 2));
+
+        if (!response?.success) {
           Alert.alert(
             'Login Failed',
-            response?.message ||
-              'Try again.'
+            response?.message || 'Try again.'
           );
+          return;
         }
+
+        let ownerId = null;
+        let role = 'USER'; // default
+
+        try {
+          const decoded = jwtDecode(response.token);
+
+          console.log("DECODED TOKEN:", decoded);
+
+          /* existing */
+          ownerId = decoded?.id;
+
+          /* 🔥 NEW: extract role */
+          role = decoded?.role || 'USER';
+
+          /* normalize role */
+          role = role.toUpperCase().replace('ROLE_', '');
+
+          console.log("FINAL ROLE:", role);
+
+        } catch (err) {
+          console.log("Token decode failed:", err);
+        }
+
+        console.log("LOGIN RESPONSE:", response);
+        console.log("OWNER ID:", ownerId);
+
+        if (!ownerId) {
+          Alert.alert(
+            'Error',
+            'Owner ID not received from server'
+          );
+          return;
+        }
+
+        /* SAVE DATA */
+        await AsyncStorage.setItem(
+          'ownerId',
+          String(ownerId)
+        );
+
+        await AsyncStorage.setItem(
+          'userRole',
+          role
+        );
+
+        await AsyncStorage.setItem(
+          'userToken',
+          response.token
+        );
+
+        console.log("OWNER ID SAVED");
+        console.log("ROLE SAVED:", role);
+
       } catch (error) {
         Alert.alert(
           'Login Failed',
@@ -106,7 +135,7 @@ export default function LoginScreen({
         setLoading(false);
       }
     };
-
+       
   return (
     <SafeAreaView
       style={styles.container}

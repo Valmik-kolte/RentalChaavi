@@ -1,277 +1,155 @@
-// src/screens/admin/AdminDashboardScreen.js
-// UPDATED PREMIUM VERSION
-// Caryanam Broker - Admin Dashboard
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
   View,
   Text,
+  StatusBar,
+  ScrollView,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 
-export default function AdminDashboardScreen({
-  navigation,
-}) {
-  const stats = [
-    {
-      title: 'Users',
-      value: '245',
-    },
-    {
-      title: 'Owners',
-      value: '88',
-    },
-    {
-      title: 'Listings',
-      value: '412',
-    },
-    {
-      title: 'Premium',
-      value: '39',
-    },
-  ];
+import { SafeAreaView } from 'react-native-safe-area-context';
+import api from '../../api/axiosConfig';
+
+export default function AdminDashboardScreen({ navigation }) {
+
+  const [stats, setStats] = useState({
+    users: 0,
+    owners: 0,
+    listings: 0,
+    premium: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const usersRes = await api.get('/admin/pending-users');
+      const ownersRes = await api.get('/admin/pending-Owner');
+
+      const users = usersRes?.data || [];
+      const owners = ownersRes?.data || [];
+
+      setStats({
+        users: users.length,
+        owners: owners.length,
+        listings: 0,
+        premium: 0,
+      });
+
+    } catch (e) {
+      console.log('ERROR:', e?.response?.data || e.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchDashboardData();
+  };
 
   const actions = [
-    {
-      title:
-        'User Management',
-      screen:
-        'UsersManagement',
-    },
-    {
-      title:
-        'Owner Approvals',
-      screen:
-        'OwnersApproval',
-    },
-    {
-      title:
-        'Property Review',
-      screen:
-        'PropertiesApproval',
-    },
-    {
-      title:
-        'Premium Requests',
-      screen:
-        'PremiumRequests',
-    },
-    {
-      title:
-        'Reports & Analytics',
-      screen:
-        'ReportsAnalytics',
-    },
+    { title: 'User Management', screen: 'UsersManagement' },
+    { title: 'Owner Approvals', screen: 'OwnersApproval' },
+    { title: 'Property Review', screen: 'PropertiesApproval' },
+    { title: 'Premium Requests', screen: 'PremiumRequests' },
+    { title: 'Reports & Analytics', screen: 'ReportsAnalytics' },
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="#F8FAFF"
-        barStyle="dark-content"
-      />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+
+      <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />
 
       <ScrollView
-        showsVerticalScrollIndicator={
-          false
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={{
-          paddingBottom: 40,
-        }}
       >
+
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text
-              style={
-                styles.small
-              }
-            >
-              Welcome Admin 👋
-            </Text>
-
-            <Text
-              style={
-                styles.title
-              }
-            >
-              Control Center
-            </Text>
+            <Text style={styles.brand}>Admin Panel</Text>
+            <Text style={styles.tag}>Welcome Admin 👋</Text>
           </View>
 
-          <View
-            style={
-              styles.badge
-            }
+          <TouchableOpacity
+            style={styles.profileBtn}
+            onPress={() => navigation.navigate('Profile')}
           >
-            <Text
-              style={
-                styles.badgeTxt
-              }
-            >
-              Secure
-            </Text>
-          </View>
+            <Text style={styles.profileTxt}>Profile</Text>
+          </TouchableOpacity>
         </View>
 
         {/* HERO */}
         <View style={styles.hero}>
-          <Text
-            style={
-              styles.heroTitle
-            }
-          >
-            Manage Full
-            Platform
+          <Text style={styles.heroTitle}>
+            Control Platform{'\n'}Smartly
           </Text>
 
-          <Text
-            style={
-              styles.heroSub
-            }
-          >
-            Users, owners,
-            rentals, approvals and
-            premium growth in one
-            place.
+          <Text style={styles.heroSub}>
+            Manage users, owners, properties and premium flows.
           </Text>
         </View>
 
         {/* STATS */}
-        <Text style={styles.section}>
-          Overview
-        </Text>
+        <Text style={styles.section}>Overview</Text>
 
-        <View style={styles.grid}>
-          {stats.map(
-            (
-              item,
-              i
-            ) => (
-              <View
-                key={i}
-                style={
-                  styles.statCard
-                }
-              >
-                <Text
-                  style={
-                    styles.statValue
-                  }
-                >
-                  {
-                    item.value
-                  }
-                </Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#4338CA" style={{ marginTop: 20 }} />
+        ) : (
+          <View style={styles.grid}>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>{stats.users}</Text>
+              <Text style={styles.statTitle}>Users</Text>
+            </View>
 
-                <Text
-                  style={
-                    styles.statTitle
-                  }
-                >
-                  {
-                    item.title
-                  }
-                </Text>
-              </View>
-            )
-          )}
-        </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>{stats.owners}</Text>
+              <Text style={styles.statTitle}>Owners</Text>
+            </View>
 
-        {/* REVENUE */}
-        <Text style={styles.section}>
-          Revenue
-        </Text>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>{stats.listings}</Text>
+              <Text style={styles.statTitle}>Listings</Text>
+            </View>
 
-        <View
-          style={{
-            paddingHorizontal: 18,
-          }}
-        >
-          <View
-            style={
-              styles.revenueCard
-            }
-          >
-            <Text
-              style={
-                styles.revLabel
-              }
-            >
-              This Month
-            </Text>
-
-            <Text
-              style={
-                styles.revValue
-              }
-            >
-              ₹48,500
-            </Text>
-
-            <Text
-              style={
-                styles.revSub
-              }
-            >
-              Premium plans &
-              boosts
-            </Text>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>{stats.premium}</Text>
+              <Text style={styles.statTitle}>Premium</Text>
+            </View>
           </View>
-        </View>
+        )}
 
         {/* ACTIONS */}
-        <Text style={styles.section}>
-          Quick Actions
-        </Text>
+        <Text style={styles.section}>Quick Actions</Text>
 
-        <View
-          style={{
-            paddingHorizontal: 18,
-          }}
-        >
-          {actions.map(
-            (
-              item,
-              i
-            ) => (
-              <TouchableOpacity
-                key={i}
-                style={
-                  styles.actionCard
-                }
-                onPress={() =>
-                  navigation.navigate(
-                    item.screen
-                  )
-                }
-              >
-                <Text
-                  style={
-                    styles.actionTxt
-                  }
-                >
-                  {
-                    item.title
-                  }
-                </Text>
-
-                <Text
-                  style={
-                    styles.arrow
-                  }
-                >
-                  →
-                </Text>
-              </TouchableOpacity>
-            )
-          )}
+        <View style={styles.cardWrap}>
+          {actions.map((item, i) => (
+            <TouchableOpacity
+              key={i}
+              style={styles.actionCard}
+              onPress={() => navigation.navigate(item.screen)}
+            >
+              <Text style={styles.actionTxt}>{item.title}</Text>
+              <Text style={styles.arrow}>→</Text>
+            </TouchableOpacity>
+          ))}
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -279,165 +157,125 @@ export default function AdminDashboardScreen({
 
 /* ================= STYLES ================= */
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFF',
-    },
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
 
-    header: {
-      padding: 18,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems:
-        'center',
-    },
+  header: {
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    small: {
-      fontSize: 13,
-      color: '#64748B',
-    },
+  brand: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    title: {
-      marginTop: 4,
-      fontSize: 26,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  tag: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#64748B',
+  },
 
-    badge: {
-      backgroundColor:
-        '#EAF2FF',
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 20,
-    },
+  profileBtn: {
+    backgroundColor: '#4338CA',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 14,
+  },
 
-    badgeTxt: {
-      color: '#1565FF',
-      fontWeight: '800',
-      fontSize: 12,
-    },
+  profileTxt: {
+    color: '#fff',
+    fontWeight: '800',
+  },
 
-    hero: {
-      backgroundColor:
-        '#1565FF',
-      marginHorizontal: 18,
-      borderRadius: 24,
-      padding: 22,
-    },
+  hero: {
+    backgroundColor: '#4338CA',
+    marginHorizontal: 18,
+    borderRadius: 26,
+    padding: 22,
+    marginTop: 8,
+  },
 
-    heroTitle: {
-      color: '#fff',
-      fontSize: 28,
-      fontWeight: '900',
-      lineHeight: 36,
-    },
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#fff',
+    lineHeight: 36,
+  },
 
-    heroSub: {
-      marginTop: 10,
-      color: '#EAF2FF',
-      lineHeight: 22,
-      fontSize: 14,
-    },
+  heroSub: {
+    color: '#E0E7FF',
+    marginTop: 10,
+  },
 
-    section: {
-      marginTop: 26,
-      marginBottom: 14,
-      marginHorizontal: 18,
-      fontSize: 22,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  section: {
+    fontSize: 20,
+    fontWeight: '900',
+    marginHorizontal: 18,
+    marginTop: 26,
+    marginBottom: 14,
+    color: '#0F172A',
+  },
 
-    grid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent:
-        'space-between',
-      paddingHorizontal: 18,
-    },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+  },
 
-    statCard: {
-      width: '48%',
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 18,
-      padding: 18,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  statCard: {
+    width: '48%',
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E0E7FF',
+  },
 
-    statValue: {
-      fontSize: 24,
-      fontWeight: '900',
-      color: '#1565FF',
-    },
+  statValue: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#4338CA',
+  },
 
-    statTitle: {
-      marginTop: 8,
-      color: '#64748B',
-      fontSize: 13,
-    },
+  statTitle: {
+    marginTop: 6,
+    color: '#64748B',
+  },
 
-    revenueCard: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 22,
-      padding: 20,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  cardWrap: {
+    paddingHorizontal: 18,
+  },
 
-    revLabel: {
-      color: '#64748B',
-      fontSize: 13,
-    },
+  actionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E0E7FF',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    revValue: {
-      marginTop: 8,
-      fontSize: 30,
-      fontWeight: '900',
-      color: '#1565FF',
-    },
+  actionTxt: {
+    fontWeight: '800',
+    color: '#0F172A',
+  },
 
-    revSub: {
-      marginTop: 6,
-      color: '#64748B',
-      fontSize: 13,
-    },
-
-    actionCard: {
-      backgroundColor:
-        '#FFFFFF',
-      padding: 18,
-      borderRadius: 18,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems:
-        'center',
-    },
-
-    actionTxt: {
-      color: '#0F172A',
-      fontWeight: '800',
-      fontSize: 15,
-    },
-
-    arrow: {
-      color: '#1565FF',
-      fontSize: 22,
-      fontWeight: '900',
-    },
-  });
+  arrow: {
+    color: '#94A3B8',
+    fontSize: 16,
+  },
+});

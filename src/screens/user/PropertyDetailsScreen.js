@@ -1,11 +1,4 @@
-// src/screens/user/PropertyDetailsScreen.js
-// FULL UPDATED FILE
-// API READY + Premium UI + Safe Area Fixed
-
-import React, {
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 
 import {
   View,
@@ -14,608 +7,719 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   Alert,
   Linking,
+  Image,
+  Dimensions,
 } from 'react-native';
 
-import {
-  SafeAreaView,
-} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import api from '../../api/axiosConfig';
+const { width } = Dimensions.get('window');
+
+const BASE_URL = 'http://192.168.1.13:8080';
 
 export default function PropertyDetailsScreen({
   navigation,
   route,
 }) {
-  const propertyId =
-    route?.params?.propertyId;
 
-  const [loading,
-    setLoading] =
-    useState(true);
+  const property =
+    route?.params?.property;
 
-  const [property,
-    setProperty] =
-    useState(null);
+  console.log(
+    'DETAIL SCREEN PROPERTY:',
+    property
+  );
 
-  useEffect(() => {
-    fetchProperty();
-  }, []);
-
-  const fetchProperty =
-    async () => {
-      try {
-        setLoading(true);
-
-        const res =
-          await api.get(
-            `/api/properties/${propertyId}`
-          );
-
-        setProperty(
-          res.data
-        );
-      } catch (error) {
-        Alert.alert(
-          'Error',
-          'Unable to load property details.'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-  const callOwner =
-    () => {
-      const phone =
-        property?.ownerMobile ||
-        property?.mobileNumber;
-
-      if (phone) {
-        Linking.openURL(
-          `tel:${phone}`
-        );
-      } else {
-        Alert.alert(
-          'Unavailable',
-          'Owner number not available.'
-        );
-      }
-    };
-
-  if (loading) {
-    return (
-      <SafeAreaView
-        style={
-          styles.loaderWrap
-        }
-      >
-        <ActivityIndicator
-          size="large"
-          color="#4338CA"
-        />
-      </SafeAreaView>
+  console.log(
+  'RAW DOCTYPE IMAGES:',
+      property?.doctypeImages
     );
-  }
+
+  const parseImages = (imgString) => {
+
+      try {
+
+        // CASE 1
+        if (
+          !imgString ||
+          imgString === '[]'
+        ) {
+
+          // fallback image
+          if (property?.image) {
+            return [property.image];
+          }
+
+          return [];
+        }
+
+        // CASE 2
+        if (Array.isArray(imgString)) {
+
+          return imgString.map(img => {
+
+            // already full URL
+            if (
+              String(img).startsWith('http')
+            ) {
+              return img;
+            }
+
+            return `${BASE_URL}/${String(img)
+              .trim()
+              .replace(/^\/+/, '')}`;
+          });
+        }
+
+        // CASE 3
+        const cleaned = String(imgString)
+
+          .replace(/^\[/, '')
+          .replace(/\]$/, '')
+          .replace(/"/g, '')
+          .trim();
+
+        if (!cleaned) {
+
+          if (property?.image) {
+            return [property.image];
+          }
+
+          return [];
+        }
+
+        return cleaned
+          .split(',')
+          .map(img => {
+
+            const finalImg = img
+              .trim()
+              .replace(/^\/+/, '');
+
+            // already full URL
+            if (
+              finalImg.startsWith('http')
+            ) {
+              return finalImg;
+            }
+
+            return `${BASE_URL}/${finalImg}`;
+          })
+          .filter(Boolean);
+
+      } catch (e) {
+
+        console.log(
+          'IMAGE PARSE ERROR:',
+          e
+        );
+
+        // fallback
+        if (property?.image) {
+          return [property.image];
+        }
+
+        return [];
+      }
+    };
 
   if (!property) {
+
     return (
-      <SafeAreaView
-        style={
-          styles.loaderWrap
-        }
-      >
-        <Text>
-          Property not found
-        </Text>
+      <SafeAreaView style={styles.loaderWrap}>
+        <Text>Property not found</Text>
       </SafeAreaView>
     );
   }
+
+  const images =
+    parseImages(property?.doctypeImages);
+
+    console.log(
+      'PARSED IMAGES:',
+      images
+    );
+    console.log(
+      'FINAL IMAGES:',
+      images
+    );
 
   const ownerName =
     property?.ownerName ||
     'Verified Owner';
 
   const ownerInitial =
-    ownerName
-      ?.charAt(0)
-      ?.toUpperCase();
+    ownerName?.charAt(0)?.toUpperCase();
+
+  const callOwner = () => {
+
+    const phone =
+      property?.ownerMobile ||
+      property?.mobileNumber;
+
+    if (phone) {
+
+      Linking.openURL(`tel:${phone}`);
+
+    } else {
+
+      Alert.alert(
+        'Premium Required',
+        'Owner details available for premium users only.'
+      );
+    }
+  };
 
   return (
+
     <SafeAreaView
       style={styles.container}
-      edges={[
-        'top',
-        'left',
-        'right',
-      ]}
+      edges={['top', 'left', 'right']}
     >
+
       <StatusBar
         backgroundColor="#F8FAFC"
         barStyle="dark-content"
       />
 
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.goBack()
-          }
-        >
-          <Text style={styles.back}>
-            ←
-          </Text>
-        </TouchableOpacity>
-
-        <Text
-          style={styles.headTxt}
-        >
-          Property Details
-        </Text>
-
-        <TouchableOpacity>
-          <Text style={styles.save}>
-            ♡
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          paddingBottom: 130,
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scroll}
+      >
+
+        {/* IMAGE CAROUSEL */}
+<ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={{
+    paddingRight: 18,
+  }}
+  style={{
+    marginTop: 18,
+  }}
+>
+
+  {images.length > 0 ? (
+
+    images.map((img, index) => (
+
+      <View
+        key={index}
+        style={{
+          width: width - 36,
+          marginLeft:
+            index === 0 ? 18 : 10,
+          borderRadius: 24,
+          overflow: 'hidden',
+          backgroundColor: '#E2E8F0',
         }}
       >
-        {/* IMAGE */}
-        <View style={styles.imageBox}>
-          <Text
-            style={styles.imageTxt}
+
+        <Image
+          source={{ uri: img }}
+          style={styles.image}
+          resizeMode="cover"
+
+          onError={() => {
+
+            console.log(
+              'FAILED IMAGE:',
+              img
+            );
+          }}
+        />
+
+      </View>
+    ))
+
+  ) : (
+
+    <View style={styles.noImage}>
+
+      <Text style={styles.noImageTxt}>
+        No Image Available
+      </Text>
+
+    </View>
+
+  )}
+
+</ScrollView>
+
+        {/* TOP BUTTONS */}
+        <View style={styles.topButtons}>
+
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => navigation.goBack()}
           >
-            Home Image
-          </Text>
+
+            <Text style={styles.iconTxt}>
+              ←
+            </Text>
+
+          </TouchableOpacity>
+
         </View>
 
-        {/* CONTENT */}
-        <View style={styles.content}>
-          <Text
-            style={styles.title}
-          >
-            {property?.title ||
-              'Property'}
+        {/* PRICE CARD */}
+        <View style={styles.hero}>
+
+          <Text style={styles.heroTitle}>
+            {property?.title || 'Property'}
           </Text>
 
-          <Text
-            style={styles.price}
-          >
-            ₹
-            {property?.price ||
-              '0'}{' '}
-            / month
-          </Text>
+          <Text style={styles.heroSub}>
 
-          <Text
-            style={
-              styles.location
-            }
-          >
             {property?.location ||
-              property?.city}
+            property?.city
+
+              ? `${property?.location || ''} ${property?.city || ''}`
+
+              : 'Location not available'}
+
           </Text>
 
-          {/* TAGS */}
-          <View style={styles.tagRow}>
-            <Text style={styles.tag}>
-              {property?.bhk ||
-                'Home'}
+          <Text style={styles.heroPrice}>
+
+            {property?.price
+
+              ? `₹${Number(property.price).toLocaleString()} / month`
+
+              : 'Premium Required'}
+
+          </Text>
+
+        </View>
+
+        {/* HIGHLIGHTS */}
+        <Text style={styles.section}>
+          Highlights
+        </Text>
+
+        <View style={styles.grid}>
+
+          <View style={styles.gridCard}>
+            <Text style={styles.gridLabel}>
+              Property Type
             </Text>
 
-            <Text style={styles.tag}>
-              Verified
-            </Text>
-
-            <Text style={styles.tag}>
-              Ready To Move
+            <Text style={styles.gridValue}>
+              {property?.propertyType || 'N/A'}
             </Text>
           </View>
 
-          {/* ABOUT */}
-          <Text
-            style={
-              styles.section
-            }
-          >
-            About Home
-          </Text>
-
-          <Text style={styles.desc}>
-            {property?.description ||
-              'Spacious home with modern interior, peaceful locality and ideal for family living.'}
-          </Text>
-
-          {/* AMENITIES */}
-          <Text
-            style={
-              styles.section
-            }
-          >
-            Amenities
-          </Text>
-
-          <View style={styles.box}>
-            <Text
-              style={
-                styles.feature
-              }
-            >
-              • Parking Available
+          <View style={styles.gridCard}>
+            <Text style={styles.gridLabel}>
+              BHK Type
             </Text>
 
-            <Text
-              style={
-                styles.feature
-              }
-            >
-              • Security
-            </Text>
+            <Text style={styles.gridValue}>
 
-            <Text
-              style={
-                styles.feature
-              }
-            >
-              • Lift Facility
-            </Text>
+              {property?.bhkType
 
-            <Text
-              style={
-                styles.feature
-              }
-            >
-              • Water Supply
-            </Text>
+                ? String(property.bhkType)
+                    .replace(/_/g, ' ')
 
-            <Text
-              style={
-                styles.feature
-              }
-            >
-              • Family Friendly
+                : 'N/A'}
+
             </Text>
           </View>
 
-          {/* OWNER */}
-          <Text
-            style={
-              styles.section
-            }
-          >
-            Owner Details
-          </Text>
+          <View style={styles.gridCard}>
+            <Text style={styles.gridLabel}>
+              Furnishing
+            </Text>
 
-          <View
-            style={
-              styles.ownerCard
-            }
-          >
-            <View
-              style={
-                styles.avatar
-              }
-            >
-              <Text
-                style={
-                  styles.avatarTxt
+            <Text style={styles.gridValue}>
+
+              {
+
+                  property?.furnishing ||
+
+                  property?.furnishingType ||
+
+                  property?.furnishedStatus ||
+
+                  'N/A'
+
                 }
-              >
-                {
-                  ownerInitial
-                }
+
               </Text>
+          </View>
+
+          <View style={styles.gridCard}>
+            <Text style={styles.gridLabel}>
+              Area
+            </Text>
+
+            <Text style={styles.gridValue}>
+
+              {
+
+                property?.carpetArea ||
+
+                property?.builtupArea ||
+
+                property?.area ||
+
+                property?.squareFeet ||
+
+                'N/A'
+
+              }
+
+            </Text>
+          </View>
+
+        </View>
+
+        {/* ABOUT */}
+        <Text style={styles.section}>
+          About Property
+        </Text>
+
+        <View style={styles.cardWrap}>
+
+          <View style={styles.card}>
+
+            <Text style={styles.loc}>
+
+              {
+
+                property?.description ||
+
+                property?.about ||
+
+                property?.propertyDescription ||
+
+                property?.details ||
+
+                'Beautiful property with premium interior and peaceful environment.'
+
+              }
+
+            </Text>
+
+          </View>
+
+        </View>
+
+        {/* ADDRESS */}
+        <Text style={styles.section}>
+          Address
+        </Text>
+
+        <View style={styles.cardWrap}>
+
+          <View style={styles.card}>
+
+            <Text style={styles.loc}>
+
+              {property?.address ||
+
+                property?.location ||
+
+                'Address not available'}
+
+            </Text>
+
+          </View>
+
+        </View>
+
+        {/* OWNER */}
+        <Text style={styles.section}>
+          Owner Details
+        </Text>
+
+        <View style={styles.cardWrap}>
+
+          <View style={styles.ownerCard}>
+
+            <View style={styles.avatar}>
+
+              <Text style={styles.avatarTxt}>
+                {ownerInitial}
+              </Text>
+
             </View>
 
-            <View
-              style={{
-                marginLeft: 14,
-                flex: 1,
-              }}
-            >
-              <Text
-                style={
-                  styles.ownerName
-                }
-              >
+            <View style={{ flex: 1 }}>
+
+              <Text style={styles.cardTitle}>
                 {ownerName}
               </Text>
 
-              <Text
-                style={
-                  styles.ownerSub
-                }
-              >
+              <Text style={styles.loc}>
                 Trusted Owner
               </Text>
+
             </View>
+
           </View>
+
         </View>
+
+        {/* CTA */}
+        <View style={styles.cta}>
+
+          <Text style={styles.ctaTitle}>
+            Interested in this property?
+          </Text>
+
+          <Text style={styles.ctaSub}>
+            Connect with the owner and
+            schedule your visit today.
+          </Text>
+
+          {property?.price ? (
+
+            <TouchableOpacity
+              style={styles.postBtn}
+              onPress={callOwner}
+            >
+
+              <Text style={styles.postTxt}>
+                Contact Owner
+              </Text>
+
+            </TouchableOpacity>
+
+          ) : (
+
+            <TouchableOpacity
+              style={styles.postBtn}
+              onPress={() =>
+                navigation.navigate(
+                  'Premium',
+                  {
+                    isUserPremium: true
+                  }
+                )
+              }
+            >
+
+              <Text style={styles.postTxt}>
+                Buy Premium
+              </Text>
+
+            </TouchableOpacity>
+
+          )}
+
+        </View>
+
       </ScrollView>
 
-      {/* BOTTOM BAR */}
-      <View
-        style={
-          styles.bottomBar
-        }
-      >
-        <TouchableOpacity
-          style={
-            styles.chatBtn
-          }
-          onPress={() =>
-            navigation.navigate(
-              'ChatScreen',
-              {
-                propertyId:
-                  propertyId,
-              }
-            )
-          }
-        >
-          <Text
-            style={
-              styles.chatTxt
-            }
-          >
-            Chat
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={
-            styles.callBtn
-          }
-          onPress={
-            callOwner
-          }
-        >
-          <Text
-            style={
-              styles.callTxt
-            }
-          >
-            Contact Owner
-          </Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
 
-/* ================= STYLES ================= */
+const styles = StyleSheet.create({
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFC',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
 
-    loaderWrap: {
-      flex: 1,
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-      backgroundColor:
-        '#F8FAFC',
-    },
+  scroll: {
+    paddingBottom: 40,
+  },
 
-    header: {
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-    },
+  loaderWrap: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+  },
 
-    back: {
-      fontSize: 26,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  image: {
+    width: '100%',
+    height: 260,
+  },
 
-    headTxt: {
-      fontSize: 20,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  noImage: {
+    width: width - 36,
+    height: 260,
+    backgroundColor: '#E2E8F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 24,
+    overflow: 'hidden',
+    marginLeft: 18,
+  },
 
-    save: {
-      fontSize: 24,
-      color: '#4338CA',
-    },
+  noImageTxt: {
+    color: '#64748B',
+    fontWeight: '700',
+  },
 
-    imageBox: {
-      height: 250,
-      marginHorizontal: 18,
-      borderRadius: 24,
-      backgroundColor:
-        '#EEF2FF',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-    },
+  topButtons: {
+    position: 'absolute',
+    top: 20,
+    left: 18,
+    zIndex: 10,
+  },
 
-    imageTxt: {
-      color: '#4338CA',
-      fontWeight: '900',
-      fontSize: 16,
-    },
+  iconBtn: {
+    backgroundColor: '#FFFFFFDD',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    content: {
-      paddingHorizontal: 18,
-      paddingTop: 20,
-    },
+  iconTxt: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    title: {
-      fontSize: 26,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  hero: {
+    backgroundColor: '#4338CA',
+    marginHorizontal: 18,
+    marginTop: -40,
+    borderRadius: 26,
+    padding: 22,
+  },
 
-    price: {
-      marginTop: 8,
-      fontSize: 22,
-      fontWeight: '900',
-      color: '#4338CA',
-    },
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#fff',
+  },
 
-    location: {
-      marginTop: 8,
-      color: '#64748B',
-      fontSize: 15,
-    },
+  heroSub: {
+    color: '#E0E7FF',
+    marginTop: 8,
+  },
 
-    tagRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      marginTop: 16,
-    },
+  heroPrice: {
+    marginTop: 18,
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#fff',
+  },
 
-    tag: {
-      backgroundColor:
-        '#EEF2FF',
-      color: '#4338CA',
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 20,
-      marginRight: 10,
-      marginBottom: 10,
-      fontWeight: '800',
-      fontSize: 12,
-      overflow: 'hidden',
-    },
+  section: {
+    fontSize: 21,
+    fontWeight: '900',
+    marginHorizontal: 18,
+    marginTop: 28,
+    marginBottom: 14,
+    color: '#0F172A',
+  },
 
-    section: {
-      marginTop: 24,
-      marginBottom: 12,
-      fontSize: 20,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+  },
 
-    desc: {
-      color: '#64748B',
-      lineHeight: 24,
-      fontSize: 15,
-    },
+  gridCard: {
+    width: '48%',
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 14,
+  },
 
-    box: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 18,
-      padding: 18,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  gridLabel: {
+    color: '#64748B',
+    fontSize: 13,
+  },
 
-    feature: {
-      color: '#0F172A',
-      marginBottom: 10,
-      fontSize: 15,
-    },
+  gridValue: {
+    marginTop: 8,
+    fontWeight: '900',
+    color: '#0F172A',
+    fontSize: 15,
+  },
 
-    ownerCard: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 18,
-      padding: 18,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
+  cardWrap: {
+    paddingHorizontal: 18,
+  },
 
-    avatar: {
-      width: 54,
-      height: 54,
-      borderRadius: 27,
-      backgroundColor:
-        '#4338CA',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-    },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 18,
+  },
 
-    avatarTxt: {
-      color: '#fff',
-      fontWeight: '900',
-      fontSize: 18,
-    },
+  loc: {
+    color: '#64748B',
+    lineHeight: 22,
+  },
 
-    ownerName: {
-      fontSize: 17,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  ownerCard: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 
-    ownerSub: {
-      marginTop: 4,
-      color: '#64748B',
-      fontSize: 13,
-    },
+  avatar: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: '#EEF2FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
 
-    bottomBar: {
-      position: 'absolute',
-      left: 14,
-      right: 14,
-      bottom: 14,
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 20,
-      padding: 12,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-      elevation: 8,
-    },
+  avatarTxt: {
+    color: '#4338CA',
+    fontWeight: '900',
+    fontSize: 20,
+  },
 
-    chatBtn: {
-      width: '32%',
-      backgroundColor:
-        '#EEF2FF',
-      borderRadius: 14,
-      paddingVertical: 14,
-      alignItems: 'center',
-    },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    chatTxt: {
-      color: '#4338CA',
-      fontWeight: '900',
-    },
+  cta: {
+    backgroundColor: '#fff',
+    marginHorizontal: 18,
+    marginTop: 24,
+    borderRadius: 24,
+    padding: 22,
+    alignItems: 'center',
+  },
 
-    callBtn: {
-      width: '64%',
-      backgroundColor:
-        '#4338CA',
-      borderRadius: 14,
-      paddingVertical: 14,
-      alignItems: 'center',
-    },
+  ctaTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    callTxt: {
-      color: '#fff',
-      fontWeight: '900',
-    },
-  });
+  ctaSub: {
+    color: '#64748B',
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
+  postBtn: {
+    backgroundColor: '#4338CA',
+    marginTop: 18,
+    paddingHorizontal: 28,
+    paddingVertical: 15,
+    borderRadius: 16,
+  },
+
+  postTxt: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 15,
+  },
+
+});

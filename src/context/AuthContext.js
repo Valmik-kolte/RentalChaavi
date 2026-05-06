@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import {
   loginApi,
   registerUserApi,
@@ -106,94 +106,105 @@ export const AuthProvider = ({
   };
     /* ================= LOGIN ================= */
 
-    const login = async (data) => {
-  try {
-    setLoading(true);
+  
+      const login = async (data) => {
+        try {
+          setLoading(true);
 
-    const res = await loginApi({
-      email: data.email.trim().toLowerCase(),
-      password: data.password,
-    });
+          const res = await loginApi({
+            email: data.email.trim().toLowerCase(),
+            password: data.password,
+          });
 
-    const result = res?.data || {};
-    console.log('LOGIN RESPONSE:', result);
+          const result = res?.data || {};
+          console.log('LOGIN RESPONSE:', result);
 
-    // 🔑 TOKEN
-    const token =
-      result?.token ||
-      result?.jwtToken ||
-      result?.accessToken ||
-      result?.data?.token ||
-      '';
+          // 🔑 TOKEN
+          const token =
+            result?.token ||
+            result?.jwtToken ||
+            result?.accessToken ||
+            result?.data?.token ||
+            '';
 
-    if (!token) {
-      return {
-        success: false,
-        message: 'Token not received',
+          if (!token) {
+            return {
+              success: false,
+              message: 'Token not received',
+            };
+          }
+
+          /* ========================================= */
+          /* 🔥 NEW: ROLE FROM JWT TOKEN (FIXED)       */
+          /* ========================================= */
+
+              let role = 'USER';
+              let user = {};
+
+              try {
+                const decoded = jwtDecode(token);
+
+                console.log("DECODED TOKEN:", decoded);
+
+                // ✅ ROLE FIX
+                role = decoded?.role || 'USER';
+                role = role.toUpperCase().replace('ROLE_', '');
+
+                // ✅ USER DATA FIX (IMPORTANT)
+                user = {
+                  id: decoded?.id,          // 🔥 THIS FIXES YOUR ISSUE
+                  email: decoded?.sub,
+                  role: role,
+                };
+
+              } catch (e) {
+                console.log("JWT decode failed:", e);
+
+                user = {
+                  email: data.email,
+                };
+              }
+
+              console.log("FINAL ROLE:", role);
+              console.log("FINAL USER:", user);
+
+              
+          // 💾 STORE
+          await AsyncStorage.setItem('userToken', String(token));
+          await AsyncStorage.setItem('userRole', String(role));
+          await AsyncStorage.setItem('userData', JSON.stringify(user));
+
+          // 🔄 UPDATE STATE
+          setUserToken(String(token));
+          setUserRole(String(role));
+          setUserData(user);
+
+          return {
+            success: true,
+            token: token,
+            role: role,
+          };
+
+        } catch (error) {
+          console.log('LOGIN ERROR:', error?.response?.data);
+
+          const msg =
+            error?.response?.data?.message ||
+            error?.response?.data ||
+            'Login Failed';
+
+          return {
+            success: false,
+            message:
+              typeof msg === 'string'
+                ? msg
+                : JSON.stringify(msg),
+          };
+        } finally {
+          setLoading(false);
+        }
       };
-    }
 
-    // 🔥 ROLE LOGIC (NO JWT)
-    let role = 'USER';
-
-    // ✅ Case 1: role inside user object
-    if (result?.user?.role) {
-      role = detectRole(result.user.role);
-    }
-
-    // ✅ Case 2: role directly in response
-    else if (result?.role) {
-      role = detectRole(result.role);
-    }
-
-    // ✅ TEMP FALLBACK (only if backend gives nothing)
-    else {
-      const email = data.email.toLowerCase();
-
-      // ⚠️ adjust this condition if needed
-      if (email.includes('owner')) {
-        role = 'PROPERTY_OWNER';
-      }
-    }
-
-    console.log("FINAL ROLE:", role);
-
-    // 👤 USER DATA
-    const user = result?.user || {
-      email: data.email,
-    };
-
-    // 💾 STORE
-    await AsyncStorage.setItem('userToken', String(token));
-    await AsyncStorage.setItem('userRole', String(role));
-    await AsyncStorage.setItem('userData', JSON.stringify(user));
-    
-
-    setUserToken(String(token));
-    setUserRole(String(role));
-    setUserData(user);
-
-    return { success: true };
-
-  } catch (error) {
-    console.log('LOGIN ERROR:', error?.response?.data);
-
-    const msg =
-      error?.response?.data?.message ||
-      error?.response?.data ||
-      'Login Failed';
-
-    return {
-      success: false,
-      message:
-        typeof msg === 'string'
-          ? msg
-          : JSON.stringify(msg),
-    };
-  } finally {
-    setLoading(false);
-  }
-};
   /* ================= REGISTER ================= */
 
   const register =

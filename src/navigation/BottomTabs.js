@@ -1,21 +1,10 @@
 // src/navigation/BottomTabs.js
-// FINAL CLEAN VERSION (OWNER + USER PERFECT SWITCH)
+// FINAL CLEAN VERSION (ADMIN + OWNER + USER SWITCH)
 
 import React, { useContext } from 'react';
-
-import {
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-
-import {
-  View,
-  Text,
-  Platform,
-} from 'react-native';
-
-import {
-  AuthContext,
-} from '../context/AuthContext';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View, Text, Platform } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 
 /* USER SCREENS */
 import HomeScreen from '../screens/user/HomeScreen';
@@ -28,9 +17,14 @@ import ProfileScreen from '../screens/user/ProfileScreen';
 import OwnerHomeScreen from '../screens/owner/OwnerHomeScreen';
 import AddPropertyScreen from '../screens/owner/AddPropertyScreen';
 import MyListingsScreen from '../screens/owner/MyListingsScreen';
-import LeadsScreen from '../screens/owner/LeadsScreen';
 import OwnerChatListScreen from '../screens/owner/OwnerChatListScreen';
 import OwnerProfileScreen from '../screens/owner/OwnerProfileScreen';
+
+/* ADMIN SCREENS */
+import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
+import PremiumRequestsScreen from '../screens/admin/PremiumRequestsScreen';
+import ManagePropertiesScreen from '../screens/admin/ManagePropertiesScreen';
+import UsersManagementScreen from '../screens/admin/UsersManagementScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +32,6 @@ const Tab = createBottomTabNavigator();
 function TabIcon({ label, focused }) {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
-      
       {focused && (
         <View
           style={{
@@ -77,11 +70,10 @@ function TabIcon({ label, focused }) {
 export default function BottomTabs() {
   const { userRole } = useContext(AuthContext);
 
-  /* 🔥 SAFE ROLE CHECK */
-  const isOwner =
-    String(userRole || '')
-      .toUpperCase()
-      .includes('OWNER');
+  const role = String(userRole || '').toUpperCase();
+
+  const isAdmin = role.includes('ADMIN');
+  const isOwner = role.includes('OWNER');
 
   return (
     <Tab.Navigator
@@ -113,43 +105,86 @@ export default function BottomTabs() {
       {/* 🏠 HOME / DASHBOARD */}
       <Tab.Screen
         name="HomeTab"
-        component={isOwner ? OwnerHomeScreen : HomeScreen}
+        component={
+          isAdmin
+            ? AdminDashboardScreen
+            : isOwner
+            ? OwnerHomeScreen
+            : HomeScreen
+        }
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon label={isOwner ? 'DASH' : 'HOME'} focused={focused} />
+            <TabIcon
+              label={
+                isAdmin ? 'DASH' : isOwner ? 'DASH' : 'HOME'
+              }
+              focused={focused}
+            />
           ),
         }}
       />
 
-      {/* ➕ ADD / RENT */}
+      {/* 📩 REQUESTS / ADD / RENT */}
       <Tab.Screen
         name="ActionTab"
-        component={isOwner ? AddPropertyScreen : PropertyListScreen}
+        component={
+          isAdmin
+            ? PremiumRequestsScreen
+            : isOwner
+            ? AddPropertyScreen
+            : PropertyListScreen
+        }
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon label={isOwner ? 'ADD' : 'RENT'} focused={focused} />
+            <TabIcon
+              label={
+                isAdmin ? 'REQ' : isOwner ? 'ADD' : 'RENT'
+              }
+              focused={focused}
+            />
           ),
         }}
       />
 
-      {/* 📋 LIST / SAVED */}
-      <Tab.Screen
-        name="ListTab"
-        component={isOwner ? MyListingsScreen : FavoritesScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label={isOwner ? 'LIST' : 'SAVED'} focused={focused} />
-          ),
-        }}
-      />
+      {/* 🏢 PROPERTIES / LIST */}
+      
+      {(isAdmin || isOwner) && (
+        <Tab.Screen
+          name="ListTab"
+          component={
+            isAdmin
+              ? ManagePropertiesScreen
+              : MyListingsScreen
+          }
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <TabIcon
+                label={isAdmin ? 'PROP' : 'LIST'}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+      )}
 
-      {/* 💬 LEADS / CHAT */}
+      {/* 👥 USERS / CHAT */}
       <Tab.Screen
         name="ChatTab"
-        component={isOwner ? OwnerChatListScreen : ChatListScreen}
+        component={
+          isAdmin
+            ? UsersManagementScreen
+            : isOwner
+            ? OwnerChatListScreen
+            : ChatListScreen
+        }
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon label={isOwner ? 'LEADS' : 'CHAT'} focused={focused} />
+            <TabIcon
+              label={
+                isAdmin ? 'USERS' : isOwner ? 'LEADS' : 'CHAT'
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -157,7 +192,9 @@ export default function BottomTabs() {
       {/* 👤 PROFILE */}
       <Tab.Screen
         name="ProfileTab"
-        component={isOwner ? OwnerProfileScreen : ProfileScreen}
+        component={
+          isOwner ? OwnerProfileScreen : ProfileScreen
+        }
         options={{
           tabBarIcon: ({ focused }) => (
             <TabIcon label="PROFILE" focused={focused} />

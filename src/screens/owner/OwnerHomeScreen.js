@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addProperty, uploadPropertyImages } from '../../api/propertyApi';
 
 export default function OwnerHomeScreen({ navigation }) {
   const { userData, userRole } = useContext(AuthContext);
@@ -22,6 +24,7 @@ export default function OwnerHomeScreen({ navigation }) {
 
   useEffect(() => {
     fetchProperties();
+    retryPendingProperty();
   }, []);
 
   const fetchProperties = async () => {
@@ -39,6 +42,65 @@ export default function OwnerHomeScreen({ navigation }) {
     }
   };
 
+  const retryPendingProperty = async () => {
+  try {
+    const pending = await AsyncStorage.getItem('pendingProperty');
+
+    if (!pending) return;
+
+    console.log("FOUND PENDING PROPERTY");
+
+    const { form, images } = JSON.parse(pending);
+
+    const ownerId = userData?.id;
+
+    if (!ownerId) return;
+
+    const mapType = {
+      'Apartment': 'APARTMENT',
+      'Villa': 'VILLA',
+      'Independent House': 'INDEPENDENT_HOUSE',
+      'Studio': 'STUDIO',
+    };
+
+    const payload = {
+      title: form.title.trim(),
+      price: Number(form.rent),
+      location: form.location.trim(),
+      city: form.city.trim(),
+      address: form.address.trim(),
+      state: form.state.trim(),
+      pincode: form.pincode.trim(),
+      description: form.description.trim(),
+      propertyType: mapType[form.type],
+      mobileNumber: form.mobile.trim(),
+      bhkType: form.bhkType,
+      furnishing: form.furnishing,
+      pgType: form.pgType,
+      carpetArea: form.carpetArea.trim() || "750 sqft",
+    };
+
+    console.log("RETRYING PROPERTY UPLOAD...");
+
+    const res = await addProperty(ownerId, payload);
+
+    if (res?.data?.status === 200) {
+      const propertyId = res.data.data.id;
+
+      await uploadPropertyImages(propertyId, buildFormData(images));
+
+      await AsyncStorage.removeItem('pendingProperty');
+
+      Alert.alert("Success", "Your property is now uploaded!");
+
+      fetchProperties(); 
+    }
+
+  } catch (e) {
+    console.log("Retry failed:", e?.response?.data || e.message);
+  }
+};
+
   const stats = [
     { title: 'Active Listings', value: properties.length },
     { title: 'Leads', value: '0' },
@@ -46,6 +108,21 @@ export default function OwnerHomeScreen({ navigation }) {
     { title: 'Views', value: '0' },
   ];
 
+  const buildFormData = (imageMap) => {
+    const formData = new FormData();
+
+    Object.keys(imageMap).forEach((key) => {
+      const uri = imageMap[key];
+
+      formData.append('files', {
+        uri,
+        name: `${key}-${Date.now()}.jpg`,
+        type: 'image/jpeg',
+      });
+    });
+
+    return formData;
+  };
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />

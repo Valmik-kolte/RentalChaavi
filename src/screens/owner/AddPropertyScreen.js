@@ -30,6 +30,10 @@ export default function AddPropertyScreen({ navigation }) {
     mobile: '',
     description: '',
     type: 'Apartment',
+    bhkType: 'ONE_BHK',
+    furnishing: 'FULLY_FURNISHED',
+    pgType: 'BOYS_ONLY',
+    carpetArea: '',
   });
 
   const [images, setImages] = useState({});
@@ -81,8 +85,30 @@ export default function AddPropertyScreen({ navigation }) {
     );
   };
 
+
+    const buildFormData = (imageMap) => {
+    const formData = new FormData();
+
+    imageFields.forEach(field => {
+      const uri = imageMap[field.key];
+
+      if (!uri) return; 
+
+      formData.append('files', {
+        uri: Platform.OS === 'android'
+          ? uri
+          : uri.replace('file://', ''),
+        name: `${field.key}-${Date.now()}.jpg`,
+        type: 'image/jpeg',
+      });
+    });
+
+    return formData;
+  };
+    
+
   const submit = async () => {
-    if (
+      if (
       !form.title ||
       !form.rent ||
       !form.location ||
@@ -90,9 +116,13 @@ export default function AddPropertyScreen({ navigation }) {
       !form.state ||
       !form.address ||
       !form.pincode ||
-      !form.mobile
+      !form.mobile ||
+      !form.bhkType ||
+      !form.furnishing ||
+      !form.pgType ||
+      !form.carpetArea
     ) {
-      Alert.alert('Error', 'Fill all required fields');
+      Alert.alert('Error', 'Please fill all required fields including property details');
       return;
     }
 
@@ -104,28 +134,78 @@ export default function AddPropertyScreen({ navigation }) {
     }
 
     try {
-     const ownerId = Number(await AsyncStorage.getItem('ownerId'));
+     const storedOwnerId = await AsyncStorage.getItem('ownerId');
+      console.log("RAW OWNER ID FROM STORAGE:", storedOwnerId);
+
+      const ownerId = Number(storedOwnerId);
+      console.log("PARSED OWNER ID:", ownerId);
+
+    if (!ownerId || ownerId === 0) {
+      Alert.alert('Error', 'Owner ID not found. Please login again');
+      return;
+    }
 
       console.log('OWNER ID:', ownerId);
 
-      const payload = {
-        title: form.title,
-        price: Number(form.rent),
-        location: form.location,
-        city: form.city,
-        address: form.address,
-        state: form.state,
-        pincode: form.pincode,
-        description: form.description,
-        propertyType: form.type.toUpperCase(),
-        mobileNumber: form.mobile,
+      console.log("IMAGES OBJECT:", images);
+     const mapType = {
+        'Apartment': 'APARTMENT',
+        'Villa': 'VILLA',
+        'Independent House': 'INDEPENDENT_HOUSE',
+        'Studio': 'STUDIO',
       };
 
+      if (isNaN(Number(form.rent))) {
+        Alert.alert('Error', 'Enter valid price');
+        return;
+      }
+      if (form.mobile.length !== 10) {
+        Alert.alert('Error', 'Enter valid 10-digit mobile number');
+        return;
+      }
+      if (isNaN(Number(form.pincode))) {
+        Alert.alert('Error', 'Invalid pincode');
+        return;
+      }
+
+      const payload = {
+        title: form.title.trim(),
+        price: Number(form.rent),
+        location: form.location.trim(),
+        city: form.city.trim(),
+        address: form.address.trim(),
+        state: form.state.trim(),              
+        pincode: form.pincode.trim(),
+        description: form.description.trim(),
+        propertyType: mapType[form.type],
+        mobileNumber: form.mobile.trim(),
+        bhkType: form.bhkType,
+        furnishing: form.furnishing,
+        pgType: form.pgType,
+        carpetArea: form.carpetArea.trim() || "750 sqft",
+      };
+
+      console.log("FINAL PAYLOAD:", JSON.stringify(payload, null, 2));
       const res = await addProperty(ownerId, payload);
+        console.log("ADD PROPERTY RESPONSE:", res?.data);
 
-     const propertyId = res?.data?.data?.id;
+        // 🔥 SAFE RESPONSE CHECK
+        if (!res?.data || res.data.status !== 200) {
+          Alert.alert(
+            'Error',
+            res?.data?.message || 'Failed to add property'
+          );
+          return;
+        }
 
-      console.log('PROPERTY ID:', propertyId);
+        const propertyId = res.data?.data?.id;
+
+        if (!propertyId) {
+          Alert.alert('Error', 'Property not created');
+          return;
+        }
+
+      
 
       if (!propertyId) {
         Alert.alert('Error', 'Property created but ID not found');
@@ -135,28 +215,52 @@ export default function AddPropertyScreen({ navigation }) {
       console.log('PROPERTY ID:', propertyId);
 
     
-      const formData = new FormData();
+      try {
+      // 🚀 First Upload Attempt
+      console.log("UPLOADING IMAGES...");
+      await uploadPropertyImages(propertyId, buildFormData(images));
 
-      imageFields.forEach(field => {
-        const uri = images[field.key];
-
-       formData.append('files', {
-          uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
-          name: `${field.key}.jpg`,
-          type: 'image/jpeg',
-        });
-      });
-
-      const uploadRes = await uploadPropertyImages(propertyId, formData);
-
-      console.log('UPLOAD RESPONSE:', uploadRes?.data);
-
-     
       Alert.alert('Success', 'Property + Images Uploaded');
 
-    } catch (error) {
-      console.log('API ERROR:', error?.response?.data || error);
-      Alert.alert('Error', 'Failed to upload property');
+    } catch (uploadErr) {
+      console.log('First upload failed:', uploadErr);
+
+      try {
+        // 🔁 Retry Upload
+        await uploadPropertyImages(propertyId, buildFormData(images));
+        console.log("UPLOAD SUCCESS");
+        Alert.alert('Success', 'Uploaded after retry');
+
+      } catch (retryErr) {
+        console.log('Retry failed:', retryErr);
+
+        Alert.alert(
+          'Warning',
+          'Property added but image upload failed'
+        );
+      }
+    }
+    } 
+    catch (error) {
+    const errMsg =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Something went wrong';
+
+    console.log('API ERROR:', errMsg);
+
+    // 🔥 PREMIUM HANDLING
+    if (
+      errMsg.toLowerCase().includes('premium') ||
+      error?.response?.status === 500
+    ) {
+      Alert.alert(
+        'Premium Required',
+        'Please buy premium to upload property'
+      );
+    } else {
+      Alert.alert('Error', errMsg);
+    }
     }
   };
 
@@ -198,23 +302,162 @@ export default function AddPropertyScreen({ navigation }) {
           </View>
 
           {/* INPUTS */}
-          <TextInput placeholder="Property Title" placeholderTextColor="#64748B" value={form.title} onChangeText={v => update('title', v)} style={styles.input} />
-          <TextInput placeholder="Price" placeholderTextColor="#64748B" keyboardType="number-pad" value={form.rent} onChangeText={v => update('rent', v)} style={styles.input} />
-          <TextInput placeholder="Location" placeholderTextColor="#64748B" value={form.location} onChangeText={v => update('location', v)} style={styles.input} />
-          <TextInput placeholder="City" placeholderTextColor="#64748B" value={form.city} onChangeText={v => update('city', v)} style={styles.input} />
-          <TextInput placeholder="State" placeholderTextColor="#64748B" value={form.state} onChangeText={v => update('state', v)} style={styles.input} />
-          <TextInput placeholder="Address" placeholderTextColor="#64748B" value={form.address} onChangeText={v => update('address', v)} style={styles.input} />
-          <TextInput placeholder="Pincode" placeholderTextColor="#64748B" keyboardType="number-pad" value={form.pincode} onChangeText={v => update('pincode', v)} style={styles.input} />
-          <TextInput placeholder="Mobile Number" placeholderTextColor="#64748B" keyboardType="phone-pad" value={form.mobile} onChangeText={v => update('mobile', v)} style={styles.input} />
+          {/* PROPERTY TITLE */}
+            <TextInput
+              placeholder="Property Title"
+              placeholderTextColor="#64748B"
+              value={form.title}
+              onChangeText={v => update('title', v)}
+              style={styles.input}
+            />
 
-          <TextInput
-            placeholder="Description"
-            placeholderTextColor="#64748B"
-            value={form.description}
-            onChangeText={v => update('description', v)}
-            style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-            multiline
-          />
+            {/* PRICE */}
+            <TextInput
+              placeholder="Price"
+              placeholderTextColor="#64748B"
+              keyboardType="number-pad"
+              value={form.rent}
+              onChangeText={v => update('rent', v)}
+              style={styles.input}
+            />
+
+            {/* LOCATION */}
+            <TextInput
+              placeholder="Location"
+              placeholderTextColor="#64748B"
+              value={form.location}
+              onChangeText={v => update('location', v)}
+              style={styles.input}
+            />
+
+            {/* CITY */}
+            <TextInput
+              placeholder="City"
+              placeholderTextColor="#64748B"
+              value={form.city}
+              onChangeText={v => update('city', v)}
+              style={styles.input}
+            />
+
+            {/* STATE */}
+            <TextInput
+              placeholder="State"
+              placeholderTextColor="#64748B"
+              value={form.state}
+              onChangeText={v => update('state', v)}
+              style={styles.input}
+            />
+
+            {/* ADDRESS */}
+            <TextInput
+              placeholder="Address"
+              placeholderTextColor="#64748B"
+              value={form.address}
+              onChangeText={v => update('address', v)}
+              style={styles.input}
+            />
+
+            {/* PINCODE */}
+            <TextInput
+              placeholder="Pincode"
+              placeholderTextColor="#64748B"
+              keyboardType="number-pad"
+              value={form.pincode}
+              onChangeText={v => update('pincode', v)}
+              style={styles.input}
+            />
+
+            {/* MOBILE */}
+            <TextInput
+              placeholder="Mobile Number"
+              placeholderTextColor="#64748B"
+              keyboardType="phone-pad"
+              value={form.mobile}
+              onChangeText={v => update('mobile', v)}
+              style={styles.input}
+            />
+
+            {/* CARPET AREA */}
+            <TextInput
+              placeholder="Carpet Area (e.g. 750 sqft)"
+              placeholderTextColor="#64748B"
+              value={form.carpetArea}
+              onChangeText={v => update('carpetArea', v)}
+              style={styles.input}
+            />
+
+            {/* DESCRIPTION */}
+            <TextInput
+              placeholder="Description"
+              placeholderTextColor="#64748B"
+              value={form.description}
+              onChangeText={v => update('description', v)}
+              style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
+              multiline
+            />
+
+            <Text style={styles.label}>BHK Type</Text>
+            <View style={styles.row}>
+              {['ONE_BHK', 'TWO_BHK', 'THREE_BHK'].map(item => (
+                <TouchableOpacity
+                  key={item}
+                  style={[
+                    styles.typeBtn,
+                    form.bhkType === item && styles.activeBtn,
+                  ]}
+                  onPress={() => update('bhkType', item)}
+                >
+                  <Text style={[
+                    styles.typeTxt,
+                    form.bhkType === item && styles.activeTxt,
+                  ]}>
+                    {item.replace('_', ' ')}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+              <Text style={styles.label}>Furnishing</Text>
+              <View style={styles.row}>
+                {['FULLY_FURNISHED', 'SEMI_FURNISHED', 'UNFURNISHED'].map(item => (
+                  <TouchableOpacity
+                    key={item}
+                    style={[
+                      styles.typeBtn,
+                      form.furnishing === item && styles.activeBtn,
+                    ]}
+                    onPress={() => update('furnishing', item)}
+                  >
+                    <Text style={[
+                      styles.typeTxt,
+                      form.furnishing === item && styles.activeTxt,
+                    ]}>
+                      {item.replace('_', ' ')}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+                <Text style={styles.label}>PG Type</Text>
+                <View style={styles.row}>
+                  {['BOYS_ONLY', 'GIRLS_ONLY', 'BOTH'].map(item => (
+                    <TouchableOpacity
+                      key={item}
+                      style={[
+                        styles.typeBtn,
+                        form.pgType === item && styles.activeBtn,
+                      ]}
+                      onPress={() => update('pgType', item)}
+                    >
+                      <Text style={[
+                        styles.typeTxt,
+                        form.pgType === item && styles.activeTxt,
+                      ]}>
+                        {item.replace('_', ' ')}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
 
           {/* IMAGE GRID */}
           <Text style={styles.imageTitle}>Property Images (All Required)</Text>
@@ -234,7 +477,26 @@ export default function AddPropertyScreen({ navigation }) {
             ))}
           </View>
 
-          <TouchableOpacity style={styles.submitBtn} onPress={submit}>
+          <TouchableOpacity style={styles.submitBtn} onPress={() => {
+              if (
+                !form.title ||
+                !form.rent ||
+                !form.location ||
+                !form.city ||
+                !form.state ||
+                !form.address ||
+                !form.pincode ||
+                !form.mobile
+              ) {
+                Alert.alert('Error', 'Fill all required fields');
+                return;
+              }
+
+              navigation.navigate('PreviewProperty', {
+                form,
+                images,
+              });
+            }}>
             <Text style={styles.submitTxt}>Preview Property</Text>
           </TouchableOpacity>
 

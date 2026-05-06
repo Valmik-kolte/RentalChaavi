@@ -1,11 +1,6 @@
-// src/screens/user/ChatListScreen.js
-// UPDATED PREMIUM VERSION
-// Caryanam Broker - Rental Chats
-
 import React from 'react';
 
 import {
-  SafeAreaView,
   StatusBar,
   ScrollView,
   View,
@@ -14,9 +9,9 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default function ChatListScreen({
-  navigation,
-}) {
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+export default function ChatListScreen({ navigation }) {
   const chats = [
     {
       id: 1,
@@ -48,160 +43,61 @@ export default function ChatListScreen({
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="#F8FAFF"
-        barStyle="dark-content"
-      />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />
 
       {/* HEADER */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.small}>
-            Caryanam Broker
-          </Text>
-
-          <Text style={styles.title}>
-            Messages
-          </Text>
+          <Text style={styles.title}>Messages</Text>
+          <Text style={styles.sub}>Your conversations</Text>
         </View>
 
         <View style={styles.countBox}>
-          <Text
-            style={
-              styles.countTxt
-            }
-          >
-            {chats.length}
-          </Text>
+          <Text style={styles.countTxt}>{chats.length}</Text>
         </View>
       </View>
 
       {/* CHAT LIST */}
-      <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          paddingBottom: 110,
-        }}
-      >
-        <View
-          style={{
-            paddingHorizontal: 18,
-          }}
-        >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
+        <View style={styles.container}>
           {chats.map(item => (
             <TouchableOpacity
               key={item.id}
               style={styles.card}
               onPress={() =>
-                navigation.navigate(
-                  'ChatScreen',
-                  { chat: item }
-                )
+                navigation.navigate('ChatScreen', { chat: item })
               }
             >
               {/* AVATAR */}
-              <View
-                style={
-                  styles.avatarWrap
-                }
-              >
-                <View
-                  style={
-                    styles.avatar
-                  }
-                >
-                  <Text
-                    style={
-                      styles.avatarTxt
-                    }
-                  >
-                    {item.name
-                      .substring(
-                        0,
-                        1
-                      )
-                      .toUpperCase()}
+              <View style={styles.avatarWrap}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarTxt}>
+                    {item.name.substring(0, 1).toUpperCase()}
                   </Text>
                 </View>
 
-                {item.online && (
-                  <View
-                    style={
-                      styles.online
-                    }
-                  />
-                )}
+                {item.online && <View style={styles.online} />}
               </View>
 
               {/* CENTER */}
-              <View
-                style={{
-                  flex: 1,
-                  marginLeft: 14,
-                }}
-              >
-                <Text
-                  style={
-                    styles.name
-                  }
-                >
-                  {item.name}
-                </Text>
+              <View style={{ flex: 1, marginLeft: 14 }}>
+                <Text style={styles.name}>{item.name}</Text>
 
-                <Text
-                  style={
-                    styles.property
-                  }
-                >
-                  {item.property}
-                </Text>
+                <Text style={styles.property}>{item.property}</Text>
 
-                <Text
-                  numberOfLines={
-                    1
-                  }
-                  style={
-                    styles.msg
-                  }
-                >
+                <Text numberOfLines={1} style={styles.msg}>
                   {item.msg}
                 </Text>
               </View>
 
               {/* RIGHT */}
-              <View
-                style={{
-                  alignItems:
-                    'flex-end',
-                }}
-              >
-                <Text
-                  style={
-                    styles.time
-                  }
-                >
-                  {item.time}
-                </Text>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={styles.time}>{item.time}</Text>
 
-                {item.unread >
-                  0 && (
-                  <View
-                    style={
-                      styles.badge
-                    }
-                  >
-                    <Text
-                      style={
-                        styles.badgeTxt
-                      }
-                    >
-                      {
-                        item.unread
-                      }
-                    </Text>
+                {item.unread > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeTxt}>{item.unread}</Text>
                   </View>
                 )}
               </View>
@@ -215,146 +111,125 @@ export default function ChatListScreen({
 
 /* ================= STYLES ================= */
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFF',
-    },
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
 
-    header: {
-      paddingTop: 16,
-      paddingHorizontal: 18,
-      paddingBottom: 14,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-    },
+  header: {
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    small: {
-      fontSize: 13,
-      color: '#64748B',
-    },
+  title: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    title: {
-      marginTop: 4,
-      fontSize: 24,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  sub: {
+    fontSize: 13,
+    color: '#64748B',
+    marginTop: 4,
+  },
 
-    countBox: {
-      minWidth: 38,
-      height: 38,
-      borderRadius: 19,
-      backgroundColor:
-        '#EAF2FF',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-      paddingHorizontal: 8,
-    },
+  countBox: {
+    backgroundColor: '#4338CA',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+  },
 
-    countTxt: {
-      color: '#1565FF',
-      fontWeight: '900',
-    },
+  countTxt: {
+    color: '#fff',
+    fontWeight: '800',
+  },
 
-    card: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 20,
-      padding: 14,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
+  container: {
+    paddingHorizontal: 18,
+  },
 
-    avatarWrap: {
-      position:
-        'relative',
-    },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E7FF',
+  },
 
-    avatar: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
-      backgroundColor:
-        '#1565FF',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-    },
+  avatarWrap: {
+    position: 'relative',
+  },
 
-    avatarTxt: {
-      color: '#fff',
-      fontSize: 20,
-      fontWeight: '900',
-    },
+  avatar: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#EEF2FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    online: {
-      position:
-        'absolute',
-      right: 2,
-      bottom: 2,
-      width: 14,
-      height: 14,
-      borderRadius: 7,
-      backgroundColor:
-        '#22C55E',
-      borderWidth: 2,
-      borderColor:
-        '#FFFFFF',
-    },
+  avatarTxt: {
+    color: '#4338CA',
+    fontWeight: '900',
+    fontSize: 18,
+  },
 
-    name: {
-      fontSize: 16,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  online: {
+    position: 'absolute',
+    right: 2,
+    bottom: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#22C55E',
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
 
-    property: {
-      marginTop: 3,
-      color: '#1565FF',
-      fontSize: 13,
-      fontWeight: '700',
-    },
+  name: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    msg: {
-      marginTop: 6,
-      color: '#64748B',
-      fontSize: 13,
-    },
+  property: {
+    fontSize: 12,
+    color: '#4338CA',
+    marginTop: 2,
+  },
 
-    time: {
-      color: '#64748B',
-      fontSize: 12,
-    },
+  msg: {
+    fontSize: 13,
+    color: '#64748B',
+    marginTop: 4,
+  },
 
-    badge: {
-      marginTop: 10,
-      minWidth: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor:
-        '#1565FF',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-      paddingHorizontal: 6,
-    },
+  time: {
+    fontSize: 11,
+    color: '#64748B',
+  },
 
-    badgeTxt: {
-      color: '#fff',
-      fontSize: 11,
-      fontWeight: '900',
-    },
-  });
+  badge: {
+    backgroundColor: '#4338CA',
+    marginTop: 6,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+
+  badgeTxt: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+});

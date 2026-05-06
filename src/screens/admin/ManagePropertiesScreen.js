@@ -1,13 +1,6 @@
-// ManagePropertiesScreen.js
-// Create this file in:
-// src/screens/admin/ManagePropertiesScreen.js
-
-import React, {
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
-  SafeAreaView,
   StatusBar,
   ScrollView,
   View,
@@ -15,188 +8,171 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 
-export default function ManagePropertiesScreen({
-  navigation,
-}) {
-  const [properties] =
-    useState([
-      {
-        id: 1,
-        title: 'Luxury Apartment',
-        owner: 'Rajesh Patil',
-        city: 'Baner, Pune',
-        status: 'Active',
-      },
-      {
-        id: 2,
-        title: 'Villa House',
-        owner: 'Suresh Sharma',
-        city: 'Hinjewadi',
-        status: 'Pending',
-      },
-      {
-        id: 3,
-        title: '1 BHK Flat',
-        owner: 'Neha Jain',
-        city: 'Wakad, Pune',
-        status: 'Blocked',
-      },
-    ]);
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-  const action = (
-    type,
-    item
-  ) => {
-    Alert.alert(
-      type,
-      `${type} ${item.title}`
-    );
+import {
+  getPendingUsers,
+  getPendingOwners,
+  approveUser,
+  rejectUser,
+  approveOwner,
+  rejectOwner,
+} from '../../api/adminApi';
+
+export default function ManagePropertiesScreen({ navigation }) {
+
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    try {
+      setLoading(true);
+
+      const users = await getPendingUsers();
+      const owners = await getPendingOwners();
+
+      const formattedUsers = users.map(u => ({
+        id: u.userId,
+        name: u.fullName,
+        email: u.email,
+        mobile: u.mobileNumber,
+        status: u.premiumStatus,
+        type: 'USER',
+      }));
+
+      const formattedOwners = owners.map(o => ({
+        id: o.ownerId,
+        name: o.fullName,
+        email: o.email,
+        mobile: o.mobileNumber,
+        status: o.premiumStatus,
+        type: 'OWNER',
+      }));
+
+      setRequests([...formattedUsers, ...formattedOwners]);
+
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Error', 'Failed to load requests');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getStatusColor =
-    status => {
-      if (status === 'Active')
-        return '#16A34A';
+  const approve = async (item) => {
+    try {
+      if (item.type === 'USER') {
+        await approveUser(item.id);
+      } else {
+        await approveOwner(item.id);
+      }
 
-      if (status === 'Pending')
-        return '#F59E0B';
+      Alert.alert('Approved');
+      fetchRequests();
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Error approving');
+    }
+  };
 
-      return '#EF4444';
-    };
+  const reject = async (item) => {
+    try {
+      if (item.type === 'USER') {
+        await rejectUser(item.id);
+      } else {
+        await rejectOwner(item.id);
+      }
+
+      Alert.alert('Rejected');
+      fetchRequests();
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Error rejecting');
+    }
+  };
+
+  const getStatusColor = status => {
+    const s = status?.toLowerCase();
+    if (s === 'approved') return '#16A34A';
+    if (s === 'rejected') return '#EF4444';
+    return '#F59E0B';
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="#F8FAFF"
-        barStyle="dark-content"
-      />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+
+      <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />
 
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.goBack()
-          }
-        >
-          <Text style={styles.back}>
-            ←
-          </Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.back}>←</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>
-          Manage Properties
-        </Text>
+        <Text style={styles.title}>Manage Requests</Text>
 
         <View style={{ width: 24 }} />
       </View>
 
       {/* BODY */}
-      <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          paddingBottom: 30,
-        }}
-      >
-        <View
-          style={{
-            paddingHorizontal: 18,
-          }}
-        >
-          {properties.map(item => (
-            <View
-              key={item.id}
-              style={styles.card}
-            >
-              <Text
-                style={
-                  styles.cardTitle
-                }
-              >
-                {item.title}
-              </Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        <View style={styles.container}>
 
-              <Text
-                style={
-                  styles.owner
-                }
-              >
-                Owner:{' '}
-                {item.owner}
-              </Text>
+          {loading ? (
+            <ActivityIndicator size="large" color="#4338CA" style={{ marginTop: 30 }} />
+          ) : requests.length === 0 ? (
+            <Text style={styles.empty}>No Requests Found</Text>
+          ) : (
+            requests.map(item => (
+              <View key={item.id} style={styles.card}>
 
-              <Text
-                style={
-                  styles.city
-                }
-              >
-                {item.city}
-              </Text>
+                <Text style={styles.cardTitle}>{item.name}</Text>
 
-              <Text
-                style={[
-                  styles.status,
-                  {
-                    color:
-                      getStatusColor(
-                        item.status
-                      ),
-                  },
-                ]}
-              >
-                {item.status}
-              </Text>
+                <Text style={styles.meta}>{item.email}</Text>
+                <Text style={styles.meta}>{item.mobile}</Text>
 
-              <View
-                style={
-                  styles.row
-                }
-              >
-                <TouchableOpacity
-                  style={
-                    styles.viewBtn
-                  }
-                  onPress={() =>
-                    action(
-                      'View',
-                      item
-                    )
-                  }
-                >
-                  <Text
-                    style={
-                      styles.viewTxt
-                    }
-                  >
-                    View
+                <View style={styles.rowBetween}>
+                  <Text style={styles.type}>{item.type}</Text>
+
+                  <Text style={[
+                    styles.status,
+                    { color: getStatusColor(item.status) }
+                  ]}>
+                    {item.status?.toUpperCase()}
                   </Text>
-                </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                  style={
-                    styles.blockBtn
-                  }
-                  onPress={() =>
-                    action(
-                      'Block',
-                      item
-                    )
-                  }
-                >
-                  <Text
-                    style={
-                      styles.blockTxt
-                    }
-                  >
-                    Block
-                  </Text>
-                </TouchableOpacity>
+                {item.status?.toLowerCase() === 'pending' && (
+                  <View style={styles.actionRow}>
+
+                    <TouchableOpacity
+                      style={styles.approveBtn}
+                      onPress={() => approve(item)}
+                    >
+                      <Text style={styles.approveTxt}>Approve</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.rejectBtn}
+                      onPress={() => reject(item)}
+                    >
+                      <Text style={styles.rejectTxt}>Reject</Text>
+                    </TouchableOpacity>
+
+                  </View>
+                )}
+
               </View>
-            </View>
-          ))}
+            ))
+          )}
+
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -205,102 +181,107 @@ export default function ManagePropertiesScreen({
 
 /* ================= STYLES ================= */
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFF',
-    },
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
 
-    header: {
-      paddingHorizontal: 18,
-      paddingVertical: 16,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-    },
+  header: {
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
-    back: {
-      fontSize: 26,
-      fontWeight: '900',
-      color: '#111827',
-    },
+  back: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    title: {
-      fontSize: 22,
-      fontWeight: '900',
-      color: '#111827',
-    },
+  title: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    card: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 20,
-      padding: 18,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor:
-        '#E5E7EB',
-    },
+  container: {
+    paddingHorizontal: 18,
+  },
 
-    cardTitle: {
-      fontSize: 18,
-      fontWeight: '900',
-      color: '#111827',
-    },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E0E7FF',
+  },
 
-    owner: {
-      marginTop: 6,
-      color: '#6B7280',
-      fontSize: 14,
-    },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    city: {
-      marginTop: 6,
-      color: '#6B7280',
-      fontSize: 14,
-    },
+  meta: {
+    marginTop: 4,
+    color: '#64748B',
+    fontSize: 13,
+  },
 
-    status: {
-      marginTop: 10,
-      fontWeight: '900',
-      fontSize: 14,
-    },
+  rowBetween: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 
-    row: {
-      marginTop: 16,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-    },
+  type: {
+    fontWeight: '700',
+    color: '#4338CA',
+  },
 
-    viewBtn: {
-      width: '48%',
-      backgroundColor:
-        '#EAF2FF',
-      paddingVertical: 14,
-      borderRadius: 14,
-      alignItems: 'center',
-    },
+  status: {
+    fontWeight: '800',
+  },
 
-    viewTxt: {
-      color: '#1565FF',
-      fontWeight: '900',
-    },
+  actionRow: {
+    flexDirection: 'row',
+    marginTop: 14,
+  },
 
-    blockBtn: {
-      width: '48%',
-      backgroundColor:
-        '#FEE2E2',
-      paddingVertical: 14,
-      borderRadius: 14,
-      alignItems: 'center',
-    },
+  approveBtn: {
+    flex: 1,
+    backgroundColor: '#4338CA',
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginRight: 8,
+    alignItems: 'center',
+  },
 
-    blockTxt: {
-      color: '#EF4444',
-      fontWeight: '900',
-    },
-  });
+  rejectBtn: {
+    flex: 1,
+    backgroundColor: '#FEE2E2',
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+
+  approveTxt: {
+    color: '#fff',
+    fontWeight: '800',
+  },
+
+  rejectTxt: {
+    color: '#DC2626',
+    fontWeight: '800',
+  },
+
+  empty: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#64748B',
+  },
+});

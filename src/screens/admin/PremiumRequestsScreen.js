@@ -1,310 +1,166 @@
-// src/screens/admin/PremiumRequestsScreen.js
-// NEW PREMIUM VERSION
-// Caryanam Broker - Premium Requests
-
-import React, {
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
   View,
   Text,
+  ScrollView,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Alert,
+  ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 
-export default function PremiumRequestsScreen({
-  navigation,
-}) {
-  const [search,
-    setSearch] =
-    useState('');
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-  const [requests,
-    setRequests] =
-    useState([
-      {
-        id: 1,
-        owner:
-          'Rajesh Patil',
-        city: 'Pune',
-        plan: 'Gold',
-        amount: '₹999',
-        duration:
-          '3 Months',
-        status:
-          'Pending',
-      },
-      {
-        id: 2,
-        owner:
-          'Sneha More',
-        city: 'Mumbai',
-        plan: 'Silver',
-        amount: '₹499',
-        duration:
-          '1 Month',
-        status:
-          'Pending',
-      },
-      {
-        id: 3,
-        owner:
-          'Amit Shah',
-        city: 'Nashik',
-        plan: 'Platinum',
-        amount: '₹1499',
-        duration:
-          '6 Months',
-        status:
-          'Pending',
-      },
-    ]);
+import {
+  getPendingUsers,
+  getPendingOwners,
+  approveUser,
+  rejectUser,
+  approveOwner,
+  rejectOwner,
+} from '../../api/adminApi';
 
-  const filtered =
-    requests.filter(
-      item =>
-        item.owner
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        item.city
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        item.plan
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
-    );
+export default function PremiumRequestsScreen() {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const updateStatus =
-    (
-      id,
-      type
-    ) => {
-      setRequests(
-        requests.map(
-          item =>
-            item.id ===
-            id
-              ? {
-                  ...item,
-                  status:
-                    type,
-                }
-              : item
-        )
-      );
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
-      Alert.alert(
-        'Updated',
-        `Request ${type}`
-      );
-    };
+  const fetchRequests = async () => {
+    try {
+      setLoading(true);
 
-  const badgeColor =
-    status => {
-      if (
-        status ===
-        'Approved'
-      )
-        return '#16A34A';
+      const users = await getPendingUsers();
+      const owners = await getPendingOwners();
 
-      if (
-        status ===
-        'Rejected'
-      )
-        return '#DC2626';
+      const formattedUsers = users.map(u => ({
+        id: u.userId,
+        name: u.fullName,
+        email: u.email,
+        mobile: u.mobileNumber,
+        status: u.premiumStatus,
+        type: 'USER',
+      }));
 
-      return '#F59E0B';
-    };
+      const formattedOwners = owners.map(o => ({
+        id: o.ownerId,
+        name: o.fullName,
+        email: o.email,
+        mobile: o.mobileNumber,
+        status: o.premiumStatus,
+        type: 'OWNER',
+      }));
+
+      setRequests([...formattedUsers, ...formattedOwners]);
+
+    } catch (e) {
+      console.log("ERROR:", e?.response?.data || e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const approve = async (item) => {
+    try {
+      if (item.type === 'USER') {
+        await approveUser(item.id);
+      } else {
+        await approveOwner(item.id);
+      }
+
+      Alert.alert("Approved");
+      fetchRequests();
+    } catch {
+      Alert.alert("Error approving");
+    }
+  };
+
+  const reject = async (item) => {
+    try {
+      if (item.type === 'USER') {
+        await rejectUser(item.id);
+      } else {
+        await rejectOwner(item.id);
+      }
+
+      Alert.alert("Rejected");
+      fetchRequests();
+    } catch {
+      Alert.alert("Error rejecting");
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="#F8FAFF"
-        barStyle="dark-content"
-      />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
 
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.goBack()
-          }
-        >
-          <Text style={styles.back}>
-            ←
-          </Text>
-        </TouchableOpacity>
+      <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />
 
-        <Text style={styles.title}>
-          Premium Requests
-        </Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
 
-        <View
-          style={{ width: 24 }}
-        />
-      </View>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Premium Requests</Text>
+          <Text style={styles.sub}>Approve or reject premium users</Text>
+        </View>
 
-      {/* SEARCH */}
-      <View
-        style={{
-          paddingHorizontal: 18,
-        }}
-      >
-        <TextInput
-          placeholder="Search owner, city, plan"
-          placeholderTextColor="#94A3B8"
-          value={search}
-          onChangeText={
-            setSearch
-          }
-          style={styles.search}
-        />
-      </View>
+        {/* BODY */}
+        {loading ? (
+          <ActivityIndicator size="large" color="#4338CA" style={{ marginTop: 30 }} />
+        ) : requests.length === 0 ? (
+          <Text style={styles.empty}>No Requests Found</Text>
+        ) : (
+          <View style={styles.container}>
+            {requests.map(item => (
+              <View key={item.id} style={styles.card}>
 
-      {/* BODY */}
-      <ScrollView
-        showsVerticalScrollIndicator={
-          false
-        }
-        contentContainerStyle={{
-          padding: 18,
-          paddingTop: 14,
-          paddingBottom: 40,
-        }}
-      >
-        {filtered.map(item => (
-          <View
-            key={item.id}
-            style={styles.card}
-          >
-            {/* TOP */}
-            <View
-              style={
-                styles.row
-              }
-            >
-              <View
-                style={{
-                  flex: 1,
-                }}
-              >
-                <Text
-                  style={
-                    styles.name
-                  }
-                >
-                  {
-                    item.owner
-                  }
-                </Text>
+                <Text style={styles.name}>{item.name}</Text>
 
-                <Text
-                  style={
-                    styles.meta
-                  }
-                >
-                  {item.city} •{' '}
-                  {item.plan}
-                </Text>
-              </View>
+                <Text style={styles.info}>{item.email}</Text>
+                <Text style={styles.info}>{item.mobile}</Text>
 
-              <Text
-                style={[
-                  styles.status,
-                  {
-                    color:
-                      badgeColor(
-                        item.status
-                      ),
-                  },
-                ]}
-              >
-                {
-                  item.status
-                }
-              </Text>
-            </View>
+                <View style={styles.rowBetween}>
+                  <Text style={styles.type}>{item.type}</Text>
 
-            {/* PRICE */}
-            <Text
-              style={
-                styles.amount
-              }
-            >
-              {item.amount}
-            </Text>
-
-            <Text
-              style={
-                styles.duration
-              }
-            >
-              {item.duration}
-            </Text>
-
-            {/* ACTIONS */}
-            {item.status ===
-            'Pending' ? (
-              <View
-                style={
-                  styles.actionRow
-                }
-              >
-                <TouchableOpacity
-                  style={
-                    styles.approveBtn
-                  }
-                  onPress={() =>
-                    updateStatus(
-                      item.id,
-                      'Approved'
-                    )
-                  }
-                >
                   <Text
-                    style={
-                      styles.approveTxt
-                    }
+                    style={[
+                      styles.status,
+                      item.status?.toLowerCase() === 'pending'
+                        ? { color: '#F59E0B' }
+                        : { color: '#16A34A' },
+                    ]}
                   >
-                    Approve
+                    {item.status?.toUpperCase()}
                   </Text>
-                </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                  style={
-                    styles.rejectBtn
-                  }
-                  onPress={() =>
-                    updateStatus(
-                      item.id,
-                      'Rejected'
-                    )
-                  }
-                >
-                  <Text
-                    style={
-                      styles.rejectTxt
-                    }
-                  >
-                    Reject
-                  </Text>
-                </TouchableOpacity>
+                {item.status?.toLowerCase() === 'pending' && (
+                  <View style={styles.actionRow}>
+
+                    <TouchableOpacity
+                      style={styles.approve}
+                      onPress={() => approve(item)}
+                    >
+                      <Text style={styles.btnText}>Approve</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.reject}
+                      onPress={() => reject(item)}
+                    >
+                      <Text style={styles.btnText}>Reject</Text>
+                    </TouchableOpacity>
+
+                  </View>
+                )}
               </View>
-            ) : null}
+            ))}
           </View>
-        ))}
+        )}
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -312,132 +168,100 @@ export default function PremiumRequestsScreen({
 
 /* ================= STYLES ================= */
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        '#F8FAFF',
-    },
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
 
-    header: {
-      paddingHorizontal: 18,
-      paddingVertical: 16,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems:
-        'center',
-    },
+  header: {
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 14,
+  },
 
-    back: {
-      fontSize: 26,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  title: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    title: {
-      fontSize: 22,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  sub: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#64748B',
+  },
 
-    search: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-      paddingHorizontal: 14,
-      paddingVertical: 14,
-      color: '#111827',
-    },
+  container: {
+    paddingHorizontal: 18,
+  },
 
-    card: {
-      backgroundColor:
-        '#FFFFFF',
-      borderRadius: 20,
-      padding: 16,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor:
-        '#EEF2F7',
-    },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E0E7FF',
+  },
 
-    row: {
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-      alignItems:
-        'center',
-    },
+  name: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#0F172A',
+  },
 
-    name: {
-      fontSize: 17,
-      fontWeight: '900',
-      color: '#0F172A',
-    },
+  info: {
+    marginTop: 4,
+    color: '#64748B',
+    fontSize: 13,
+  },
 
-    meta: {
-      marginTop: 5,
-      color: '#64748B',
-      fontSize: 13,
-    },
+  rowBetween: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 
-    status: {
-      fontSize: 12,
-      fontWeight: '900',
-      marginLeft: 10,
-    },
+  type: {
+    fontWeight: '700',
+    color: '#4338CA',
+  },
 
-    amount: {
-      marginTop: 14,
-      fontSize: 28,
-      fontWeight: '900',
-      color: '#1565FF',
-    },
+  status: {
+    fontWeight: '800',
+  },
 
-    duration: {
-      marginTop: 5,
-      color: '#64748B',
-      fontSize: 13,
-    },
+  actionRow: {
+    flexDirection: 'row',
+    marginTop: 14,
+  },
 
-    actionRow: {
-      marginTop: 16,
-      flexDirection: 'row',
-      justifyContent:
-        'space-between',
-    },
+  approve: {
+    flex: 1,
+    backgroundColor: '#4338CA',
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginRight: 8,
+    alignItems: 'center',
+  },
 
-    approveBtn: {
-      width: '48%',
-      backgroundColor:
-        '#DCFCE7',
-      paddingVertical: 13,
-      borderRadius: 14,
-      alignItems:
-        'center',
-    },
+  reject: {
+    flex: 1,
+    backgroundColor: '#FEE2E2',
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
 
-    approveTxt: {
-      color: '#16A34A',
-      fontWeight: '900',
-    },
+  btnText: {
+    color: '#fff',
+    fontWeight: '800',
+  },
 
-    rejectBtn: {
-      width: '48%',
-      backgroundColor:
-        '#FEE2E2',
-      paddingVertical: 13,
-      borderRadius: 14,
-      alignItems:
-        'center',
-    },
-
-    rejectTxt: {
-      color: '#DC2626',
-      fontWeight: '900',
-    },
-  });
+  empty: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#64748B',
+  },
+});
