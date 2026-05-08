@@ -1,6 +1,7 @@
 import { addProperty, uploadPropertyImages } from '../../api/propertyApi';
 import React, { useState } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { Picker } from '@react-native-picker/picker';
 import { Platform } from 'react-native';
 import {
   StatusBar,
@@ -21,6 +22,7 @@ export default function AddPropertyScreen({ navigation }) {
 
   const [form, setForm] = useState({
     title: '',
+    apartmentName: '',
     rent: '',
     location: '',
     city: '',
@@ -170,6 +172,7 @@ export default function AddPropertyScreen({ navigation }) {
 
       const payload = {
         title: form.title.trim(),
+        apartmentName: form.apartmentName.trim(),
         price: Number(form.rent),
         location: form.location.trim(),
         city: form.city.trim(),
@@ -187,18 +190,26 @@ export default function AddPropertyScreen({ navigation }) {
 
       console.log("FINAL PAYLOAD:", JSON.stringify(payload, null, 2));
       const res = await addProperty(ownerId, payload);
-        console.log("ADD PROPERTY RESPONSE:", res?.data);
+      await AsyncStorage.setItem(
+          'pendingProperty',
+          JSON.stringify(formData)
+        );
 
-        // 🔥 SAFE RESPONSE CHECK
-        if (!res?.data || res.data.status !== 200) {
+        console.log(
+          'PROPERTY SAVED:',
+          formData
+        );
+        console.log("ADD PROPERTY RESPONSE:", res);
+
+        if (!res || res.status !== 200) {
           Alert.alert(
             'Error',
-            res?.data?.message || 'Failed to add property'
+            res?.message || 'Failed to add property'
           );
           return;
         }
 
-        const propertyId = res.data?.data?.id;
+        const propertyId = res?.data?.id;
 
         if (!propertyId) {
           Alert.alert('Error', 'Property not created');
@@ -303,98 +314,137 @@ export default function AddPropertyScreen({ navigation }) {
 
           {/* INPUTS */}
           {/* PROPERTY TITLE */}
-            <TextInput
-              placeholder="Property Title"
-              placeholderTextColor="#64748B"
-              value={form.title}
-              onChangeText={v => update('title', v)}
-              style={styles.input}
-            />
+          <Text style={styles.inputLabel}>Property Title</Text>
 
-            {/* PRICE */}
-            <TextInput
-              placeholder="Price"
-              placeholderTextColor="#64748B"
-              keyboardType="number-pad"
-              value={form.rent}
-              onChangeText={v => update('rent', v)}
-              style={styles.input}
-            />
+          <TextInput
+            placeholder="Enter Property Title"
+            placeholderTextColor="#94A3B8"
+            value={form.title}
+            onChangeText={v => update('title', v)}
+            style={styles.input}
+          />
 
-            {/* LOCATION */}
-            <TextInput
-              placeholder="Location"
-              placeholderTextColor="#64748B"
-              value={form.location}
-              onChangeText={v => update('location', v)}
-              style={styles.input}
-            />
+          {/* APARTMENT NAME */}
+          <Text style={styles.inputLabel}>Apartment Name</Text>
 
-            {/* CITY */}
-            <TextInput
-              placeholder="City"
-              placeholderTextColor="#64748B"
-              value={form.city}
-              onChangeText={v => update('city', v)}
-              style={styles.input}
-            />
+          <TextInput
+            placeholder="Enter Apartment Name"
+            placeholderTextColor="#94A3B8"
+            value={form.apartmentName}
+            onChangeText={v => update('apartmentName', v)}
+            style={styles.input}
+          />
 
-            {/* STATE */}
-            <TextInput
-              placeholder="State"
-              placeholderTextColor="#64748B"
-              value={form.state}
-              onChangeText={v => update('state', v)}
-              style={styles.input}
-            />
+          {/* PRICE */}
+          <Text style={styles.inputLabel}>Price</Text>
 
-            {/* ADDRESS */}
-            <TextInput
-              placeholder="Address"
-              placeholderTextColor="#64748B"
-              value={form.address}
-              onChangeText={v => update('address', v)}
-              style={styles.input}
-            />
+          <TextInput
+            placeholder="Enter Price"
+            placeholderTextColor="#94A3B8"
+            keyboardType="number-pad"
+            value={form.rent}
+            onChangeText={v => update('rent', v)}
+            style={styles.input}
+          />
 
-            {/* PINCODE */}
-            <TextInput
-              placeholder="Pincode"
-              placeholderTextColor="#64748B"
-              keyboardType="number-pad"
-              value={form.pincode}
-              onChangeText={v => update('pincode', v)}
-              style={styles.input}
-            />
+          {/* LOCATION */}
+          <Text style={styles.inputLabel}>Location</Text>
 
-            {/* MOBILE */}
-            <TextInput
-              placeholder="Mobile Number"
-              placeholderTextColor="#64748B"
-              keyboardType="phone-pad"
-              value={form.mobile}
-              onChangeText={v => update('mobile', v)}
-              style={styles.input}
-            />
+          <TextInput
+            placeholder="Enter Location"
+            placeholderTextColor="#94A3B8"
+            value={form.location}
+            onChangeText={v => update('location', v)}
+            style={styles.input}
+          />
 
-            {/* CARPET AREA */}
-            <TextInput
-              placeholder="Carpet Area (e.g. 750 sqft)"
-              placeholderTextColor="#64748B"
-              value={form.carpetArea}
-              onChangeText={v => update('carpetArea', v)}
-              style={styles.input}
-            />
+          {/* CITY */}
+          <Text style={styles.dropdownLabel}>City</Text>
 
-            {/* DESCRIPTION */}
-            <TextInput
-              placeholder="Description"
-              placeholderTextColor="#64748B"
-              value={form.description}
-              onChangeText={v => update('description', v)}
-              style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-              multiline
-            />
+          <View style={styles.dropdownContainer}>
+            <Picker
+              selectedValue={form.city}
+              onValueChange={(value) => update('city', value)}
+              style={styles.picker}
+              dropdownIconColor="#4338CA"
+            >
+              <Picker.Item label="Select City" value="" />
+              <Picker.Item label="Pune" value="Pune" />
+            </Picker>
+          </View>
+
+          {/* STATE */}
+          <Text style={styles.dropdownLabel}>State</Text>
+
+          <View style={styles.dropdownContainer}>
+            <Picker
+              selectedValue={form.state}
+              onValueChange={(value) => update('state', value)}
+              style={styles.picker}
+              dropdownIconColor="#4338CA"
+            >
+              <Picker.Item label="Select State" value="" />
+              <Picker.Item label="Maharashtra" value="Maharashtra" />
+            </Picker>
+          </View>
+
+          {/* ADDRESS */}
+          <Text style={styles.inputLabel}>Address</Text>
+
+          <TextInput
+            placeholder="Enter Address"
+            placeholderTextColor="#94A3B8"
+            value={form.address}
+            onChangeText={v => update('address', v)}
+            style={[styles.input, styles.textArea]}
+          />
+
+          {/* PINCODE */}
+          <Text style={styles.inputLabel}>Pincode</Text>
+
+          <TextInput
+            placeholder="Enter Pincode"
+            placeholderTextColor="#94A3B8"
+            keyboardType="number-pad"
+            value={form.pincode}
+            onChangeText={v => update('pincode', v)}
+            style={styles.input}
+          />
+
+          {/* MOBILE */}
+          <Text style={styles.inputLabel}>Mobile Number</Text>
+
+          <TextInput
+            placeholder="Enter Mobile Number"
+            placeholderTextColor="#94A3B8"
+            keyboardType="phone-pad"
+            value={form.mobile}
+            onChangeText={v => update('mobile', v)}
+            style={styles.input}
+          />
+
+          {/* CARPET AREA */}
+          <Text style={styles.inputLabel}>Carpet Area</Text>
+
+          <TextInput
+            placeholder="e.g. 750 sqft"
+            placeholderTextColor="#94A3B8"
+            value={form.carpetArea}
+            onChangeText={v => update('carpetArea', v)}
+            style={styles.input}
+          />
+
+          {/* DESCRIPTION */}
+          <Text style={styles.inputLabel}>Description</Text>
+
+          <TextInput
+            placeholder="Enter Property Description"
+            placeholderTextColor="#94A3B8"
+            value={form.description}
+            onChangeText={v => update('description', v)}
+            style={[styles.input, styles.descriptionBox]}
+            multiline
+          />
 
             <Text style={styles.label}>BHK Type</Text>
             <View style={styles.row}>
@@ -480,6 +530,7 @@ export default function AddPropertyScreen({ navigation }) {
           <TouchableOpacity style={styles.submitBtn} onPress={() => {
               if (
                 !form.title ||
+                !form.apartmentName ||
                 !form.rent ||
                 !form.location ||
                 !form.city ||
@@ -551,6 +602,44 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
+    dropdownLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#334155',
+    marginBottom: 8,
+    marginTop: 10,
+  },
+
+  dropdownContainer: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 14,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+
+  picker: {
+    color: '#0F172A',
+  },
+
+  inputLabel: {
+    marginTop: 14,
+    marginBottom: 6,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+
+  textArea: {
+    minHeight: 70,
+    textAlignVertical: 'top',
+  },
+
+  descriptionBox: {
+    minHeight: 110,
+    textAlignVertical: 'top',
+  },
   activeTxt: {
     color: '#fff',
   },

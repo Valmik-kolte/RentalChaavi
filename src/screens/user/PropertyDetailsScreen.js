@@ -17,7 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
-const BASE_URL = 'http://192.168.1.13:8080';
+// const BASE_URL = 'http://192.168.1.13:8080';
+const BASE_URL = 'http://192.168.0.133:8080';
 
 export default function PropertyDetailsScreen({
   navigation,
@@ -67,7 +68,7 @@ export default function PropertyDetailsScreen({
               return img;
             }
 
-            return `${BASE_URL}/${String(img)
+              return `${BASE_URL}/uploads/${String(img)
               .trim()
               .replace(/^\/+/, '')}`;
           });
@@ -105,7 +106,7 @@ export default function PropertyDetailsScreen({
               return finalImg;
             }
 
-            return `${BASE_URL}/${finalImg}`;
+            return `${BASE_URL}/uploads/${finalImg}`;
           })
           .filter(Boolean);
 
@@ -118,7 +119,11 @@ export default function PropertyDetailsScreen({
 
         // fallback
         if (property?.image) {
-          return [property.image];
+          return [
+            property.image.startsWith('http')
+              ? property.image
+              : `${BASE_URL}/uploads/${property.image}`
+          ];
         }
 
         return [];

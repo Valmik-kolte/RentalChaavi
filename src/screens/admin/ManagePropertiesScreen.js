@@ -14,10 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
-  getPendingUsers,
   getPendingOwners,
-  approveUser,
-  rejectUser,
   approveOwner,
   rejectOwner,
 } from '../../api/adminApi';
@@ -31,139 +28,355 @@ export default function ManagePropertiesScreen({ navigation }) {
     fetchRequests();
   }, []);
 
+  // ================= FETCH REQUESTS =================
+
   const fetchRequests = async () => {
+
     try {
+
       setLoading(true);
 
-      const users = await getPendingUsers();
-      const owners = await getPendingOwners();
+      const owners =
+        await getPendingOwners();
 
-      const formattedUsers = users.map(u => ({
-        id: u.userId,
-        name: u.fullName,
-        email: u.email,
-        mobile: u.mobileNumber,
-        status: u.premiumStatus,
-        type: 'USER',
-      }));
+      console.log(
+        'PENDING OWNERS:',
+        owners
+      );
 
-      const formattedOwners = owners.map(o => ({
-        id: o.ownerId,
-        name: o.fullName,
-        email: o.email,
-        mobile: o.mobileNumber,
-        status: o.premiumStatus,
-        type: 'OWNER',
-      }));
+      const formattedOwners =
+        Array.isArray(owners)
 
-      setRequests([...formattedUsers, ...formattedOwners]);
+          ? owners.map(o => ({
+
+              id:
+                o.ownerId ||
+                o.id,
+
+              name:
+                o.fullName ||
+                'No Name',
+
+              email:
+                o.email ||
+                'No Email',
+
+              mobile:
+                o.mobileNumber ||
+                'No Mobile',
+
+              status:
+                o.premiumStatus ||
+                'PENDING',
+
+              type: 'OWNER',
+            }))
+
+          : Array.isArray(owners?.data)
+
+          ? owners.data.map(o => ({
+
+              id:
+                o.ownerId ||
+                o.id,
+
+              name:
+                o.fullName ||
+                'No Name',
+
+              email:
+                o.email ||
+                'No Email',
+
+              mobile:
+                o.mobileNumber ||
+                'No Mobile',
+
+              status:
+                o.premiumStatus ||
+                'PENDING',
+
+              type: 'OWNER',
+            }))
+
+          : [];
+
+      setRequests(
+        formattedOwners
+      );
 
     } catch (e) {
-      console.log(e);
-      Alert.alert('Error', 'Failed to load requests');
+
+      console.log(
+        'FETCH OWNER ERROR:',
+        e
+      );
+
+      Alert.alert(
+        'Error',
+        'Failed to load owner requests'
+      );
+
     } finally {
+
       setLoading(false);
     }
   };
 
-  const approve = async (item) => {
-    try {
-      if (item.type === 'USER') {
-        await approveUser(item.id);
-      } else {
-        await approveOwner(item.id);
-      }
+  // ================= APPROVE =================
 
-      Alert.alert('Approved');
-      fetchRequests();
-    } catch (e) {
-      console.log(e);
-      Alert.alert('Error approving');
-    }
-  };
+  const approve = async (item) => {
+
+  try {
+
+    await approveOwner(item.id);
+
+    // UPDATE UI IMMEDIATELY
+    setRequests(prev =>
+      prev.map(req =>
+        req.id === item.id
+          ? {
+              ...req,
+              status: 'APPROVED',
+            }
+          : req
+      )
+    );
+
+    Alert.alert(
+      'Success',
+      'Owner approved successfully'
+    );
+
+  } catch (e) {
+
+    console.log(
+      'APPROVE ERROR:',
+      e
+    );
+
+    Alert.alert(
+      'Error',
+      'Error approving owner'
+    );
+  }
+};
+
+  // ================= REJECT =================
 
   const reject = async (item) => {
-    try {
-      if (item.type === 'USER') {
-        await rejectUser(item.id);
-      } else {
-        await rejectOwner(item.id);
-      }
 
-      Alert.alert('Rejected');
-      fetchRequests();
-    } catch (e) {
-      console.log(e);
-      Alert.alert('Error rejecting');
-    }
-  };
+  try {
+
+    await rejectOwner(item.id);
+
+    // UPDATE UI IMMEDIATELY
+    setRequests(prev =>
+      prev.map(req =>
+        req.id === item.id
+          ? {
+              ...req,
+              status: 'REJECTED',
+            }
+          : req
+      )
+    );
+
+    Alert.alert(
+      'Rejected',
+      'Owner rejected successfully'
+    );
+
+  } catch (e) {
+
+    console.log(
+      'REJECT ERROR:',
+      e
+    );
+
+    Alert.alert(
+      'Error',
+      'Error rejecting owner'
+    );
+  }
+};
+
+  // ================= STATUS COLOR =================
 
   const getStatusColor = status => {
-    const s = status?.toLowerCase();
-    if (s === 'approved') return '#16A34A';
-    if (s === 'rejected') return '#EF4444';
+
+    const s =
+      status?.toLowerCase();
+
+    if (s === 'approved') {
+      return '#16A34A';
+    }
+
+    if (s === 'rejected') {
+      return '#EF4444';
+    }
+
     return '#F59E0B';
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+  // ================= UI =================
 
-      <StatusBar backgroundColor="#F8FAFC" barStyle="dark-content" />
+  return (
+
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'left', 'right']}
+    >
+
+      <StatusBar
+        backgroundColor="#F8FAFC"
+        barStyle="dark-content"
+      />
 
       {/* HEADER */}
+
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.back}>←</Text>
+
+        <TouchableOpacity
+          onPress={() =>
+            navigation.goBack()
+          }
+        >
+
+          <Text style={styles.back}>
+            ←
+          </Text>
+
         </TouchableOpacity>
 
-        <Text style={styles.title}>Manage Requests</Text>
+        <Text style={styles.title}>
+          Manage Owner Requests
+        </Text>
 
         <View style={{ width: 24 }} />
+
       </View>
 
       {/* BODY */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 40,
+        }}
+      >
+
         <View style={styles.container}>
 
           {loading ? (
-            <ActivityIndicator size="large" color="#4338CA" style={{ marginTop: 30 }} />
+
+            <ActivityIndicator
+              size="large"
+              color="#4338CA"
+              style={{
+                marginTop: 30,
+              }}
+            />
+
           ) : requests.length === 0 ? (
-            <Text style={styles.empty}>No Requests Found</Text>
+
+            <Text style={styles.empty}>
+              No Owner Requests Found
+            </Text>
+
           ) : (
-            requests.map(item => (
-              <View key={item.id} style={styles.card}>
 
-                <Text style={styles.cardTitle}>{item.name}</Text>
+            requests.map((item, index) => (
 
-                <Text style={styles.meta}>{item.email}</Text>
-                <Text style={styles.meta}>{item.mobile}</Text>
+              <View
+                key={`${item.id}-${index}`}
+                style={styles.card}
+              >
+
+                <Text style={styles.cardTitle}>
+                  {item.name}
+                </Text>
+
+                <Text style={styles.meta}>
+                  {item.email}
+                </Text>
+
+                <Text style={styles.meta}>
+                  {item.mobile}
+                </Text>
 
                 <View style={styles.rowBetween}>
-                  <Text style={styles.type}>{item.type}</Text>
 
-                  <Text style={[
-                    styles.status,
-                    { color: getStatusColor(item.status) }
-                  ]}>
-                    {item.status?.toUpperCase()}
+                  <Text style={styles.type}>
+                    OWNER
                   </Text>
+
+                  <Text
+                    style={[
+                      styles.status,
+                      {
+                        color:
+                          getStatusColor(
+                            item.status
+                          ),
+                      },
+                    ]}
+                  >
+
+                    {item.status?.toUpperCase()}
+
+                  </Text>
+
                 </View>
 
-                {item.status?.toLowerCase() === 'pending' && (
-                  <View style={styles.actionRow}>
+                {item.status
+                  ?.toLowerCase() ===
+                  'pending' && (
+
+                  <View
+                    style={styles.actionRow}
+                  >
 
                     <TouchableOpacity
-                      style={styles.approveBtn}
-                      onPress={() => approve(item)}
+                      style={
+                        styles.approveBtn
+                      }
+                      onPress={() =>
+                        approve(item)
+                      }
                     >
-                      <Text style={styles.approveTxt}>Approve</Text>
+
+                      <Text
+                        style={
+                          styles.approveTxt
+                        }
+                      >
+
+                        Approve
+
+                      </Text>
+
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={styles.rejectBtn}
-                      onPress={() => reject(item)}
+                      style={
+                        styles.rejectBtn
+                      }
+                      onPress={() =>
+                        reject(item)
+                      }
                     >
-                      <Text style={styles.rejectTxt}>Reject</Text>
+
+                      <Text
+                        style={
+                          styles.rejectTxt
+                        }
+                      >
+
+                        Reject
+
+                      </Text>
+
                     </TouchableOpacity>
 
                   </View>
@@ -174,14 +387,17 @@ export default function ManagePropertiesScreen({ navigation }) {
           )}
 
         </View>
+
       </ScrollView>
+
     </SafeAreaView>
   );
 }
 
-/* ================= STYLES ================= */
+// ================= STYLES =================
 
 const styles = StyleSheet.create({
+
   safeArea: {
     flex: 1,
     backgroundColor: '#F8FAFC',
@@ -189,89 +405,125 @@ const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: 18,
-    paddingVertical: 14,
+    paddingTop: 10,
+    paddingBottom: 14,
+
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
   back: {
     fontSize: 26,
-    fontWeight: '900',
     color: '#0F172A',
+    fontWeight: '900',
   },
 
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '900',
     color: '#0F172A',
   },
 
   container: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+
+  empty: {
+    marginTop: 80,
+    textAlign: 'center',
+    color: '#64748B',
+    fontSize: 16,
+    fontWeight: '600',
   },
 
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
+
     borderRadius: 18,
-    padding: 16,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#E0E7FF',
+
+    padding: 18,
+
+    marginBottom: 16,
+
+    elevation: 3,
   },
 
   cardTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '900',
     color: '#0F172A',
   },
 
   meta: {
-    marginTop: 4,
+    marginTop: 6,
     color: '#64748B',
-    fontSize: 13,
+    fontSize: 14,
   },
 
   rowBetween: {
-    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+
+    marginTop: 16,
   },
 
   type: {
-    fontWeight: '700',
+    backgroundColor: '#EEF2FF',
     color: '#4338CA',
+
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+
+    borderRadius: 10,
+
+    fontWeight: '800',
+    fontSize: 12,
   },
 
   status: {
-    fontWeight: '800',
+    fontWeight: '900',
+    fontSize: 13,
   },
 
   actionRow: {
     flexDirection: 'row',
-    marginTop: 14,
+    justifyContent: 'space-between',
+
+    marginTop: 18,
   },
 
   approveBtn: {
     flex: 1,
-    backgroundColor: '#4338CA',
-    paddingVertical: 10,
+
+    backgroundColor: '#16A34A',
+
+    paddingVertical: 12,
+
     borderRadius: 12,
-    marginRight: 8,
+
     alignItems: 'center',
+
+    marginRight: 8,
+  },
+
+  approveTxt: {
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
 
   rejectBtn: {
     flex: 1,
-    backgroundColor: '#FEE2E2',
-    paddingVertical: 10,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
 
-  approveTxt: {
-    color: '#fff',
-    fontWeight: '800',
+    backgroundColor: '#FEE2E2',
+
+    paddingVertical: 12,
+
+    borderRadius: 12,
+
+    alignItems: 'center',
   },
 
   rejectTxt: {
@@ -279,9 +531,4 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
-  empty: {
-    textAlign: 'center',
-    marginTop: 40,
-    color: '#64748B',
-  },
 });

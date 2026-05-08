@@ -173,6 +173,10 @@ export const AuthProvider = ({
           await AsyncStorage.setItem('userToken', String(token));
           await AsyncStorage.setItem('userRole', String(role));
           await AsyncStorage.setItem('userData', JSON.stringify(user));
+          await AsyncStorage.setItem(
+  'ownerId',
+  String(user.id)
+);
 
           // 🔄 UPDATE STATE
           setUserToken(String(token));

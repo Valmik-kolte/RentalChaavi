@@ -116,12 +116,7 @@ export default function PremiumScreen({ navigation, route }) {
           {
             text: 'OK',
             onPress: () =>
-              navigation.reset({
-                index: 0,
-                routes: [
-                  { name: 'OwnerHome' }
-                ],
-              }),
+              navigation.navigate('Tabs'),
           },
         ]
       );

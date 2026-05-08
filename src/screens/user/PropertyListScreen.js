@@ -16,7 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getProperties, filterProperties} from '../../api/propertyApi';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const BASE_URL = 'http://192.168.1.13:8080';
+// const BASE_URL = 'http://192.168.1.13:8080';
+const BASE_URL = 'http://192.168.0.133:8080';
 
 export default function PropertyListScreen({ navigation }) {
 

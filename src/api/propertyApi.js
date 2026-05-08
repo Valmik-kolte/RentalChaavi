@@ -84,7 +84,8 @@ export const buyPremiumOwner = async (ownerId) => {
     throw error;
   }
 };
-
+export const getAllProperties = () =>
+  api.get('/api/user/getAllProperties');
   
 // ================= USER =================
 
