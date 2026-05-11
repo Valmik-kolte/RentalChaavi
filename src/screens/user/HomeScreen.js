@@ -29,7 +29,8 @@ import {
 } from '../../api/propertyApi';
 
 const BASE_URL =
-  'http://192.168.1.13:8080';
+  // 'http://192.168.1.13:8080';
+  'http://192.168.0.133:8080';
 
 export default function HomeScreen({
   navigation,
@@ -279,6 +280,10 @@ export default function HomeScreen({
           search.toLowerCase()
         )
     );
+    console.log(
+      'HOME USER DATA:',
+      userData
+    );
 
   return (
 
@@ -523,30 +528,36 @@ export default function HomeScreen({
                     navigation.navigate(
                       'PropertyDetails',
                       {
-                        property:
-                          item,
+                        property: item,
+                        isUserPremium: true,
                       }
                     )
                   }
                 >
 
                   {(
-                  parseImages(
-                    item?.doctypeImages
-                  )[0] ||
+                  item?.coverImage
+                  ? `${BASE_URL}/${item.coverImage}`
 
-                  item?.image
+                  : parseImages(
+                      item?.doctypeImages
+                    )[0] ||
+
+                    item?.image
                 ) ? (
 
                   <Image
                     source={{
                       uri:
 
-                        parseImages(
-                          item?.doctypeImages
-                        )[0] ||
+                        item?.coverImage
+                          ? `${BASE_URL}/${item.coverImage}`
 
-                        item?.image,
+                          : parseImages(
+                              item?.doctypeImages
+                            )[0] ||
+
+                            item?.image,
                     }}
                     style={styles.image}
                     resizeMode="cover"

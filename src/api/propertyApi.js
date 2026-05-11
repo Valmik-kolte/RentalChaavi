@@ -62,14 +62,25 @@ export const uploadPropertyImages = async (propertyId, formData) => {
 // 🔥 Already correct, just kept consistent
 export const getOwnerProperties = async (ownerId) => {
   try {
-    const res = await api.get(`/api/owner/getOwnerProperties/${ownerId}`);
 
-    console.log("OWNER PROPERTIES API:", res.data);
+    const res = await api.get(
+      `/api/owner/getAllPropertiesByOwnerId/${ownerId}`
+    );
+
+    console.log(
+      "OWNER PROPERTIES API:",
+      res.data
+    );
 
     return res.data;
 
   } catch (error) {
-    console.log("OWNER API ERROR:", error.response?.data || error.message);
+
+    console.log(
+      "OWNER API ERROR:",
+      error.response?.data || error.message
+    );
+
     throw error;
   }
 };
@@ -214,12 +225,21 @@ export const saveFacilities = async (payload) => {
   }
 };
 
-export const getFacilities = async (ownerId) => {
+export const getFacilities = async (
+  ownerId,
+  propertyId
+) => {
 
   try {
 
     const res = await api.get(
-      `/api/owner/get-facilities/${ownerId}`
+      `/api/owner/get-facilities`,
+      {
+        params: {
+          ownerId,
+          propertyId,
+        },
+      }
     );
 
     return res.data;
@@ -234,6 +254,7 @@ export const getFacilities = async (ownerId) => {
     throw error;
   }
 };
+
   // ================= ADMIN =================
 
 // Get Pending Users

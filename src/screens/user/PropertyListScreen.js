@@ -416,8 +416,9 @@ export default function PropertyListScreen({ navigation }) {
               'PropertyDetails',
               {
                 property: item,
+                isUserPremium: true
               }
-            );
+              );
           }}
             >
 

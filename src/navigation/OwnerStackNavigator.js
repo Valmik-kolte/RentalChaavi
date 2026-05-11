@@ -14,6 +14,7 @@ import BottomTabs from './BottomTabs';
 
 import EditPropertyScreen from '../screens/owner/EditPropertyScreen';
 import PreviewPropertyScreen from '../screens/owner/PreviewPropertyScreen';
+import OwnerPropertyDetailsScreen from '../screens/owner/OwnerPropertyDetailsScreen';
 
 /* SHARED FULL SCREENS */
 import PropertyDetailsScreen from '../screens/user/PropertyDetailsScreen';
@@ -51,8 +52,9 @@ export default function OwnerStackNavigator() {
       
       <Stack.Screen
         name="PropertyDetails"
-        component={PropertyDetailsScreen}
+        component={OwnerPropertyDetailsScreen}
       />
+      
 
       <Stack.Screen
         name="EditProperty"

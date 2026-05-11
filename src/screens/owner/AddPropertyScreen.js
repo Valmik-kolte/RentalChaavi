@@ -382,6 +382,8 @@ export default function AddPropertyScreen({ navigation }) {
 
             await saveFacilities({
               ownerId: ownerId,
+              propertyId: propertyId,
+
               facilities: selectedFacilities.map(item => ({
                 facilityName: item,
                 status: 'ACTIVE',
@@ -418,6 +420,8 @@ export default function AddPropertyScreen({ navigation }) {
 
               await saveFacilities({
                 ownerId: ownerId,
+                propertyId: propertyId,
+
                 facilities: selectedFacilities.map(item => ({
                   facilityName: item,
                   status: 'ACTIVE',
