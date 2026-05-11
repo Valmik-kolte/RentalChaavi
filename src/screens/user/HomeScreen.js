@@ -530,6 +530,14 @@ export default function HomeScreen({
                   }
                 >
 
+                  {(
+                  parseImages(
+                    item?.doctypeImages
+                  )[0] ||
+
+                  item?.image
+                ) ? (
+
                   <Image
                     source={{
                       uri:
@@ -540,11 +548,21 @@ export default function HomeScreen({
 
                         item?.image,
                     }}
-                    style={
-                      styles.image
-                    }
+                    style={styles.image}
                     resizeMode="cover"
                   />
+
+                ) : (
+
+                  <View style={styles.imagePlaceholder}>
+
+                    <Text style={styles.imagePlaceholderTxt}>
+                      No Image
+                    </Text>
+
+                  </View>
+
+                )}
 
                   <View
                     style={{

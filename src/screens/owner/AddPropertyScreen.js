@@ -1,4 +1,4 @@
-import { addProperty, uploadPropertyImages } from '../../api/propertyApi';
+import { addProperty, uploadPropertyImages, getAreasByCity, getPincode, saveFacilities, } from '../../api/propertyApi';
 import React, { useState } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
@@ -26,7 +26,7 @@ export default function AddPropertyScreen({ navigation }) {
     rent: '',
     location: '',
     city: '',
-    state: '',
+    state: 'Maharashtra',
     address: '',
     pincode: '',
     mobile: '',
@@ -39,6 +39,9 @@ export default function AddPropertyScreen({ navigation }) {
   });
 
   const [images, setImages] = useState({});
+  const [areas, setAreas] = useState([]);
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const [loadingAreas, setLoadingAreas] = useState(false);
 
   const types = [
     'Apartment',
@@ -46,6 +49,48 @@ export default function AddPropertyScreen({ navigation }) {
     'Independent House',
     'Studio',
   ];
+  const facilityOptions = [
+  {
+    label: 'Landscape Garden',
+    value: 'LANDSCAPE_GARDEN',
+  },
+  {
+    label: 'Gated Community',
+    value: 'GATED_COMMUNITY',
+  },
+  {
+    label: '24x7 Water Supply',
+    value: 'WATER_SUPPLY_24X7',
+  },
+  {
+    label: 'CCTV Security',
+    value: 'CCTV_SECURITY',
+  },
+  {
+    label: 'Children Play Area',
+    value: 'CHILDREN_PLAY_AREA',
+  },
+  {
+    label: 'Visitor Parking',
+    value: 'VISITOR_PARKING',
+  },
+  {
+    label: 'Power Backup',
+    value: 'POWER_BACKUP',
+  },
+  {
+    label: 'Lift Facility',
+    value: 'LIFT_FACILITY',
+  },
+  {
+    label: 'Gymnasium',
+    value: 'GYMNASIUM',
+  },
+  {
+    label: 'Swimming Pool',
+    value: 'SWIMMING_POOL',
+  },
+];
 
   const imageFields = [
     { key: 'door', label: 'Door' },
@@ -64,9 +109,101 @@ export default function AddPropertyScreen({ navigation }) {
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
+  const toggleFacility = (facility) => {
+
+    setSelectedFacilities(prev => {
+
+      if (prev.includes(facility)) {
+        return prev.filter(item => item !== facility);
+      }
+
+      return [...prev, facility];
+    });
+
+  };
+  // ================= CITY CHANGE =================
+  const handleCityChange = async (city) => {
+
+    update('city', city);
+
+    // reset location + pincode
+    update('location', '');
+    update('pincode', '');
+
+    if (!city) return;
+
+    try {
+
+      setLoadingAreas(true);
+
+      const res = await getAreasByCity(city);
+
+      console.log("AREAS API RESPONSE:", res);
+
+      setAreas(
+      Array.isArray(res?.data)
+        ? res.data
+        : []
+      );
+
+    } catch (error) {
+
+      console.log("AREA FETCH ERROR:", error);
+
+      Alert.alert(
+        'Error',
+        'Failed to load locations'
+      );
+
+    } finally {
+
+      setLoadingAreas(false);
+
+    }
+  };
+
+  // ================= LOCATION CHANGE =================
+  const handleLocationChange = async (area) => {
+
+    update('location', area);
+
+    if (!area || !form.city) return;
+
+    try {
+
+      const res = await getPincode(
+        form.city,
+        area
+      );
+
+      console.log("PINCODE RESPONSE:", res);
+
+      update(
+        'pincode',
+        res?.data?.toString()|| ''
+      );
+
+    } catch (error) {
+
+      console.log("PINCODE ERROR:", error);
+
+      Alert.alert(
+        'Error',
+        'Failed to fetch pincode'
+      );
+
+    }
+  };
+
   const pickImage = (key) => {
     launchImageLibrary(
-      { mediaType: 'photo', quality: 0.7 },
+      {
+        mediaType: 'photo',
+        quality: 0.3,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        selectionLimit: 1,
+      },
       (response) => {
         if (response.didCancel) return;
 
@@ -190,10 +327,7 @@ export default function AddPropertyScreen({ navigation }) {
 
       console.log("FINAL PAYLOAD:", JSON.stringify(payload, null, 2));
       const res = await addProperty(ownerId, payload);
-      await AsyncStorage.setItem(
-          'pendingProperty',
-          JSON.stringify(formData)
-        );
+
 
         console.log(
           'PROPERTY SAVED:',
@@ -209,7 +343,7 @@ export default function AddPropertyScreen({ navigation }) {
           return;
         }
 
-        const propertyId = res?.data?.id;
+        const propertyId = res?.data?.data?.id;
 
         if (!propertyId) {
           Alert.alert('Error', 'Property not created');
@@ -227,30 +361,92 @@ export default function AddPropertyScreen({ navigation }) {
 
     
       try {
-      // 🚀 First Upload Attempt
-      console.log("UPLOADING IMAGES...");
-      await uploadPropertyImages(propertyId, buildFormData(images));
 
-      Alert.alert('Success', 'Property + Images Uploaded');
+          // 🚀 First Upload Attempt
+          console.log("UPLOADING IMAGES...");
 
-    } catch (uploadErr) {
-      console.log('First upload failed:', uploadErr);
+          await uploadPropertyImages(
+            propertyId,
+            buildFormData(images)
+          );
 
-      try {
-        // 🔁 Retry Upload
-        await uploadPropertyImages(propertyId, buildFormData(images));
-        console.log("UPLOAD SUCCESS");
-        Alert.alert('Success', 'Uploaded after retry');
+          console.log("IMAGES UPLOADED");
 
-      } catch (retryErr) {
-        console.log('Retry failed:', retryErr);
+          // ✅ SAVE FACILITIES
+          if (selectedFacilities.length > 0) {
 
-        Alert.alert(
-          'Warning',
-          'Property added but image upload failed'
-        );
-      }
-    }
+            console.log(
+              "SAVING FACILITIES:",
+              selectedFacilities
+            );
+
+            await saveFacilities({
+              ownerId: ownerId,
+              facilities: selectedFacilities.map(item => ({
+                facilityName: item,
+                status: 'ACTIVE',
+              })),
+            });
+
+            console.log("FACILITIES SAVED");
+          }
+
+          Alert.alert(
+            'Success',
+            'Property + Images + Facilities Uploaded'
+          );
+
+        } catch (uploadErr) {
+
+          console.log(
+            'First upload failed:',
+            uploadErr
+          );
+
+          try {
+
+            // 🔁 Retry Upload
+            await uploadPropertyImages(
+              propertyId,
+              buildFormData(images)
+            );
+
+            console.log("UPLOAD SUCCESS");
+
+            // ✅ SAVE FACILITIES AGAIN
+            if (selectedFacilities.length > 0) {
+
+              await saveFacilities({
+                ownerId: ownerId,
+                facilities: selectedFacilities.map(item => ({
+                  facilityName: item,
+                  status: 'ACTIVE',
+                })),
+              });
+
+              console.log(
+                "FACILITIES SAVED AFTER RETRY"
+              );
+            }
+
+            Alert.alert(
+              'Success',
+              'Uploaded after retry'
+            );
+
+          } catch (retryErr) {
+
+            console.log(
+              'Retry failed:',
+              retryErr
+            );
+
+            Alert.alert(
+              'Warning',
+              'Property added but image upload failed'
+            );
+          }
+        }
     } 
     catch (error) {
     const errMsg =
@@ -347,16 +543,7 @@ export default function AddPropertyScreen({ navigation }) {
             style={styles.input}
           />
 
-          {/* LOCATION */}
-          <Text style={styles.inputLabel}>Location</Text>
-
-          <TextInput
-            placeholder="Enter Location"
-            placeholderTextColor="#94A3B8"
-            value={form.location}
-            onChangeText={v => update('location', v)}
-            style={styles.input}
-          />
+          
 
           {/* CITY */}
           <Text style={styles.dropdownLabel}>City</Text>
@@ -364,29 +551,68 @@ export default function AddPropertyScreen({ navigation }) {
           <View style={styles.dropdownContainer}>
             <Picker
               selectedValue={form.city}
-              onValueChange={(value) => update('city', value)}
+              onValueChange={(value) =>
+                handleCityChange(value)
+              }
               style={styles.picker}
               dropdownIconColor="#4338CA"
             >
               <Picker.Item label="Select City" value="" />
               <Picker.Item label="Pune" value="Pune" />
+
+              <Picker.Item
+                label="Pimpri-Chinchwad (PCMC)"
+                value="PCMC"
+              />
+            </Picker>
+          </View>
+
+          {/* LOCATION */}
+          <Text style={styles.dropdownLabel}>Location</Text>
+
+          <View style={styles.dropdownContainer}>
+            <Picker
+              selectedValue={form.location}
+              onValueChange={(value) =>
+                handleLocationChange(value)
+              }
+              style={styles.picker}
+              dropdownIconColor="#4338CA"
+              enabled={areas.length > 0}
+            >
+              <Picker.Item
+                label={
+                  loadingAreas
+                    ? "Loading locations..."
+                    : "Select Location"
+                }
+                value=""
+              />
+
+              {areas.map((area, index) => (
+                <Picker.Item
+                  key={index}
+                  label={area}
+                  value={area}
+                />
+              ))}
             </Picker>
           </View>
 
           {/* STATE */}
-          <Text style={styles.dropdownLabel}>State</Text>
+          <Text style={styles.inputLabel}>State</Text>
 
-          <View style={styles.dropdownContainer}>
-            <Picker
-              selectedValue={form.state}
-              onValueChange={(value) => update('state', value)}
-              style={styles.picker}
-              dropdownIconColor="#4338CA"
-            >
-              <Picker.Item label="Select State" value="" />
-              <Picker.Item label="Maharashtra" value="Maharashtra" />
-            </Picker>
-          </View>
+          <TextInput
+            value="Maharashtra"
+            editable={false}
+            style={[
+              styles.input,
+              {
+                backgroundColor: '#F1F5F9',
+                color: '#475569',
+              },
+            ]}
+          />
 
           {/* ADDRESS */}
           <Text style={styles.inputLabel}>Address</Text>
@@ -403,13 +629,19 @@ export default function AddPropertyScreen({ navigation }) {
           <Text style={styles.inputLabel}>Pincode</Text>
 
           <TextInput
-            placeholder="Enter Pincode"
+            placeholder="Auto-filled from location"
             placeholderTextColor="#94A3B8"
             keyboardType="number-pad"
             value={form.pincode}
-            onChangeText={v => update('pincode', v)}
-            style={styles.input}
-          />
+            editable={false}
+            style={[
+              styles.input,
+              {
+                backgroundColor: '#F1F5F9',
+                color: '#475569',
+              },
+            ]}
+            />
 
           {/* MOBILE */}
           <Text style={styles.inputLabel}>Mobile Number</Text>
@@ -509,6 +741,56 @@ export default function AddPropertyScreen({ navigation }) {
                   ))}
                 </View>
 
+                {/* FACILITIES */}
+                <Text style={styles.label}>Facilities</Text>
+
+                <View style={styles.facilityContainer}>
+                  {facilityOptions.map(item => {
+
+                      const selected =
+                        selectedFacilities.includes(item.value);
+
+                      return (
+
+                        <TouchableOpacity
+                          key={item.value}
+                          style={[
+                            styles.facilityBox,
+                            selected && styles.facilityBoxActive,
+                          ]}
+                          onPress={() =>
+                            toggleFacility(item.value)
+                          }
+                        >
+
+                          <View
+                            style={[
+                              styles.checkbox,
+                              selected && styles.checkboxActive,
+                            ]}
+                          >
+                            {selected && (
+                              <Text style={styles.checkmark}>
+                                ✓
+                              </Text>
+                            )}
+                          </View>
+
+                          <Text
+                            style={[
+                              styles.facilityText,
+                              selected &&
+                              styles.facilityTextActive,
+                            ]}
+                          >
+                            {item.label}
+                          </Text>
+
+                        </TouchableOpacity>
+                      );
+                      })}
+                </View>
+
           {/* IMAGE GRID */}
           <Text style={styles.imageTitle}>Property Images (All Required)</Text>
 
@@ -544,8 +826,9 @@ export default function AddPropertyScreen({ navigation }) {
               }
 
               navigation.navigate('PreviewProperty', {
-                form,
-                images,
+              form,
+              images,
+              facilities: selectedFacilities,
               });
             }}>
             <Text style={styles.submitTxt}>Preview Property</Text>
@@ -706,4 +989,71 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '900',
   },
+
+  label: {
+  marginTop: 18,
+  marginBottom: 10,
+  fontSize: 16,
+  fontWeight: '700',
+  color: '#0F172A',
+},
+
+  facilityContainer: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginTop: 10,
+  marginBottom: 20,
+},
+
+facilityBox: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: '#CBD5E1',
+  borderRadius: 12,
+  paddingVertical: 10,
+  paddingHorizontal: 14,
+  marginRight: 10,
+  marginBottom: 10,
+  backgroundColor: '#fff',
+},
+
+facilityBoxActive: {
+  backgroundColor: '#EEF2FF',
+  borderColor: '#4338CA',
+},
+
+checkbox: {
+  width: 20,
+  height: 20,
+  borderRadius: 6,
+  borderWidth: 1.5,
+  borderColor: '#94A3B8',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginRight: 8,
+},
+
+checkboxActive: {
+  backgroundColor: '#4338CA',
+  borderColor: '#4338CA',
+},
+
+checkmark: {
+  color: '#fff',
+  fontSize: 12,
+  fontWeight: 'bold',
+},
+
+facilityText: {
+  color: '#334155',
+  fontSize: 14,
+  fontWeight: '600',
+},
+
+facilityTextActive: {
+  color: '#4338CA',
+},
+
 });
+

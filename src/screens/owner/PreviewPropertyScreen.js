@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   addProperty,
   uploadPropertyImages,
+  saveFacilities,
 } from '../../api/propertyApi';
 
 export default function PreviewPropertyScreen({
@@ -24,7 +25,7 @@ export default function PreviewPropertyScreen({
   navigation,
 }) {
 
-  const { form, images } = route.params;
+  const { form, images ,facilities,} = route.params;
 
   const imageKeys = Object.keys(images);
 
@@ -210,7 +211,29 @@ export default function PreviewPropertyScreen({
           propertyId,
           buildFormData(images)
         );
+        // ✅ SAVE FACILITIES
+        if (
+          facilities &&
+          facilities.length > 0
+        ) {
 
+          console.log(
+            "SAVING FACILITIES:",
+            facilities
+          );
+
+          await saveFacilities({
+            ownerId: ownerId,
+            facilities: facilities.map(item => ({
+              facilityName: item,
+              status: 'ACTIVE',
+            })),
+          });
+
+          console.log(
+            "FACILITIES SAVED"
+          );
+        }
         Alert.alert(
           'Property Saved',
           'Your property is pending admin approval.',
@@ -399,6 +422,34 @@ export default function PreviewPropertyScreen({
 
         </View>
 
+
+      {/* FACILITIES */}
+
+        <View style={styles.card}>
+
+          <Text style={styles.sectionTitle}>
+            Facilities
+          </Text>
+
+          <View style={styles.facilityContainer}>
+
+            {facilities?.map((item, index) => (
+
+              <View
+                key={index}
+                style={styles.facilityChip}
+              >
+
+                <Text style={styles.facilityText}>
+                  ✓ {item}
+                </Text>
+
+              </View>
+            ))}
+
+          </View>
+
+        </View>
         {/* IMAGES */}
 
         <Text style={styles.imageTitle}>
@@ -565,5 +616,24 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 17,
     fontWeight: '700',
+  },
+  facilityContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+  },
+
+  facilityChip: {
+    backgroundColor: '#EEF2FF',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+
+  facilityText: {
+    color: '#4338CA',
+    fontWeight: '600',
   },
 });

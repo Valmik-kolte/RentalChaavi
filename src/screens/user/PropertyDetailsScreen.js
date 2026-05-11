@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect
+} from 'react';
 
 import {
   View,
@@ -14,6 +17,9 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  getFacilities
+} from '../../api/propertyApi';
 
 const { width } = Dimensions.get('window');
 
@@ -27,11 +33,64 @@ export default function PropertyDetailsScreen({
 
   const property =
     route?.params?.property;
+        const isPremiumLocked = true;
+
+        // TEMP USER PREMIUM STATUS
+        const isUserPremium =
+          route?.params?.isUserPremium || false;
+          
+        const lockedText =
+          ' Buy Premium to View';
+
+    useEffect(() => {
+
+    const fetchFacilities = async () => {
+
+      try {
+
+        const ownerId =
+          property?.raw?.ownerId;
+
+        console.log(
+          'OWNER ID:',
+          ownerId
+        );
+
+        if (!ownerId) return;
+
+        const res =
+          await getFacilities(ownerId);
+
+        console.log(
+          'FACILITIES RESPONSE:',
+          JSON.stringify(res, null, 2)
+        );
+
+        setFacilities(
+          res?.data || []
+        );
+
+      } catch (err) {
+
+        console.log(
+          'FACILITY FETCH ERROR:',
+          err
+        );
+      }
+    };
+
+    fetchFacilities();
+
+  }, []);
+    
+    const [facilities, setFacilities] =
+  useState([]);
+
 
   console.log(
-    'DETAIL SCREEN PROPERTY:',
-    property
-  );
+  'DETAIL SCREEN PROPERTY FULL:',
+  JSON.stringify(property, null, 2)
+);
 
   console.log(
   'RAW DOCTYPE IMAGES:',
@@ -158,24 +217,6 @@ export default function PropertyDetailsScreen({
   const ownerInitial =
     ownerName?.charAt(0)?.toUpperCase();
 
-  const callOwner = () => {
-
-    const phone =
-      property?.ownerMobile ||
-      property?.mobileNumber;
-
-    if (phone) {
-
-      Linking.openURL(`tel:${phone}`);
-
-    } else {
-
-      Alert.alert(
-        'Premium Required',
-        'Owner details available for premium users only.'
-      );
-    }
-  };
 
   return (
 
@@ -312,7 +353,7 @@ export default function PropertyDetailsScreen({
             </Text>
 
             <Text style={styles.gridValue}>
-              {property?.propertyType || 'N/A'}
+              {property?.propertyType || lockedText }
             </Text>
           </View>
 
@@ -328,7 +369,7 @@ export default function PropertyDetailsScreen({
                 ? String(property.bhkType)
                     .replace(/_/g, ' ')
 
-                : 'N/A'}
+                : lockedText}
 
             </Text>
           </View>
@@ -348,7 +389,7 @@ export default function PropertyDetailsScreen({
 
                   property?.furnishedStatus ||
 
-                  'N/A'
+                   lockedText
 
                 }
 
@@ -372,7 +413,7 @@ export default function PropertyDetailsScreen({
 
                 property?.squareFeet ||
 
-                'N/A'
+                lockedText
 
               }
 
@@ -382,6 +423,82 @@ export default function PropertyDetailsScreen({
         </View>
 
         {/* ABOUT */}
+
+        {/* APARTMENT NAME */}
+        <Text style={styles.section}>
+          Apartment Name
+        </Text>
+
+        <View style={styles.cardWrap}>
+
+          <View style={styles.card}>
+
+            <Text style={styles.loc}>
+
+              {isPremiumLocked
+
+                ? 'Buy Premium to view apartment name'
+
+                : (
+                    property?.apartmentName ||
+                    property?.raw?.apartmentName ||
+                    'Apartment name not available'
+                  )}
+
+            </Text>
+
+          </View>
+
+        </View>
+        {/* FACILITIES */}
+        <Text style={styles.section}>
+          Facilities
+        </Text>
+
+        <View style={styles.cardWrap}>
+
+          <View style={styles.facilitiesWrap}>
+
+            {facilities.length > 0 ? (
+
+              facilities.map(
+                (facility, index) => (
+
+                  <View
+                    key={index}
+                    style={styles.facilityChip}
+                  >
+
+                    <Text style={styles.facilityTxt}>
+
+                      {isPremiumLocked
+
+                        ? '🔒 Premium'
+
+                        : String(
+                            facility?.facilityName ||
+                            facility
+                          )
+                            .replace(/_/g, ' ')}
+
+                    </Text>
+
+                  </View>
+                )
+              )
+
+            ) : (
+
+              <Text style={styles.loc}>
+                Buy Premium to View Facilities
+              </Text>
+
+            )}
+
+          </View>
+
+        </View>
+
         <Text style={styles.section}>
           About Property
         </Text>
@@ -402,7 +519,7 @@ export default function PropertyDetailsScreen({
 
                 property?.details ||
 
-                'Beautiful property with premium interior and peaceful environment.'
+                lockedText
 
               }
 
@@ -427,7 +544,7 @@ export default function PropertyDetailsScreen({
 
                 property?.location ||
 
-                'Address not available'}
+                lockedText}
 
             </Text>
 
@@ -480,40 +597,51 @@ export default function PropertyDetailsScreen({
             schedule your visit today.
           </Text>
 
-          {property?.price ? (
+          {!isUserPremium ? (
 
-            <TouchableOpacity
-              style={styles.postBtn}
-              onPress={callOwner}
-            >
-
-              <Text style={styles.postTxt}>
-                Contact Owner
-              </Text>
-
-            </TouchableOpacity>
-
-          ) : (
-
-            <TouchableOpacity
-              style={styles.postBtn}
-              onPress={() =>
-                navigation.navigate(
-                  'Premium',
-                  {
-                    isUserPremium: true
-                  }
-                )
+          <TouchableOpacity
+            style={styles.postBtn}
+            onPress={() =>
+              navigation.navigate(
+              'Premium',
+              {
+                isUserPremium: true
               }
+              )
+            }
+          >
+
+            <Text style={styles.postTxt}>
+              Buy Premium
+            </Text>
+
+          </TouchableOpacity>
+
+        ) : isUserPremium ? (
+
+          <View
+            style={{
+              marginTop: 18,
+              backgroundColor: '#ECFDF5',
+              paddingVertical: 14,
+              paddingHorizontal: 22,
+              borderRadius: 14,
+            }}
+          >
+
+            <Text
+              style={{
+                color: '#059669',
+                fontWeight: '800',
+                fontSize: 15,
+              }}
             >
+              Premium Member
+            </Text>
 
-              <Text style={styles.postTxt}>
-                Buy Premium
-              </Text>
+          </View>
 
-            </TouchableOpacity>
-
-          )}
+        ) : null}
 
         </View>
 
@@ -726,5 +854,23 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 15,
   },
+  facilitiesWrap: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+},
 
+facilityChip: {
+  backgroundColor: '#EEF2FF',
+  paddingVertical: 10,
+  paddingHorizontal: 14,
+  borderRadius: 30,
+  marginRight: 10,
+  marginBottom: 10,
+},
+
+facilityTxt: {
+  color: '#4338CA',
+  fontWeight: '700',
+  fontSize: 13,
+},
 });

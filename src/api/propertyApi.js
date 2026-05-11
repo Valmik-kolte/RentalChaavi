@@ -144,6 +144,96 @@ export const searchCity = async (city) => {
 };
 
 
+
+// Get Areas/Locations By City
+export const getAreasByCity = async (city) => {
+  try {
+    const res = await api.get(
+      `/api/owner/getAreasByCity/${city}`
+    );
+
+    return res.data;
+
+  } catch (error) {
+
+    console.log(
+      "GET AREAS ERROR:",
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
+};
+
+// Get Pincode By City + Area
+export const getPincode = async (city, area) => {
+  try {
+
+    const res = await api.get(
+      `/api/owner/getPincode`,
+      {
+        params: {
+          city,
+          area,
+        },
+      }
+    );
+
+    return res.data;
+
+  } catch (error) {
+
+    console.log(
+      "GET PINCODE ERROR:",
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
+};
+
+export const saveFacilities = async (payload) => {
+
+  try {
+
+    const res = await api.post(
+      '/api/owner/save-facilities',
+      payload
+    );
+
+    return res.data;
+
+  } catch (error) {
+
+    console.log(
+      'SAVE FACILITIES ERROR:',
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
+};
+
+export const getFacilities = async (ownerId) => {
+
+  try {
+
+    const res = await api.get(
+      `/api/owner/get-facilities/${ownerId}`
+    );
+
+    return res.data;
+
+  } catch (error) {
+
+    console.log(
+      'GET FACILITIES ERROR:',
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
+};
   // ================= ADMIN =================
 
 // Get Pending Users

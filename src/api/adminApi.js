@@ -22,7 +22,7 @@ export const getPendingUsers = async () => {
 // Get Pending Owners
 export const getPendingOwners = async () => {
   try {
-    const res = await api.get('/admin/pending-Owner');
+    const res = await api.get('/admin/pending-owner');
 
     console.log('PENDING OWNERS:', res.data);
 

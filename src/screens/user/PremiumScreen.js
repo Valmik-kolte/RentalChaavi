@@ -116,7 +116,7 @@ export default function PremiumScreen({ navigation, route }) {
           {
             text: 'OK',
             onPress: () =>
-              navigation.navigate('Tabs'),
+              navigation.goBack(),
           },
         ]
       );
