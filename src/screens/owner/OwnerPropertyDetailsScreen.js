@@ -34,26 +34,16 @@ export default function PropertyDetailsScreen({
   const property =
       route?.params?.property;
 
-    // TEMP USER PREMIUM STATUS
-    const isUserPremium =
-      route?.params?.isUserPremium || false;
-
-    const isPremiumLocked =
-      !isUserPremium;
+      const isPremiumLocked = false;
           
-      console.log(
-        'IS USER PREMIUM:',
-        isUserPremium
-      );
 
-        const lockedText =
-          ' Buy Premium to View';
+        const lockedText = 'Not Available';
 
     useEffect(() => {
 
     const fetchFacilities = async () => {
 
-      if (!isUserPremium) return;
+      // owner can always view facilities
       try {
 
         const ownerId =
@@ -453,84 +443,70 @@ export default function PropertyDetailsScreen({
 
         {/* ABOUT */}
 
-        {/* APARTMENT NAME */}
+     {/* APARTMENT NAME */}
         <Text style={styles.section}>
-          Apartment Name
+        Apartment Name
         </Text>
 
         <View style={styles.cardWrap}>
 
-          <View style={styles.card}>
+        <View style={styles.card}>
 
             <Text style={styles.loc}>
 
-              {isPremiumLocked
-
-                ? 'Buy Premium to view apartment name'
-
-                : (
-                    property?.apartmentName ||
-                    property?.raw?.apartmentName ||
-                    'Apartment name not available'
-                  )}
+            {
+                property?.apartmentName ||
+                property?.raw?.apartmentName ||
+                'Apartment name not available'
+            }
 
             </Text>
 
-          </View>
+        </View>
 
         </View>
+
         {/* FACILITIES */}
         <Text style={styles.section}>
-          Facilities
+        Facilities
         </Text>
 
         <View style={styles.cardWrap}>
 
-          <View style={styles.facilitiesWrap}>
+        <View style={styles.facilitiesWrap}>
 
-            {isPremiumLocked ? (
+            {facilities.length > 0 ? (
 
-                <Text style={styles.loc}>
-                  Buy Premium to View Facilities
-                </Text>
-
-              ) : facilities.length > 0 ? (
-
-              facilities.map(
+            facilities.map(
                 (facility, index) => (
 
-                  <View
+                <View
                     key={index}
                     style={styles.facilityChip}
-                  >
+                >
 
                     <Text style={styles.facilityTxt}>
 
-                      {isPremiumLocked
-
-                        ? '🔒 Premium'
-
-                        : String(
-                            facility?.facilityName ||
-                            facility
-                          )
-                            .replace(/_/g, ' ')}
+                    {String(
+                        facility?.facilityName ||
+                        facility
+                    ).replace(/_/g, ' ')}
 
                     </Text>
 
-                  </View>
+                </View>
                 )
-              )
+            )
 
             ) : (
 
-              <Text style={styles.loc}>
+            <Text style={styles.loc}>
                 No Facilities Available
-              </Text>
+            </Text>
 
             )}
 
-          </View>
+        </View>
 
         </View>
 
@@ -632,52 +608,7 @@ export default function PropertyDetailsScreen({
             schedule your visit today.
           </Text>
 
-          {!isUserPremium ? (
-
-          <TouchableOpacity
-            style={styles.postBtn}
-            onPress={() =>
-              navigation.navigate(
-              'Premium',
-              {
-                isUserPremium: true
-              }
-              )
-            }
-          >
-
-            <Text style={styles.postTxt}>
-              Buy Premium
-            </Text>
-
-          </TouchableOpacity>
-
-        ) : isUserPremium ? (
-
-          <View
-            style={{
-              marginTop: 18,
-              backgroundColor: '#ECFDF5',
-              paddingVertical: 14,
-              paddingHorizontal: 22,
-              borderRadius: 14,
-            }}
-          >
-
-            <Text
-              style={{
-                color: '#059669',
-                fontWeight: '800',
-                fontSize: 15,
-              }}
-            >
-              Premium Member
-            </Text>
-
-          </View>
-
-        ) : null}
-
+         
         </View>
 
       </ScrollView>

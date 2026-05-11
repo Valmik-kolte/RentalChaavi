@@ -222,12 +222,14 @@ export default function PreviewPropertyScreen({
             facilities
           );
 
-          await saveFacilities({
-            ownerId: ownerId,
-            facilities: facilities.map(item => ({
-              facilityName: item,
-              status: 'ACTIVE',
-            })),
+         await saveFacilities({
+          ownerId: ownerId,
+          propertyId: propertyId,
+
+          facilities: facilities.map(item => ({
+            facilityName: item,
+            status: 'ACTIVE',
+          })),
           });
 
           console.log(

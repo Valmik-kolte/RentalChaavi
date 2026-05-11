@@ -17,7 +17,6 @@ import { jwtDecode } from 'jwt-decode';
 
 import {
   getOwnerProperties,
-  filterProperties,
   deleteProperty,
 } from '../../api/propertyApi';
 
@@ -243,91 +242,21 @@ export default function MyListingsScreen({ navigation }) {
         );
 
         const basicList =
-          Array.isArray(basicRes)
-
-            ? basicRes
-
-            : Array.isArray(basicRes?.data)
-
-            ? basicRes.data
-
+          Array.isArray(
+            basicRes?.data?.properties
+          )
+            ? basicRes.data.properties
             : [];
 
-        let detailedList = [];
-
-        if (basicList.length > 0) {
-
-          const propertyType =
-            basicList[0]?.propertyType ||
-            "APARTMENT";
-
-          const detailedRes =
-            await filterProperties(
-              ownerId,
-              { propertyType }
-            );
-
-          console.log(
-            "DETAIL RESPONSE:",
-            detailedRes
-          );
-
-          detailedList =
-            Array.isArray(detailedRes?.data)
-
-              ? detailedRes.data
-
-              : [];
-        }
+            
 
       console.log(
       'FULL OWNER RESPONSE:',
       basicRes
     );
 
-      
-      const merged =
-        basicList.map((basic) => {
-
-          const detailed =
-            detailedList.find(
-              item =>
-
-                item?.title === basic?.title &&
-
-                item?.propertyType === basic?.propertyType
-            ) || {};
-
-          return {
-
-            ...basic,
-            ...detailed,
-
-            doctypeImages:
-              basic?.doctypeImages ||
-              detailed?.doctypeImages,
-
-            title:
-              detailed?.title ||
-              basic?.title,
-
-            propertyType:
-              detailed?.propertyType ||
-              basic?.propertyType,
-
-            id:
-              detailed?.id ||
-              basic?.id,
-          };
-      });
-
-      console.log(
-        "MERGED DATA:",
-        merged
-      );
-
       const mapped =
-        merged.map(
+        basicList.map(
           mapBackendToUi
         );
 
@@ -586,7 +515,7 @@ export default function MyListingsScreen({ navigation }) {
 
       {/* TABS */}
 
-      <View style={styles.tabWrapper}>
+      {/* <View style={styles.tabWrapper}>
 
         <ScrollView
           horizontal
@@ -629,7 +558,7 @@ export default function MyListingsScreen({ navigation }) {
 
         </ScrollView>
 
-      </View>
+      </View> */}
 
       {/* LOADER */}
 
@@ -665,9 +594,19 @@ export default function MyListingsScreen({ navigation }) {
 
               filtered.map(item => (
 
-                <View
+                <TouchableOpacity
                   key={item.id?.toString() || Math.random().toString()}
                   style={styles.card}
+
+                  onPress={() => {
+
+                    navigation.navigate(
+                        'PropertyDetails',
+                      {
+                        property: item,
+                      }
+                    );
+                  }}
                 >
 
                   {/* IMAGE */}
@@ -810,7 +749,7 @@ export default function MyListingsScreen({ navigation }) {
 
                   </View>
 
-                </View>
+                </TouchableOpacity>
               ))
             )}
 
