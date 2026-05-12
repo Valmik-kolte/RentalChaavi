@@ -1,6 +1,3 @@
-// src/context/AuthContext.js
-
-
 import React, {
   createContext,
   useEffect,

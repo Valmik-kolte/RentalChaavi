@@ -23,11 +23,11 @@ export default function PremiumScreen({ navigation, route }) {
 
     try {
 
-      const isUserPremium =
-        route?.params?.isUserPremium;
+      const premiumType =
+  route?.params?.premiumType;
 
       // USER PREMIUM FLOW
-      if (isUserPremium) {
+      if (premiumType === 'USER') {
 
         const token =
           await AsyncStorage.getItem('userToken');

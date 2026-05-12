@@ -1,58 +1,158 @@
-import React, { useState } from 'react';
+    import React, {
+      useEffect,
+      useState
+    } from 'react';
 
-import {
-  StatusBar,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+    import {
+      StatusBar,
+      ScrollView,
+      View,
+      Text,
+      TouchableOpacity,
+      StyleSheet,
+      ActivityIndicator,
+    } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+    import AsyncStorage
+    from '@react-native-async-storage/async-storage';
 
-export default function OwnerChatListScreen({ navigation }) {
-  const [chats] = useState([
-    {
-      id: 1,
-      tenant: 'Amit Sharma',
-      property: '2 BHK Baner',
-      msg: 'Can we visit today?',
-      time: '10:20 AM',
-      unread: 3,
-      lead: 'Hot Lead',
-    },
-    {
-      id: 2,
-      tenant: 'Sneha Patil',
-      property: '1 BHK Wakad',
-      msg: 'What is final rent?',
-      time: 'Yesterday',
-      unread: 1,
-      lead: 'Interested',
-    },
-    {
-      id: 3,
-      tenant: 'Rohan Jain',
-      property: 'PG Hinjewadi',
-      msg: 'Still available?',
-      time: 'Mon',
-      unread: 0,
-      lead: 'New',
-    },
-  ]);
+    import {
+      pendingChats,
+      acceptChat,
+      rejectChat,
+    } from '../../api/chatApi';
 
-  const leadColor = type => {
-    if (type === 'Hot Lead') return '#16A34A';
-    if (type === 'Interested') return '#F59E0B';
-    return '#4338CA';
-  };
+    import {
+      SafeAreaView
+    } from 'react-native-safe-area-context';
 
-  const leadBg = type => {
-    if (type === 'Hot Lead') return '#DCFCE7';
-    if (type === 'Interested') return '#FEF3C7';
-    return '#EEF2FF';
-  };
+    export default function OwnerChatListScreen({ navigation }) {
+      const [loading, setLoading] =
+      useState(true);
+
+    const [chats, setChats] =
+      useState([]);
+
+    const [ownerId, setOwnerId] =
+      useState(null);
+
+    useEffect(() => {
+
+      fetchChats();
+
+    }, []);
+
+    const fetchChats = async () => {
+
+      try {
+
+        setLoading(true);
+
+        const userData =
+          await AsyncStorage.getItem(
+            'user'
+          );
+
+        const parsed =
+          JSON.parse(userData);
+
+        setOwnerId(parsed?.id);
+
+        const res =
+          await pendingChats(
+            parsed?.id
+          );
+
+        console.log(
+          'PENDING CHAT RESPONSE:',
+          JSON.stringify(
+            res?.data,
+            null,
+            2
+          )
+        );
+
+        setChats(
+          res?.data?.data || []
+        );
+
+      } catch (e) {
+
+        console.log(
+          'PENDING CHAT ERROR:',
+          e?.response?.data || e
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+    };
+
+    const handleAccept =
+      async roomId => {
+
+        try {
+
+          await acceptChat({
+            roomId,
+          });
+
+          fetchChats();
+
+        } catch (e) {
+
+          console.log(
+            'ACCEPT ERROR:',
+            e?.response?.data || e
+          );
+
+        }
+      };
+
+      const handleReject =
+      async roomId => {
+
+        try {
+
+          await rejectChat({
+            roomId,
+          });
+
+          fetchChats();
+
+        } catch (e) {
+
+          console.log(
+            'REJECT ERROR:',
+            e?.response?.data || e
+          );
+
+        }
+      };
+      
+      if (loading) {
+
+      return (
+
+        <View style={{
+          flex:1,
+          justifyContent:'center',
+          alignItems:'center',
+          backgroundColor:'#F8FAFC'
+        }}>
+
+          <ActivityIndicator
+            size="large"
+            color="#4338CA"
+          />
+
+        </View>
+
+      );
+    }
+  
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -70,71 +170,170 @@ export default function OwnerChatListScreen({ navigation }) {
       </View>
 
       {/* BODY */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+     <ScrollView
+  showsVerticalScrollIndicator={false}
+  contentContainerStyle={{
+    paddingBottom: 40
+  }}
+>
+
         <View style={styles.container}>
-          {chats.map(item => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              onPress={() =>
-                navigation.navigate('ChatScreen', {
-                  chat: {
-                    name: item.tenant,
-                    property: item.property,
-                  },
-                })
-              }
-            >
-              {/* AVATAR */}
-              <View style={styles.avatar}>
-                <Text style={styles.avatarTxt}>
-                  {item.tenant.charAt(0).toUpperCase()}
-                </Text>
-              </View>
 
-              {/* CENTER */}
-              <View style={{ flex: 1, marginLeft: 14 }}>
-                <View style={styles.row}>
-                  <Text style={styles.name}>{item.tenant}</Text>
+            {chats.map(item => (
 
-                  <View
-                    style={[
-                      styles.leadBadge,
-                      { backgroundColor: leadBg(item.lead) },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.leadTxt,
-                        { color: leadColor(item.lead) },
-                      ]}
-                    >
-                      {item.lead}
-                    </Text>
-                  </View>
+              <View
+                key={item.roomId}
+                style={styles.card}
+              >
+
+                {/* AVATAR */}
+                <View style={styles.avatar}>
+
+                  <Text style={styles.avatarTxt}>
+                    {String(item.userId)
+                      .charAt(0)
+                      .toUpperCase()}
+                  </Text>
+
                 </View>
 
-                <Text style={styles.property}>{item.property}</Text>
+                {/* CENTER */}
+                <View style={{
+                  flex: 1,
+                  marginLeft: 14
+                }}>
 
-                <Text numberOfLines={1} style={styles.msg}>
-                  {item.msg}
-                </Text>
-              </View>
+                  <View style={styles.row}>
 
-              {/* RIGHT */}
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.time}>{item.time}</Text>
+                    <Text style={styles.name}>
+                      User #{item.userId}
+                    </Text>
 
-                {item.unread > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeTxt}>{item.unread}</Text>
                   </View>
-                )}
+
+                  <Text style={styles.property}>
+                    Pending Property Chat
+                  </Text>
+
+                  <Text
+                    numberOfLines={1}
+                    style={styles.msg}
+                  >
+                    {item.lastMessage}
+                  </Text>
+
+                  {/* ACTIONS */}
+                  <View style={{
+                    flexDirection:'row',
+                    marginTop:12,
+                  }}>
+
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleAccept(
+                          item.roomId
+                        )
+                      }
+                      style={{
+                        backgroundColor:'#16A34A',
+                        paddingHorizontal:16,
+                        paddingVertical:8,
+                        borderRadius:10,
+                        marginRight:10,
+                      }}
+                    >
+
+                      <Text style={{
+                        color:'#fff',
+                        fontWeight:'700',
+                      }}>
+                        Accept
+                      </Text>
+
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleReject(
+                          item.roomId
+                        )
+                      }
+                      style={{
+                        backgroundColor:'#DC2626',
+                        paddingHorizontal:16,
+                        paddingVertical:8,
+                        borderRadius:10,
+                      }}
+                    >
+
+                      <Text style={{
+                        color:'#fff',
+                        fontWeight:'700',
+                      }}>
+                        Reject
+                      </Text>
+
+                    </TouchableOpacity>
+
+                  </View>
+
+                  {/* OPEN CHAT */}
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate(
+                        'ChatScreen',
+                        {
+                          user: {
+                            id: item.ownerId,
+                            name:
+                              `User ${item.userId}`,
+                          },
+
+                          property: {
+                            title:
+                              'Property Chat',
+                          },
+                        }
+                      )
+                    }
+                    style={{
+                      marginTop:12,
+                      backgroundColor:'#4338CA',
+                      paddingVertical:10,
+                      borderRadius:10,
+                      alignItems:'center',
+                    }}
+                  >
+
+                    <Text style={{
+                      color:'#fff',
+                      fontWeight:'700',
+                    }}>
+                      Open Chat
+                    </Text>
+
+                  </TouchableOpacity>
+
+                </View>
+
+                {/* RIGHT */}
+                <View style={{
+                  alignItems:'flex-end'
+                }}>
+
+                  <Text style={styles.time}>
+                    {item.time || 'Now'}
+                  </Text>
+
+                </View>
+
               </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+
+            ))}
+
+          </View>
+
+        </ScrollView>
     </SafeAreaView>
   );
 }

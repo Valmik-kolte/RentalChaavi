@@ -1,7 +1,3 @@
-// src/navigation/ChatNavigator.js
-// FULL UPDATED FILE
-// Caryanam Broker Chat Navigation
-
 import React from 'react';
 
 import {
@@ -9,39 +5,104 @@ import {
 } from '@react-navigation/native-stack';
 
 /* CHAT SCREENS */
-import ChatListScreen from '../screens/user/ChatListScreen';
-import ChatScreen from '../screens/user/ChatScreen';
+
+import ChatRoomScreen
+from '../screens/chat/ChatRoomScreen';
+
+import UserChatListScreen
+from '../screens/chat/UserChatListScreen';
+
+import OwnerChatListScreen
+from '../screens/owner/OwnerChatListScreen';
+
+
 
 const Stack =
   createNativeStackNavigator();
 
-export default function ChatNavigator() {
+export default function ChatNavigator({
+
+  role,
+
+}) {
+
+  const safeRole =
+    String(role || '')
+      .toUpperCase()
+      .replace('ROLE_', '');
+
+  /* =========================
+     OWNER FLOW
+  ========================= */
+
+  if (
+    safeRole ===
+    'PROPERTY_OWNER'
+  ) {
+
+    return (
+
+      <Stack.Navigator
+        screenOptions={{
+          headerShown:false,
+          animation:
+            'slide_from_right',
+        }}
+      >
+        <Stack.Screen
+          name="OwnerChats"
+          component={
+            OwnerChatListScreen
+          }
+        />
+
+        {/* ROOM */}
+
+        <Stack.Screen
+          name="ChatRoom"
+          component={
+            ChatRoomScreen
+          }
+        />
+
+      </Stack.Navigator>
+
+    );
+  }
+
+  /* =========================
+     USER FLOW
+  ========================= */
+
   return (
+
     <Stack.Navigator
-      initialRouteName="ChatList"
       screenOptions={{
-        headerShown: false,
+        headerShown:false,
         animation:
           'slide_from_right',
-        gestureEnabled:
-          true,
       }}
     >
-      {/* CHAT LIST */}
+
+      {/* USER LIST */}
+
       <Stack.Screen
-        name="ChatList"
+        name="UserChats"
         component={
-          ChatListScreen
+          UserChatListScreen
         }
       />
 
-      {/* CHAT ROOM */}
+      {/* ROOM */}
+
       <Stack.Screen
-        name="ChatScreen"
+        name="ChatRoom"
         component={
-          ChatScreen
+          ChatRoomScreen
         }
       />
+
     </Stack.Navigator>
+
   );
 }
