@@ -13,7 +13,7 @@ import UserChatListScreen
 from '../screens/chat/UserChatListScreen';
 
 import OwnerChatListScreen
-from '../screens/owner/OwnerChatListScreen';
+from '../screens/chat/OwnerChatListScreen';
 
 
 

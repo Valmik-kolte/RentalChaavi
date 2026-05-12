@@ -135,12 +135,16 @@ export default function ChatRoomScreen({
 
     currentRole:
 
-    currentUser?.role ===
-    'ROLE_PROPERTY_OWNER'
+        String(
+          currentUser?.role
+        )
+        .includes(
+          'PROPERTY_OWNER'
+        )
 
-      ? 'PROPERTY_OWNER'
+          ? 'PROPERTY_OWNER'
 
-      : 'USER',
+          : 'USER',
 
   });
 
@@ -203,8 +207,11 @@ export default function ChatRoomScreen({
 
         messages.length > 0 &&
 
-        currentUser?.role !==
-        'PROPERTY_OWNER'
+        !String(
+          currentUser?.role
+        ).includes(
+          'PROPERTY_OWNER'
+        )
 
       ) {
 
@@ -249,9 +256,42 @@ export default function ChatRoomScreen({
             {user?.name}
           </Text>
 
-          <Text style={styles.propertyName}>
-            {property?.title}
-          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 2,
+            }}
+          >
+
+            <View
+              style={{
+
+                width: 8,
+
+                height: 8,
+
+                borderRadius: 10,
+
+                backgroundColor:
+                  connected
+                    ? '#22C55E'
+                    : '#94A3B8',
+
+                marginRight: 6,
+
+              }}
+            />
+
+            <Text style={styles.propertyName}>
+
+              {connected
+                ? 'Online'
+                : 'Offline'}
+
+            </Text>
+
+          </View>
 
         </View>
 
@@ -259,11 +299,12 @@ export default function ChatRoomScreen({
 
       {/* STATUS */}
 
-      <View style={styles.statusRow}>
+      {/* <View style={styles.statusRow}>
 
         <Text style={styles.status}>
 
-          {chatStatus}
+          {String(chatStatus)
+            .toUpperCase()}
 
         </Text>
 
@@ -275,7 +316,7 @@ export default function ChatRoomScreen({
 
         </Text>
 
-      </View>
+      </View> */}
 
       {/* BODY */}
 
@@ -299,7 +340,8 @@ export default function ChatRoomScreen({
             false
           }
           contentContainerStyle={{
-            paddingBottom: 20,
+            paddingBottom: 120,
+            flexGrow: 1,
           }}
         >
 
@@ -360,7 +402,12 @@ export default function ChatRoomScreen({
 
                     }
                   >
-                    {msg.createdAt}
+                    {new Date(
+                      msg.createdAt
+                    ).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </Text>
 
                 </View>
@@ -382,8 +429,9 @@ export default function ChatRoomScreen({
 
           {/* PENDING */}
 
-          {chatStatus ===
-           'PENDING' && (
+          {String(chatStatus)
+            .toUpperCase() ===
+            'PENDING' && (
 
             <Text style={styles.pendingTxt}>
               Waiting for owner approval
@@ -423,10 +471,12 @@ export default function ChatRoomScreen({
 
               setMessage(text);
 
-              sendTyping(text);
+              sendTyping(
+                text.trim().length > 0
+              );
 
             }
-          }
+            }
 
           placeholder="Type message..."
 
@@ -456,8 +506,11 @@ export default function ChatRoomScreen({
           onPress={onSend}
         >
 
-          <Text style={styles.sendTxt}>
+          {/* <Text style={styles.sendTxt}>
             Send
+          </Text> */}
+          <Text style={styles.sendTxt}>
+            ➤
           </Text>
 
         </TouchableOpacity>
@@ -558,60 +611,93 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 
-  messageBox: {
-    maxWidth: '80%',
+  // messageBox: {
+  //   maxWidth: '80%',
+
+  //   paddingHorizontal: 14,
+  //   paddingVertical: 10,
+
+  //   borderRadius: 18,
+
+  //   marginBottom: 14,
+  // },
+
+    messageBox: {
 
     paddingHorizontal: 14,
+
     paddingVertical: 10,
 
     borderRadius: 18,
 
-    marginBottom: 14,
-  },
+    marginBottom: 10,
+
+    },
 
   myMessage: {
     alignSelf: 'flex-end',
     backgroundColor: '#4338CA',
-
+    maxWidth: '78%',
     borderBottomRightRadius: 6,
+    marginLeft: 50,
+    
   },
 
   ownerMessage: {
     alignSelf: 'flex-start',
     backgroundColor: '#fff',
-
+    maxWidth: '78%',
     borderBottomLeftRadius: 6,
-
+    marginRight: 50,
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
 
   myMessageText: {
-    color: '#fff',
+
+    color: '#FFFFFF',
+
     fontSize: 15,
+
+    lineHeight: 22,
+
   },
 
   ownerMessageText: {
+
     color: '#0F172A',
+
     fontSize: 15,
+
+    lineHeight: 22,
+
   },
 
-  myTime: {
-    color: '#E0E7FF',
-    fontSize: 10,
 
-    marginTop: 6,
-    textAlign: 'right',
+  myTime: {
+
+    color: 'rgba(255,255,255,0.7)',
+
+    fontSize: 11,
+
+    marginTop: 4,
+
+    alignSelf: 'flex-end',
+
   },
 
   ownerTime: {
-    color: '#94A3B8',
-    fontSize: 10,
 
-    marginTop: 6,
-    textAlign: 'right',
+    color: '#64748B',
+
+    fontSize: 11,
+
+    marginTop: 4,
+
+    alignSelf: 'flex-end',
+
   },
-
+  
   typing: {
     color: '#999',
     marginTop: 10,
@@ -631,45 +717,69 @@ const styles = StyleSheet.create({
   },
 
   inputContainer: {
+
     flexDirection: 'row',
+
     alignItems: 'center',
 
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
 
-    backgroundColor: '#fff',
+    paddingVertical: 10,
+
+    backgroundColor: '#FFFFFF',
 
     borderTopWidth: 1,
+
     borderTopColor: '#E2E8F0',
+
   },
 
   input: {
+
     flex: 1,
 
     backgroundColor: '#F1F5F9',
 
-    borderRadius: 14,
+    borderRadius: 24,
 
-    paddingHorizontal: 14,
+    paddingHorizontal: 18,
+
     paddingVertical: 12,
 
+    fontSize: 15,
+
     color: '#0F172A',
-  },
+
+    maxHeight: 120,
+
+    },
 
   sendBtn: {
+
     marginLeft: 10,
 
     backgroundColor: '#4338CA',
 
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    width: 48,
 
-    borderRadius: 14,
+    height: 48,
+
+    borderRadius: 24,
+
+    justifyContent: 'center',
+
+    alignItems: 'center',
+
   },
 
   sendTxt: {
-    color: '#fff',
-    fontWeight: '800',
-  },
+
+    color: '#FFFFFF',
+
+    fontSize: 20,
+
+    fontWeight: '700',
+
+    },
 
 });

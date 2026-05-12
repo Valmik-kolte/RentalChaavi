@@ -97,9 +97,16 @@ export default function useChatSocket({
 
           if (last?.status) {
 
-            setChatStatus(
-              last.status
+            console.log(
+              'LAST CHAT STATUS:',
+              last?.status
             );
+
+            setChatStatus(
+              String(last.status)
+                .toUpperCase()
+            );
+
           }
         }
 
@@ -139,7 +146,11 @@ export default function useChatSocket({
 
         socket.io.opts.query = query;
 
-        socket.connect();
+        if (!socket.connected) {
+
+          socket.connect();
+
+        }
 
         socket.on('connect', () => {
 
@@ -191,6 +202,21 @@ export default function useChatSocket({
           dto
         );
 
+        /* ROOM FILTER */
+
+        if (
+
+          dto?.roomId &&
+
+          String(dto.roomId) !==
+          String(roomId)
+
+        ) {
+
+          return;
+
+        }
+
         const normalized =
           normalizeMessageResponseDTO(
             dto
@@ -209,14 +235,21 @@ export default function useChatSocket({
             );
 
           if (exists) {
+
             return prev;
+
           }
 
           return [
+
             ...prev,
+
             normalized,
+
           ];
+
         });
+
       }
     );
 
@@ -256,9 +289,26 @@ export default function useChatSocket({
 
     socket.on(
       'typing',
-      () => {
+      dto => {
 
-        setTyping(true);
+        /* ROOM FILTER */
+
+        if (
+
+          dto?.roomId &&
+
+          String(dto.roomId) !==
+          String(roomId)
+
+        ) {
+
+          return;
+
+        }
+
+        setTyping(
+          !!dto?.typing
+        );
 
         clearTimeout(
           global.typingHideTimeout
@@ -296,9 +346,13 @@ export default function useChatSocket({
         'typing'
       );
 
-      socket.disconnect();
+      socket.off(
+        'connect'
+      );
 
-      setConnected(false);
+      socket.off(
+        'connect_error'
+      );
 
     };
 
@@ -322,24 +376,45 @@ export default function useChatSocket({
     async text => {
 
       if (!text?.trim()) {
+
         return;
+
       }
+
+      const payload = {
+
+        userId,
+
+        ownerId,
+
+        senderRole:
+          currentRole,
+
+        message:
+          text.trim(),
+
+      };
 
       try {
 
-        await sendMessageApi({
+        /* REALTIME SOCKET */
 
-            userId,
+        if (socket.connected) {
 
-            ownerId,
+          socket.emit(
+            'send_message',
+            payload
+          );
 
-            senderRole:
-            currentRole,
+          return;
 
-            message:
-            text,
+        }
 
-            });
+        /* FALLBACK REST */
+
+        await sendMessageApi(
+          payload
+        );
 
       } catch (e) {
 
@@ -349,29 +424,35 @@ export default function useChatSocket({
         );
 
       }
-    };
+
+  };
 
   /* =========================
      SEND TYPING
   ========================= */
 
   const sendTyping =
-    text => {
+    typing => {
 
       if (!roomId) return;
 
-      clearTimeout(
-        global.typingTimeout
+      if (!socket.connected) return;
+
+      socket.emit(
+        'typing',
+        {
+
+          roomId,
+
+          userId:
+            currentUserId,
+
+          typing:
+            !!typing,
+
+        }
       );
 
-      global.typingTimeout =
-        setTimeout(() => {
-
-          typingStatus({
-            roomId,
-          });
-
-        }, 500);
     };
 
   /* =========================
