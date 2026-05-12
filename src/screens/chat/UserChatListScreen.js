@@ -184,6 +184,16 @@ export default function UserChatListScreen({
 
                     },
 
+                    roomData: {
+
+                      userId:
+                        item?.userId,
+
+                      ownerId:
+                        item?.ownerId,
+
+                    },
+
                   }
                 )
               }

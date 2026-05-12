@@ -17,7 +17,7 @@ import ProfileScreen from '../screens/user/ProfileScreen';
 import OwnerHomeScreen from '../screens/owner/OwnerHomeScreen';
 import AddPropertyScreen from '../screens/owner/AddPropertyScreen';
 import MyListingsScreen from '../screens/owner/MyListingsScreen';
-import OwnerChatListScreen from '../screens/owner/OwnerChatListScreen';
+// import OwnerChatListScreen from '../screens/chat/OwnerChatListScreen';
 import OwnerProfileScreen from '../screens/owner/OwnerProfileScreen';
 
 /* ADMIN SCREENS */
