@@ -5,12 +5,12 @@ import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, Platform } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
-
+import ChatNavigator
+from './ChatNavigator';
 /* USER SCREENS */
 import HomeScreen from '../screens/user/HomeScreen';
 import PropertyListScreen from '../screens/user/PropertyListScreen';
 import FavoritesScreen from '../screens/user/FavoritesScreen';
-import ChatListScreen from '../screens/user/ChatListScreen';
 import ProfileScreen from '../screens/user/ProfileScreen';
 
 /* OWNER SCREENS */
@@ -138,7 +138,7 @@ export default function BottomTabs() {
           tabBarIcon: ({ focused }) => (
             <TabIcon
               label={
-                isAdmin ? 'REQ' : isOwner ? 'ADD' : 'RENT'
+                isAdmin ? 'USER' : isOwner ? 'ADD' : 'RENT'
               }
               focused={focused}
             />
@@ -159,7 +159,7 @@ export default function BottomTabs() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabIcon
-                label={isAdmin ? 'PROP' : 'LIST'}
+                label={isAdmin ? 'OWNER' : 'LIST'}
                 focused={focused}
               />
             ),
@@ -167,27 +167,25 @@ export default function BottomTabs() {
         />
       )}
 
-      {/* 👥 USERS / CHAT */}
-      <Tab.Screen
-        name="ChatTab"
-        component={
-          isAdmin
-            ? UsersManagementScreen
-            : isOwner
-            ? OwnerChatListScreen
-            : ChatListScreen
-        }
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              label={
-                isAdmin ? 'USERS' : isOwner ? 'LEADS' : 'CHAT'
-              }
-              focused={focused}
-            />
-          ),
-        }}
-      />
+      {/* 👥 CHAT */}
+
+        {!isAdmin && (
+          <Tab.Screen
+            name="ChatTab"
+            options={{
+              tabBarIcon: ({ focused }) => (
+                <TabIcon
+                  label="CHAT"
+                  focused={focused}
+                />
+              ),
+            }}
+          >
+            {() => (
+              <ChatNavigator role={role} />
+            )}
+          </Tab.Screen>
+        )}
 
       {/* 👤 PROFILE */}
       <Tab.Screen

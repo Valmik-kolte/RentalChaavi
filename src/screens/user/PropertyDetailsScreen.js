@@ -17,14 +17,15 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  getFacilities
+  getFacilities,getUserById
 } from '../../api/propertyApi';
 
 const { width } = Dimensions.get('window');
 
-// const BASE_URL = 'http://192.168.1.13:8080';
-const BASE_URL = 'http://192.168.0.133:8080';
+const BASE_URL = 'http://192.168.1.6:8080';
+// const BASE_URL = 'http://192.168.0.133:8080';
 
 export default function PropertyDetailsScreen({
   navigation,
@@ -35,10 +36,13 @@ export default function PropertyDetailsScreen({
       route?.params?.property;
 
     // TEMP USER PREMIUM STATUS
-    const isUserPremium =
-      route?.params?.isUserPremium || false;
+    // const isUserPremium =
+    //   route?.params?.isUserPremium || false;
 
-    const isPremiumLocked =
+    const [isUserPremium, setIsUserPremium] =
+      useState(false);
+    
+      const isPremiumLocked =
       !isUserPremium;
           
       console.log(
@@ -48,6 +52,57 @@ export default function PropertyDetailsScreen({
 
         const lockedText =
           ' Buy Premium to View';
+
+
+
+    useEffect(() => {
+
+      const fetchPremiumStatus = async () => {
+
+        try {
+
+          const storedUser =
+            await AsyncStorage.getItem(
+              'userData'
+            );
+
+          if (!storedUser) return;
+
+          const parsedUser =
+            JSON.parse(storedUser);
+
+          const userId =
+            parsedUser?.id;
+
+          if (!userId) return;
+
+          const res =
+            await getUserById(userId);
+
+          console.log(
+            'USER PREMIUM RESPONSE:',
+            res
+          );
+
+          const premiumActive =
+            res?.data?.premiumActive;
+
+          setIsUserPremium(
+            premiumActive === true
+          );
+
+        } catch (error) {
+
+          console.log(
+            'PREMIUM STATUS ERROR:',
+            error
+          );
+        }
+      };
+
+      fetchPremiumStatus();
+
+    }, []);
 
     useEffect(() => {
 
@@ -623,6 +678,61 @@ export default function PropertyDetailsScreen({
         {/* CTA */}
         <View style={styles.cta}>
 
+           <TouchableOpacity
+                style={styles.chatBtn}
+                onPress={() => {
+
+                  navigation.navigate(
+                        'ChatTab',
+                        {
+                          screen: 'ChatRoom',
+
+                          params: {
+
+                                user: {
+
+                                  id:
+                                    property?.ownerId ||
+                                    property?.raw?.ownerId,
+
+                                  name:
+                                    property?.ownerName ||
+                                    'Owner',
+                                },
+
+                                property: {
+
+                                  id:
+                                    property?.id ||
+                                    property?.raw?.id,
+
+                                  title:
+                                    property?.title ||
+                                    'Property Chat',
+                                },
+
+                                roomData: {
+
+                                  userId: 1,
+
+                                  ownerId:
+                                    property?.ownerId ||
+                                    property?.raw?.ownerId,
+
+                                },
+                              },
+                        }
+                      );
+
+                }}
+              >
+
+                <Text style={styles.chatBtnText}>
+                  Chat with Owner
+                </Text>
+
+              </TouchableOpacity>
+
           <Text style={styles.ctaTitle}>
             Interested in this property?
           </Text>
@@ -634,49 +744,45 @@ export default function PropertyDetailsScreen({
 
           {!isUserPremium ? (
 
-          <TouchableOpacity
-            style={styles.postBtn}
-            onPress={() =>
-              navigation.navigate(
-              'Premium',
-              {
-                isUserPremium: true
+            <TouchableOpacity
+              style={styles.postBtn}
+              onPress={() =>
+                navigation.navigate(
+                  'Premium',
+                  {
+                    premiumType: 'USER'
+                  }
+                )
               }
-              )
-            }
-          >
+            >
+              <Text style={styles.postTxt}>
+                Buy Premium
+              </Text>
+            </TouchableOpacity>
 
-            <Text style={styles.postTxt}>
-              Buy Premium
-            </Text>
+          ) : (
 
-          </TouchableOpacity>
-
-        ) : isUserPremium ? (
-
-          <View
-            style={{
-              marginTop: 18,
-              backgroundColor: '#ECFDF5',
-              paddingVertical: 14,
-              paddingHorizontal: 22,
-              borderRadius: 14,
-            }}
-          >
-
-            <Text
+            <View
               style={{
-                color: '#059669',
-                fontWeight: '800',
-                fontSize: 15,
+                marginTop: 18,
+                backgroundColor: '#ECFDF5',
+                paddingVertical: 14,
+                paddingHorizontal: 22,
+                borderRadius: 14,
               }}
             >
-              Premium Member
-            </Text>
+              <Text
+                style={{
+                  color: '#059669',
+                  fontWeight: '800',
+                  fontSize: 15,
+                }}
+              >
+                Premium Member
+              </Text>
+            </View>
 
-          </View>
-
-        ) : null}
+          )}
 
         </View>
 
@@ -908,4 +1014,19 @@ facilityTxt: {
   fontWeight: '700',
   fontSize: 13,
 },
+chatBtn: {
+  backgroundColor: '#2563EB',
+  marginTop: 18,
+  paddingVertical: 15,
+  borderRadius: 14,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+chatBtnText: {
+  color: '#fff',
+  fontSize: 16,
+  fontWeight: '800',
+},
+
 });

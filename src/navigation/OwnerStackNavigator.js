@@ -15,6 +15,8 @@ import BottomTabs from './BottomTabs';
 import EditPropertyScreen from '../screens/owner/EditPropertyScreen';
 import PreviewPropertyScreen from '../screens/owner/PreviewPropertyScreen';
 import OwnerPropertyDetailsScreen from '../screens/owner/OwnerPropertyDetailsScreen';
+import OwnerChatListScreen
+from '../screens/owner/OwnerChatListScreen';
 
 /* SHARED FULL SCREENS */
 import PropertyDetailsScreen from '../screens/user/PropertyDetailsScreen';
@@ -70,7 +72,10 @@ export default function OwnerStackNavigator() {
         name="Premium"
         component={PremiumScreen}
       />
-
+      <Stack.Screen
+        name="OwnerChats"
+        component={OwnerChatListScreen}
+      />
     </Stack.Navigator>
   );
 }

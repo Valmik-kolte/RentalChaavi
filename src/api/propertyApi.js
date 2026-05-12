@@ -120,6 +120,26 @@ export const buyPremiumUser = async (userId) => {
   }
 };
 
+export const getUserById = async (userId) => {
+  try {
+
+    const res = await api.get(
+      `/api/user/${userId}`
+    );
+
+    return res.data;
+
+  } catch (error) {
+
+    console.log(
+      'GET USER ERROR:',
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
+};
+
 export const getProperties = async (userId) => {
   try {
     const res = await api.get(`/api/user/properties/${userId}`);

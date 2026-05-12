@@ -1,19 +1,141 @@
 import api from './axiosConfig';
 
-export const createRoom = (userId, ownerId) =>
-  api.post('/chat/room', {
-    userId,
-    ownerId,
-  });
+/* =========================
+   SEND MESSAGE
+========================= */
 
-export const sendMessage = data =>
-  api.post('/chat/send', data);
+export const sendMessage = async ({
+  userId,
+  ownerId,
+  senderRole,
+  message,
+}) => {
 
-export const getHistory = roomId =>
-  api.get(`/chat/history/${roomId}`);
+  return api.post(
+    '/api/chat/send',
+    {
+      userId,
+      ownerId,
+      senderRole,
+      message,
+    }
+  );
+};
 
-export const typingStatus = data =>
-  api.post('/chat/typing', data);
+/* =========================
+   GET CHAT HISTORY
+========================= */
 
-export const acceptedChats = id =>
-  api.get(`/chat/accepted/${id}`);
+export const getHistory = async (
+  roomId
+) => {
+
+  return api.get(
+    `/api/chat/history/${roomId}`
+  );
+};
+
+/* =========================
+   TYPING STATUS
+========================= */
+
+export const typingStatus = async ({
+  roomId,
+}) => {
+
+  return api.post(
+    '/api/chat/typing',
+    {
+      roomId,
+    }
+  );
+};
+
+/* =========================
+   OWNER ACCEPTED CHATS
+========================= */
+
+export const acceptedChats =
+  async (ownerId) => {
+
+    console.log(
+      'ACCEPTED OWNER ID:',
+      ownerId
+    );
+
+    return api.get(
+      `/api/chat/accepted/${Number(ownerId)}`
+    );
+  };
+
+/* =========================
+   OWNER PENDING CHATS
+========================= */
+
+export const pendingChats =
+  async (ownerId) => {
+
+    console.log(
+      'PENDING OWNER ID:',
+      ownerId
+    );
+
+    return api.get(
+      `/api/chat/pending/${Number(ownerId)}`
+    );
+  };
+
+/* =========================
+   OWNER REJECTED CHATS
+========================= */
+
+export const rejectedChats =
+  async (ownerId) => {
+
+    console.log(
+      'REJECTED OWNER ID:',
+      ownerId
+    );
+
+    return api.get(
+      `/api/chat/rejected/${Number(ownerId)}`
+    );
+  };
+
+/* =========================
+   ACCEPT CHAT
+========================= */
+
+export const acceptChat =
+  async ({
+    roomId,
+  }) => {
+
+    return api.post(
+      '/api/chat/accept',
+      {
+        roomId,
+        senderRole:
+          'PROPERTY_OWNER',
+      }
+    );
+  };
+
+/* =========================
+   REJECT CHAT
+========================= */
+
+export const rejectChat =
+  async ({
+    roomId,
+  }) => {
+
+    return api.post(
+      '/api/chat/reject',
+      {
+        roomId,
+        senderRole:
+          'PROPERTY_OWNER',
+      }
+    );
+  };
