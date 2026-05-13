@@ -184,9 +184,20 @@ export default function OwnerChatListScreen({
 
       try {
 
-        await acceptChat({
-        roomId,
-        });
+        console.log(
+          'ACCEPTING ROOM:',
+          roomId
+        );
+
+        const res =
+          await acceptChat({
+            roomId,
+          });
+
+        console.log(
+          'ACCEPT RESPONSE:',
+          res?.data
+        );
 
         await loadChats();
 
@@ -233,9 +244,11 @@ export default function OwnerChatListScreen({
     item => {
 
       navigation.navigate(
-        'ChatRoom',
+        'OwnerChatScreen',
         {
-
+            status:
+              item?.status,
+              
           user: {
 
             id:
