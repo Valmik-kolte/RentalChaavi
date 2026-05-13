@@ -192,6 +192,9 @@ export default function UserChatListScreen({
                       ownerId:
                         item?.ownerId,
 
+                      propertyId:
+                        item?.propertyId,
+
                     },
 
                   }
