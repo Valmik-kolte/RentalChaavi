@@ -6,8 +6,11 @@ import {
 
 /* CHAT SCREENS */
 
-import ChatRoomScreen
-from '../screens/chat/ChatRoomScreen';
+import UserChatScreen
+from '../screens/chat/UserChatScreen';
+
+import OwnerChatScreen
+from '../screens/chat/OwnerChatScreen';
 
 import UserChatListScreen
 from '../screens/chat/UserChatListScreen';
@@ -59,11 +62,11 @@ export default function ChatNavigator({
         {/* ROOM */}
 
         <Stack.Screen
-          name="ChatRoom"
+          name="OwnerChatScreen"
           component={
-            ChatRoomScreen
+            OwnerChatScreen
           }
-        />
+          />
 
       </Stack.Navigator>
 
@@ -96,9 +99,9 @@ export default function ChatNavigator({
       {/* ROOM */}
 
       <Stack.Screen
-        name="ChatRoom"
+        name="UserChatScreen"
         component={
-          ChatRoomScreen
+          UserChatScreen
         }
       />
 

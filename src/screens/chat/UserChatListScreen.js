@@ -20,7 +20,9 @@ import {
 } from 'react-native-safe-area-context';
 
 import {
+  pendingChats,
   acceptedChats,
+  rejectedChats,
 } from '../../api/chatApi';
 
 export default function UserChatListScreen({
@@ -63,23 +65,81 @@ export default function UserChatListScreen({
           parsed
         );
 
-        const res =
-          await acceptedChats(
-            parsed?.id
-          );
+        const [
 
-        console.log(
-          'USER CHAT LIST:',
-          JSON.stringify(
-            res?.data,
-            null,
-            2
-          )
-        );
+                pendingRes,
 
-        setChats(
-          res?.data?.data || []
-        );
+                acceptedRes,
+
+                rejectedRes,
+
+              ] = await Promise.all([
+
+                pendingChats(
+                  parsed?.id
+                ),
+
+                acceptedChats(
+                  parsed?.id
+                ),
+
+                rejectedChats(
+                  parsed?.id
+                ),
+
+              ]);
+
+              const pending =
+                (pendingRes?.data?.data || [])
+                .map(item => ({
+                  ...item,
+                  status: 'PENDING',
+                }));
+
+              const accepted =
+                (acceptedRes?.data?.data || [])
+                .map(item => ({
+                  ...item,
+                  status: 'ACCEPTED',
+                }));
+
+              const rejected =
+                (rejectedRes?.data?.data || [])
+                .map(item => ({
+                  ...item,
+                  status: 'REJECTED',
+                }));
+
+              const allChats = [
+
+                ...pending,
+
+                ...accepted,
+
+                ...rejected,
+
+              ];
+
+              const uniqueChats =
+                Array.from(
+
+                  new Map(
+
+                    allChats.map(item => [
+                      item.roomId,
+                      item
+                    ])
+
+                  ).values()
+
+                );
+
+              console.log(
+                'ALL USER CHATS:',
+                uniqueChats
+              );
+
+              setChats(uniqueChats);
 
       } catch (e) {
 
@@ -162,7 +222,7 @@ export default function UserChatListScreen({
               onPress={() =>
 
                 navigation.navigate(
-                  'ChatRoom',
+                  'UserChatScreen',
                   {
 
                     user: {
@@ -269,16 +329,43 @@ export default function UserChatListScreen({
 
               {/* STATUS */}
 
-              <View style={styles.statusBox}>
+              <View
+                  style={[
 
-                <Text style={styles.status}>
+                    styles.statusBox,
 
-                  {item?.status ||
-                   'ACTIVE'}
+                    item.status ===
+                    'ACCEPTED'
 
-                </Text>
+                      ? {
+                          backgroundColor:
+                          '#DCFCE7'
+                        }
 
-              </View>
+                      : item.status ===
+                        'REJECTED'
+
+                      ? {
+                          backgroundColor:
+                          '#FEE2E2'
+                        }
+
+                      : {
+                          backgroundColor:
+                          '#FEF3C7'
+                        }
+
+                  ]}
+                  >
+
+                  <Text style={styles.status}>
+
+                    {item?.status ||
+                      'ACTIVE'}
+
+                  </Text>
+
+                  </View>
 
             </TouchableOpacity>
 

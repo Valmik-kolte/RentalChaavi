@@ -685,7 +685,7 @@ export default function PropertyDetailsScreen({
                   navigation.navigate(
                         'ChatTab',
                         {
-                          screen: 'ChatRoom',
+                          screen: 'UserChatScreen',
 
                           params: {
 

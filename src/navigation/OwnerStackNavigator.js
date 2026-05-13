@@ -21,7 +21,8 @@ from '../screens/chat/OwnerChatListScreen';
 /* SHARED FULL SCREENS */
 import PropertyDetailsScreen from '../screens/user/PropertyDetailsScreen';
 import PremiumScreen from '../screens/user/PremiumScreen';
-import ChatScreen from '../screens/user/ChatScreen';
+import ChatNavigator
+from './ChatNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,8 +65,8 @@ export default function OwnerStackNavigator() {
       />
 
       <Stack.Screen
-        name="ChatScreen"
-        component={ChatScreen}
+        name="Chats"
+        component={ChatNavigator}
       />
 
       <Stack.Screen
