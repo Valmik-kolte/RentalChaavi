@@ -9,6 +9,7 @@ import {
   Text,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -44,8 +45,8 @@ export default function ChatRoomScreen({
     useState('');
 
   const [currentUser,
-    setCurrentUser] =
-    useState(null);
+  setCurrentUser] =
+  useState(undefined);
 
   const scrollRef =
     useRef();
@@ -60,35 +61,47 @@ export default function ChatRoomScreen({
 
   }, []);
 
-  const getCurrentUser =
-    async () => {
+      const getCurrentUser =
+      async () => {
 
-      try {
+        try {
 
-        const userData =
-          await AsyncStorage.getItem(
-            'userData'
+          const userData =
+            await AsyncStorage.getItem(
+              'userData'
+            );
+
+          console.log(
+            'STORAGE USER:',
+            userData
           );
 
-        if (userData) {
+          if (userData) {
 
-          const parsed =
-            JSON.parse(userData);
+            const parsed =
+              JSON.parse(userData);
 
-          setCurrentUser(
-            parsed
+            setCurrentUser(
+              parsed
+            );
+
+          } else {
+
+            setCurrentUser(null);
+
+          }
+
+        } catch (e) {
+
+          console.log(
+            'USER FETCH ERROR:',
+            e
           );
+
+          setCurrentUser(null);
+
         }
-
-      } catch (e) {
-
-        console.log(
-          'USER FETCH ERROR:',
-          e
-        );
-
-      }
-    };
+      };
 
   /* =========================
      ROOM ID
@@ -96,10 +109,12 @@ export default function ChatRoomScreen({
 
   const roomId =
   buildRoomId(
-    roomData?.userId,
-    roomData?.ownerId
-  );
 
+  roomData?.userId,
+
+  roomData?.ownerId,
+
+  );
   /* =========================
      CHAT SOCKET HOOK
   ========================= */
@@ -130,10 +145,11 @@ export default function ChatRoomScreen({
     ownerId:
       roomData?.ownerId,
 
-    userId:
-      roomData?.userId,
+      userId:
+        roomData?.userId,
 
-    currentRole:
+
+      currentRole:
 
         String(
           currentUser?.role
@@ -169,7 +185,7 @@ export default function ChatRoomScreen({
      WAIT USER
   ========================= */
 
-  if (!currentUser) {
+  if (currentUser === undefined) {
 
     return (
 
@@ -202,10 +218,11 @@ export default function ChatRoomScreen({
 
       if (
 
-        chatStatus ===
-        'PENDING' &&
+        String(chatStatus)
+          .toUpperCase() ===
+          'PENDING' &&
 
-        messages.length > 0 &&
+        messages.length === 0 &&
 
         !String(
           currentUser?.role
@@ -230,9 +247,18 @@ export default function ChatRoomScreen({
 
     };
 
-  return (
+    return (
 
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={
+        Platform.OS === 'ios'
+          ? 'padding'
+          : 'height'
+      }
+    >
+
+      <SafeAreaView style={styles.container}>
 
       {/* HEADER */}
 
@@ -429,9 +455,13 @@ export default function ChatRoomScreen({
 
           {/* PENDING */}
 
+          {/* PENDING */}
+
           {String(chatStatus)
             .toUpperCase() ===
-            'PENDING' && (
+            'PENDING' &&
+
+            messages.length === 0 && (
 
             <Text style={styles.pendingTxt}>
               Waiting for owner approval
@@ -517,7 +547,9 @@ export default function ChatRoomScreen({
 
       </View>
 
-    </SafeAreaView>
+        </SafeAreaView>
+
+    </KeyboardAvoidingView>
   );
 }
 

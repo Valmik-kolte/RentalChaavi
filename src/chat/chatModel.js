@@ -1,6 +1,9 @@
 export const buildRoomId = (
+
   userId,
-  ownerId
+
+  ownerId,
+
 ) => {
 
   const u = Number(userId);
@@ -8,15 +11,20 @@ export const buildRoomId = (
   const o = Number(ownerId);
 
   if (
+
     !Number.isFinite(u) ||
+
     !Number.isFinite(o)
+
   ) {
+
     return null;
+
   }
 
   return `USER_${u}_OWNER_${o}`;
-};
 
+};
 /* =========================
    SOCKET QUERY
 ========================= */

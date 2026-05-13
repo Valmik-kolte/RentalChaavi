@@ -26,9 +26,11 @@ export default function useChatSocket({
 
   currentUserId,
 
+    ownerId,
+
     userId,
 
-    ownerId,
+    propertyId,
 
     currentRole = 'USER',
 
@@ -101,7 +103,10 @@ export default function useChatSocket({
               'LAST CHAT STATUS:',
               last?.status
             );
-
+            console.log(
+            'CHAT STATUS FROM API:',
+            last?.status
+            );
             setChatStatus(
               String(last.status)
                 .toUpperCase()
@@ -386,6 +391,8 @@ export default function useChatSocket({
         userId,
 
         ownerId,
+
+        propertyId,
 
         senderRole:
           currentRole,

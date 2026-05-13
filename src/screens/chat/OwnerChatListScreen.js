@@ -263,6 +263,9 @@ export default function OwnerChatListScreen({
             ownerId:
               item?.ownerId,
 
+            propertyId:
+              item?.propertyId,
+
           },
 
         }
