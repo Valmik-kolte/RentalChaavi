@@ -22,8 +22,21 @@ const BASE_URL = 'http://192.168.0.133:8080';
 export default function PropertyListScreen({ navigation }) {
 
   const [search, setSearch] = useState('');
+  const [selectedCity, setSelectedCity] =
+  useState('');
+
+  const [selectedType, setSelectedType] =
+    useState(''); 
+
+  const [minPrice, setMinPrice] =
+    useState('');
+
+  const [maxPrice, setMaxPrice] =
+    useState('');
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] =
+  useState(false);
 
   // ✅ IMAGE PARSER
   const parseImages = (imgString) => {
@@ -166,7 +179,93 @@ export default function PropertyListScreen({ navigation }) {
         raw: dto,
       };
   };
+    const applyFilters = async () => {
+      
+    try {
 
+      setLoading(true);
+
+      const token =
+        await AsyncStorage.getItem(
+          'userToken'
+        );
+
+      if (!token) {
+        return;
+      }
+
+      const payload = JSON.parse(
+        atob(token.split('.')[1])
+      );
+
+      const userId = payload.id;
+
+      const body = {
+
+        city:
+          selectedCity || null,
+
+        propertyType:
+          selectedType &&
+          selectedType !== 'ALL'
+            ? selectedType
+             : null,
+
+        minPrice:
+          minPrice
+            ? Number(minPrice)
+            : null,
+
+        maxPrice:
+          maxPrice
+            ? Number(maxPrice)
+            : null,
+
+      };
+
+      console.log(
+        'FILTER BODY:',
+        body
+      );
+
+      const response =
+        await filterProperties(
+          userId,
+          body
+        );
+
+      console.log(
+        'FILTER RESPONSE:',
+        response
+      );
+      console.log(
+          'FILTER DATA:',
+          response?.data
+        );
+
+     const data =
+      Array.isArray(response?.data)
+        ? response.data
+        : [];
+
+      const mapped =
+        data.map(mapBackendToUi);
+
+      setProperties(mapped);
+
+    } catch (e) {
+
+      console.log(
+        'FILTER ERROR:',
+        e?.response?.data || e
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+    };
   // ✅ FETCH PROPERTIES
   const fetchProperties = async () => {
 
@@ -216,108 +315,16 @@ export default function PropertyListScreen({ navigation }) {
         ? basicRes.data
         : [];
 
-      let detailedList = [];
-
-        if (basicList.length > 0) {
-
-          const propertyType =
-            basicList[0]?.propertyType || "APARTMENT";
-
-          const detailedRes = await filterProperties(userId, {
-            propertyType
-          });
-
-          console.log("DETAIL RESPONSE:", detailedRes);
-
-          detailedList = Array.isArray(detailedRes?.data)
-            ? detailedRes.data
-            : [];
-        }
+      
 
       console.log("BASIC LIST:", basicList);
-      console.log("DETAIL LIST:", detailedList);
+      const mappedProperties =
+        basicList.map(mapBackendToUi);
 
-      // ✅ MERGE BOTH API RESPONSES
-      const merged = basicList.map((basic) => {
-
-      const detailed = detailedList.find(
-        item =>
-          item?.title === basic?.title &&
-          item?.propertyType === basic?.propertyType
-      ) || {};
-
-      return {
-
-          ...basic,
-
-          ...detailed,
-
-          doctypeImages:
-            basic?.doctypeImages ||
-            detailed?.doctypeImages,
-
-          title:
-            detailed?.title ||
-            basic?.title,
-
-          propertyType:
-            detailed?.propertyType ||
-            basic?.propertyType,
-
-          furnishing:
-
-            detailed?.furnishing ||
-
-            detailed?.furnishingType ||
-
-            basic?.furnishing ||
-
-            basic?.furnishingType ||
-
-            null,
-
-          carpetArea:
-
-            detailed?.carpetArea ||
-
-            detailed?.builtupArea ||
-
-            detailed?.area ||
-
-            basic?.carpetArea ||
-
-            basic?.builtupArea ||
-
-            basic?.area ||
-
-            null,
-
-          description:
-
-            detailed?.description ||
-
-            detailed?.about ||
-
-            detailed?.propertyDescription ||
-
-            basic?.description ||
-
-            basic?.about ||
-
-            basic?.propertyDescription ||
-
-            null,
-
-          id:
-            detailed?.id ||
-            basic?.id ||
-            null,
-        };
-    });
-
-      console.log("MERGED DATA:", merged);
-
-      const mappedProperties = merged.map(mapBackendToUi);
+        console.log(
+        "MAPPED PROPERTIES:",
+        mappedProperties
+        );
 
       console.log("MAPPED PROPERTIES:", mappedProperties);
 
@@ -372,7 +379,12 @@ export default function PropertyListScreen({ navigation }) {
             </Text>
           </View>
 
-          <TouchableOpacity style={styles.filterBtn}>
+          <TouchableOpacity
+            style={styles.filterBtn}
+            onPress={() =>
+              setShowFilters(!showFilters)
+            }
+          >
             <Text style={styles.filterTxt}>
               Filter
             </Text>
@@ -390,7 +402,136 @@ export default function PropertyListScreen({ navigation }) {
             onChangeText={setSearch}
             style={styles.input}
           />
+          {
+            showFilters && (
 
+            <View style={styles.filterCard}>
+
+              <Text style={styles.filterHeading}>
+                Filter Properties
+              </Text>
+
+              <TextInput
+                placeholder="City"
+                placeholderTextColor="#94A3B8"
+                value={selectedCity}
+                onChangeText={setSelectedCity}
+                style={styles.filterInput}
+              />
+
+              <View style={styles.typeRow}>
+
+  {[
+    'ALL',
+    'APARTMENT',
+    'PG',
+    'HOUSE',
+    'VILLA',
+  ].map(type => (
+
+    <TouchableOpacity
+      key={type}
+      style={[
+
+        styles.typeBtn,
+
+        selectedType === type && {
+          backgroundColor: '#4338CA',
+        }
+
+      ]}
+      onPress={() =>
+        setSelectedType(type)
+      }
+    >
+
+      <Text
+        style={[
+
+          styles.typeTxt,
+
+          selectedType === type && {
+            color: '#f7e2e2',
+          }
+
+        ]}
+      >
+        {type}
+      </Text>
+
+    </TouchableOpacity>
+
+  ))}
+
+</View>
+
+              <View style={styles.priceRow}>
+
+                <TextInput
+                  placeholder="Min Price"
+                  placeholderTextColor="#94A3B8"
+                  value={minPrice}
+                  onChangeText={setMinPrice}
+                  keyboardType="numeric"
+                  style={styles.priceInput}
+                />
+
+                <TextInput
+                  placeholder="Max Price"
+                  placeholderTextColor="#94A3B8"
+                  value={maxPrice}
+                  onChangeText={setMaxPrice}
+                  keyboardType="numeric"
+                  style={styles.priceInput}
+                />
+
+              </View>
+
+              <View style={styles.filterActionRow}>
+
+                <TouchableOpacity
+                  style={styles.clearBtn}
+                  onPress={() => {
+
+                    setSelectedCity('');
+                    setSelectedType('');
+                    setMinPrice('');
+                    setMaxPrice('');
+
+                    fetchProperties();
+
+                  }}
+                >
+
+                  <Text style={styles.clearTxt}>
+                    Clear
+                  </Text>
+
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.applyBtn}
+                  onPress={() => {
+
+                    applyFilters();
+
+                    setShowFilters(false);
+
+                  }}
+                >
+
+                  <Text style={styles.applyTxt}>
+                    Apply Filters
+                  </Text>
+
+                </TouchableOpacity>
+
+              </View>
+
+            </View>
+
+            )
+            }
         </View>
 
         {/* LOADING */}
@@ -640,5 +781,100 @@ const styles = StyleSheet.create({
     color: '#64748B',
     fontSize: 16,
   },
+  filterCard: {
+  backgroundColor: '#FFFFFF',
+  marginHorizontal: 20,
+  marginTop: 16,
+  borderRadius: 18,
+  padding: 18,
+  elevation: 4,
+},
 
+filterHeading: {
+  fontSize: 18,
+  fontWeight: '700',
+  color: '#0F172A',
+  marginBottom: 16,
+},
+
+filterInput: {
+  backgroundColor: '#F8FAFC',
+  borderWidth: 1,
+  borderColor: '#E2E8F0',
+  borderRadius: 12,
+  paddingHorizontal: 14,
+  height: 50,
+  marginBottom: 14,
+  color: '#0F172A',
+},
+
+priceRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+},
+
+priceInput: {
+  width: '48%',
+  backgroundColor: '#F8FAFC',
+  borderWidth: 1,
+  borderColor: '#E2E8F0',
+  borderRadius: 12,
+  paddingHorizontal: 14,
+  height: 50,
+  color: '#0F172A',
+},
+
+filterActionRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginTop: 18,
+},
+
+clearBtn: {
+  flex: 1,
+  backgroundColor: '#E2E8F0',
+  paddingVertical: 14,
+  borderRadius: 12,
+  marginRight: 10,
+  alignItems: 'center',
+},
+
+applyBtn: {
+  flex: 1,
+  backgroundColor: '#4338CA',
+  paddingVertical: 14,
+  borderRadius: 12,
+  alignItems: 'center',
+},
+
+clearTxt: {
+  color: '#0F172A',
+  fontWeight: '700',
+},
+
+applyTxt: {
+  color: '#FFFFFF',
+  fontWeight: '700',
+},
+typeRow: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginBottom: 14,
+},
+
+typeBtn: {
+  borderWidth: 1,
+  borderColor: '#CBD5E1',
+  paddingHorizontal: 14,
+  paddingVertical: 10,
+  borderRadius: 10,
+  marginRight: 10,
+  marginBottom: 10,
+  backgroundColor: '#FFFFFF',
+},
+
+typeTxt: {
+  color: '#0F172A',
+  fontWeight: '600',
+},
 });

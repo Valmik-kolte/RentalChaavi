@@ -114,13 +114,21 @@ export default function UserChatScreen({
   ========================= */
 
   const roomId =
+  roomData?.roomId ||
   buildRoomId(
-
-  roomData?.userId,
-
-  roomData?.ownerId,
-
+    currentUser?.id,
+    roomData?.ownerId,
   );
+
+    console.log(
+      'ROOM DATA:',
+      roomData
+    );
+
+    console.log(
+      'GENERATED ROOM:',
+      roomId
+    );
   /* =========================
      CHAT SOCKET HOOK
   ========================= */
@@ -152,7 +160,7 @@ export default function UserChatScreen({
       roomData?.ownerId,
 
       userId:
-        roomData?.userId,
+        currentUser?.id,
 
 
       currentRole: 'USER',

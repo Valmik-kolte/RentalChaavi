@@ -1,6 +1,6 @@
 import React, {
-  useEffect,
   useState,
+  useCallback,
 } from 'react';
 
 import {
@@ -18,12 +18,16 @@ from '@react-native-async-storage/async-storage';
 import {
   SafeAreaView,
 } from 'react-native-safe-area-context';
+import {
+  useFocusEffect,
+} from '@react-navigation/native';
 
 import {
   pendingChats,
   acceptedChats,
   rejectedChats,
 } from '../../api/chatApi';
+
 
 export default function UserChatListScreen({
   navigation,
@@ -39,11 +43,13 @@ export default function UserChatListScreen({
      LOAD CHATS
   ========================= */
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
 
-    loadChats();
+      loadChats();
 
-  }, []);
+    }, [])
+  );
 
   const loadChats =
     async () => {
@@ -65,30 +71,31 @@ export default function UserChatListScreen({
           parsed
         );
 
-        const [
+        const OWNER_ID = 1;
 
-                pendingRes,
+          const [
 
-                acceptedRes,
+            pendingRes,
 
-                rejectedRes,
+            acceptedRes,
 
-              ] = await Promise.all([
+            rejectedRes,
 
-                pendingChats(
-                  parsed?.id
-                ),
+          ] = await Promise.all([
 
-                acceptedChats(
-                  parsed?.id
-                ),
+            pendingChats(
+              OWNER_ID
+            ),
 
-                rejectedChats(
-                  parsed?.id
-                ),
+            acceptedChats(
+              OWNER_ID
+            ),
 
-              ]);
+            rejectedChats(
+              OWNER_ID
+            ),
 
+          ]);
               const pending =
                 (pendingRes?.data?.data || [])
                 .map(item => ({
@@ -120,18 +127,26 @@ export default function UserChatListScreen({
 
               ];
 
+              /* ONLY CURRENT USER CHATS */
+
+              const filteredChats =
+                allChats.filter(
+                  item =>
+                    Number(item?.userId) ===
+                    Number(parsed?.id)
+                );
+
+              /* REMOVE DUPLICATES */
+
               const uniqueChats =
                 Array.from(
-
                   new Map(
-
-                    allChats.map(item => [
-                      item.roomId,
-                      item
+                    filteredChats.map(item => [
+                      item.roomId ||
+                      `${item.userId}-${item.ownerId}-${item.propertyId}`,
+                      item,
                     ])
-
                   ).values()
-
                 );
 
               console.log(
@@ -246,16 +261,18 @@ export default function UserChatListScreen({
 
                     roomData: {
 
+                      roomId:
+                        item?.roomId,
+
                       userId:
                         item?.userId,
 
                       ownerId:
                         item?.ownerId,
 
-                      propertyId:
-                        item?.propertyId,
+                      
 
-                    },
+                      },
 
                   }
                 )
@@ -309,8 +326,11 @@ export default function UserChatListScreen({
                     style={styles.location}
                   >
 
-                    {item?.lastMessage ||
-                     'No message'}
+                    {
+                      item?.lastMessage ||
+                      item?.message ||
+                      'Start conversation'
+                    }
 
                   </Text>
 
