@@ -333,7 +333,7 @@ export default function HomeScreen({
               Welcome back 👋
             </Text>
 
-            <Text
+            {/* <Text
               style={{
                 fontSize: 12,
                 color: '#4338CA',
@@ -347,7 +347,7 @@ export default function HomeScreen({
               {userRole}
               )
 
-            </Text>
+            </Text> */}
 
           </View>
 
@@ -629,182 +629,301 @@ export default function HomeScreen({
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+  card: '#ffffff',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor:
-      '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
   scroll: {
     paddingBottom: 40,
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+
     paddingHorizontal: 18,
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingVertical: 16,
+
+    borderRadius: 20,
+
+    backgroundColor: '#111111',
+
     flexDirection: 'row',
-    justifyContent:
-      'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   brand: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: 0.2,
   },
 
   tag: {
     marginTop: 4,
-    fontSize: 13,
-    color: '#64748B',
+    fontSize: 12,
+    color: '#d1d5db',
   },
 
   profileBtn: {
-    backgroundColor:
-      '#4338CA',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    backgroundColor: COLORS.primary,
+
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+
     borderRadius: 14,
   },
 
   profileTxt: {
     color: '#fff',
-    fontWeight: '800',
+    fontWeight: '700',
+    fontSize: 13,
   },
 
+  /* HERO */
+
   hero: {
-    backgroundColor:
-      '#4338CA',
-    marginHorizontal: 18,
-    borderRadius: 26,
-    padding: 22,
-    marginTop: 8,
+    marginHorizontal: 16,
+    marginTop: 18,
+
+    borderRadius: 28,
+
+    padding: 24,
+
+    backgroundColor: '#f5ede5',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
 
   heroTitle: {
-    fontSize: 30,
+    fontSize: 34,
+    lineHeight: 42,
     fontWeight: '900',
-    color: '#fff',
-    lineHeight: 38,
+    color: COLORS.secondary,
+    letterSpacing: -1,
   },
 
   heroSub: {
-    color: '#E0E7FF',
-    marginTop: 10,
+    color: COLORS.lightText,
+
+    marginTop: 14,
+
+    lineHeight: 24,
+    fontSize: 14,
+
+    width: '92%',
   },
 
+  /* SEARCH */
+
   searchBox: {
-    backgroundColor:
-      '#fff',
-    marginTop: 18,
-    borderRadius: 16,
+    backgroundColor: '#ffffff',
+
+    marginTop: 22,
+
+    borderRadius: 18,
+
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
+
+    paddingHorizontal: 16,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   searchIcon: {
-    color: '#4338CA',
-    fontSize: 18,
+    color: COLORS.primary,
+    fontSize: 16,
     fontWeight: '900',
   },
 
   input: {
     flex: 1,
-    color: '#0F172A',
-    paddingVertical: 14,
+
+    color: COLORS.text,
+
+    paddingVertical: 15,
+
     marginLeft: 10,
+
+    fontSize: 14,
   },
 
   searchBtn: {
-    backgroundColor:
-      '#312E81',
-    marginTop: 14,
-    paddingVertical: 15,
-    borderRadius: 16,
+    backgroundColor: COLORS.primary,
+
+    marginTop: 16,
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   searchTxt: {
     color: '#fff',
+
     textAlign: 'center',
+
     fontWeight: '800',
+
+    fontSize: 15,
   },
+
+  /* SECTION */
 
   section: {
-    fontSize: 21,
-    fontWeight: '900',
+    fontSize: 24,
+    fontWeight: '800',
+
     marginHorizontal: 18,
-    marginTop: 26,
-    marginBottom: 14,
-    color: '#0F172A',
-    
+    marginTop: 30,
+    marginBottom: 16,
+
+    color: COLORS.secondary,
   },
 
+  /* CATEGORY */
+
   horizontalWrap: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
   },
 
   catBtn: {
-    backgroundColor:
-      '#fff',
+    backgroundColor: '#fff',
+
     paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingVertical: 11,
+
     borderRadius: 30,
+
     marginRight: 10,
+
     borderWidth: 1,
-    borderColor: '#E0E7FF',
+    borderColor: COLORS.border,
   },
 
   catTxt: {
-    color: '#4338CA',
+    color: COLORS.secondary,
     fontWeight: '700',
+    fontSize: 13,
   },
 
+  /* CARDS */
+
   cardWrap: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
   },
 
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 24,
+    backgroundColor: COLORS.card,
+
+    borderRadius: 26,
+
     padding: 14,
-    marginBottom: 18,
+
+    marginBottom: 20,
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   image: {
     width: '100%',
-    height: 190,
-    borderRadius: 20,
-    backgroundColor:
-      '#E2E8F0',
+    height: 210,
+
+    borderRadius: 22,
+
+    backgroundColor: '#e5e7eb',
+  },
+
+  imagePlaceholder: {
+    width: '100%',
+    height: 210,
+
+    borderRadius: 22,
+
+    backgroundColor: '#e5e7eb',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  imagePlaceholderTxt: {
+    color: '#6b7280',
+    fontWeight: '700',
+    fontSize: 14,
   },
 
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 20,
+    fontWeight: '800',
+    color: COLORS.secondary,
   },
 
   price: {
-    color: '#4338CA',
+    color: COLORS.primary,
+
     fontWeight: '900',
-    marginTop: 8,
-    fontSize: 16,
+
+    marginTop: 10,
+
+    fontSize: 20,
   },
 
   loc: {
-    color: '#64748B',
-    marginTop: 6,
+    color: COLORS.lightText,
+
+    marginTop: 8,
+
+    fontSize: 14,
+
+    lineHeight: 22,
   },
 
   empty: {
     textAlign: 'center',
-    color: '#64748B',
-    marginTop: 20,
+
+    color: COLORS.lightText,
+
+    marginTop: 30,
+
+    fontSize: 15,
   },
 
 });

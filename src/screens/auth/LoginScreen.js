@@ -308,172 +308,214 @@ export default function LoginScreen({
 
 /* ================= STYLES ================= */
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles =
   StyleSheet.create({
+
     container: {
       flex: 1,
-      backgroundColor:
-        '#F8FAFC',
+      backgroundColor: COLORS.bg,
     },
 
     scroll: {
       flexGrow: 1,
-      paddingHorizontal: 22,
-      paddingTop: 14,
+      paddingHorizontal: 20,
+      paddingTop: 10,
       paddingBottom: 30,
-      justifyContent:
-        'center',
+      justifyContent: 'center',
     },
+
+    /* TOP */
 
     top: {
       alignItems: 'center',
-      marginBottom: 24,
+      marginBottom: 26,
     },
 
     logo: {
-      width: 88,
-      height: 88,
-      borderRadius: 44,
-      backgroundColor:
-        '#4338CA',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
-      shadowColor:
-        '#4338CA',
-      shadowOpacity: 0.25,
-      shadowRadius: 14,
-      elevation: 8,
+      width: 78,
+      height: 78,
+      borderRadius: 39,
+
+      backgroundColor: '#111111',
+
+      justifyContent: 'center',
+      alignItems: 'center',
+
+      shadowColor: '#000',
+      shadowOpacity: 0.08,
+      shadowRadius: 10,
+      elevation: 4,
     },
 
     logoTxt: {
-      color: '#fff',
-      fontSize: 28,
+      color: COLORS.primary,
+      fontSize: 24,
       fontWeight: '900',
+      letterSpacing: 1,
     },
 
     brand: {
-      marginTop: 14,
-      fontSize: 25,
-      fontWeight: '900',
-      color: '#0F172A',
+      marginTop: 16,
+      fontSize: 22,
+      fontWeight: '800',
+      color: COLORS.secondary,
+      letterSpacing: 0.2,
     },
 
     heading: {
-      marginTop: 8,
-      fontSize: 28,
+      marginTop: 10,
+      fontSize: 34,
       fontWeight: '900',
-      color: '#0F172A',
+      color: COLORS.secondary,
+      letterSpacing: -1,
     },
 
     sub: {
-      marginTop: 10,
+      marginTop: 12,
+
       textAlign: 'center',
-      color: '#64748B',
-      lineHeight: 22,
+
+      color: COLORS.lightText,
+
+      lineHeight: 24,
       fontSize: 14,
-      paddingHorizontal: 18,
+
+      paddingHorizontal: 14,
     },
 
+    /* CARD */
+
     card: {
-      backgroundColor:
-        '#FFFFFF',
+      backgroundColor: '#ffffff',
+
       borderRadius: 28,
+
       padding: 22,
+
       borderWidth: 1,
-      borderColor:
-        '#EEF2FF',
-      shadowColor:
-        '#000',
-      shadowOpacity: 0.06,
-      shadowRadius: 16,
-      elevation: 6,
+      borderColor: '#f3e7dc',
+
+      shadowColor: '#000',
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 3,
     },
 
     label: {
-      fontSize: 14,
-      fontWeight: '800',
-      color: '#0F172A',
+      fontSize: 13,
+      fontWeight: '700',
+      color: COLORS.secondary,
+
       marginBottom: 8,
-      marginTop: 12,
+      marginTop: 14,
     },
 
     input: {
-      backgroundColor:
-        '#F8FAFC',
+      backgroundColor: '#faf7f2',
+
       borderRadius: 16,
+
       borderWidth: 1,
-      borderColor:
-        '#E2E8F0',
-      paddingHorizontal: 14,
-      paddingVertical: 15,
-      color: '#111827',
+      borderColor: COLORS.border,
+
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+
+      color: COLORS.text,
+      fontSize: 14,
     },
 
     passWrap: {
       flexDirection: 'row',
-      alignItems:
-        'center',
-      backgroundColor:
-        '#F8FAFC',
+      alignItems: 'center',
+
+      backgroundColor: '#faf7f2',
+
       borderRadius: 16,
+
       borderWidth: 1,
-      borderColor:
-        '#E2E8F0',
-      paddingHorizontal: 14,
+      borderColor: COLORS.border,
+
+      paddingHorizontal: 16,
     },
 
     passInput: {
       flex: 1,
-      paddingVertical: 15,
-      color: '#111827',
+      paddingVertical: 16,
+      color: COLORS.text,
+      fontSize: 14,
     },
 
     showTxt: {
-      color: '#4338CA',
-      fontWeight: '800',
+      color: COLORS.primary,
+      fontWeight: '700',
       fontSize: 13,
     },
 
     forgot: {
       textAlign: 'right',
-      color: '#4338CA',
-      marginTop: 12,
+
+      color: COLORS.primary,
+
+      marginTop: 14,
+
       fontWeight: '700',
       fontSize: 13,
     },
 
+    /* BUTTON */
+
     loginBtn: {
-      backgroundColor:
-        '#4338CA',
-      paddingVertical: 16,
-      borderRadius: 16,
-      marginTop: 24,
-      shadowColor:
-        '#4338CA',
-      shadowOpacity: 0.25,
-      shadowRadius: 10,
-      elevation: 5,
+      backgroundColor: COLORS.primary,
+
+      paddingVertical: 17,
+
+      borderRadius: 18,
+
+      marginTop: 26,
+
+      shadowColor: COLORS.primary,
+      shadowOpacity: 0.18,
+      shadowRadius: 8,
+      elevation: 3,
     },
 
     loginTxt: {
       color: '#fff',
+
       textAlign: 'center',
-      fontWeight: '900',
-      fontSize: 16,
+
+      fontWeight: '800',
+      fontSize: 15,
     },
+
+    /* BOTTOM */
 
     bottomTxt: {
       textAlign: 'center',
+
       marginTop: 28,
-      color: '#64748B',
+
+      color: COLORS.lightText,
+
       fontSize: 14,
+
       marginBottom: 10,
     },
 
     link: {
-      color: '#4338CA',
-      fontWeight: '900',
+      color: COLORS.primary,
+      fontWeight: '800',
     },
+
   });

@@ -368,95 +368,150 @@ export default function PremiumRequestsScreen({ navigation }) {
 
 // ================= STYLES =================
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 8,
+
     paddingHorizontal: 18,
-    paddingTop: 10,
-    paddingBottom: 14,
+    paddingVertical: 16,
 
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 24,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   back: {
-    fontSize: 26,
-    color: '#0F172A',
+    fontSize: 24,
+    color: COLORS.secondary,
     fontWeight: '900',
   },
 
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
+    letterSpacing: -0.3,
   },
+
+  /* BODY */
 
   container: {
     paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingTop: 12,
+    paddingBottom: 10,
   },
 
+  /* EMPTY */
+
   empty: {
-    marginTop: 80,
+    marginTop: 90,
+
     textAlign: 'center',
-    color: '#64748B',
-    fontSize: 16,
+
+    color: COLORS.lightText,
+
+    fontSize: 15,
+
     fontWeight: '600',
   },
 
+  /* CARD */
+
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ffffff',
 
-    borderRadius: 18,
+    borderRadius: 30,
 
-    padding: 18,
+    padding: 22,
 
-    marginBottom: 16,
+    marginBottom: 18,
 
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: COLORS.border,
 
     shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   cardTitle: {
-    fontSize: 18,
+    fontSize: 20,
+
     fontWeight: '900',
-    color: '#0F172A',
+
+    color: COLORS.secondary,
+
+    marginBottom: 10,
   },
 
   meta: {
     marginTop: 6,
-    color: '#64748B',
+
+    color: COLORS.lightText,
+
     fontSize: 14,
+
+    lineHeight: 22,
   },
+
+  /* STATUS ROW */
 
   rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
 
-    marginTop: 16,
+    marginTop: 20,
   },
 
   type: {
-    backgroundColor: '#EEF2FF',
-    color: '#4338CA',
+    backgroundColor: '#fff1e8',
 
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    color: COLORS.primary,
 
-    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+
+    borderRadius: 30,
 
     fontWeight: '800',
+
     fontSize: 12,
+
+    overflow: 'hidden',
   },
 
   status: {
@@ -464,47 +519,63 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
+  /* ACTIONS */
+
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
 
-    marginTop: 18,
+    marginTop: 22,
   },
 
   approveBtn: {
     flex: 1,
 
-    backgroundColor: '#16A34A',
+    backgroundColor: '#16a34a',
 
-    paddingVertical: 12,
+    paddingVertical: 15,
 
-    borderRadius: 12,
+    borderRadius: 18,
 
     alignItems: 'center',
 
-    marginRight: 8,
+    marginRight: 10,
+
+    shadowColor: '#16a34a',
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   approveTxt: {
-    color: '#FFFFFF',
+    color: '#ffffff',
+
     fontWeight: '800',
+
+    fontSize: 14,
   },
 
   rejectBtn: {
     flex: 1,
 
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#fff1f2',
 
-    paddingVertical: 12,
+    paddingVertical: 15,
 
-    borderRadius: 12,
+    borderRadius: 18,
 
     alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: '#fecdd3',
   },
 
   rejectTxt: {
-    color: '#DC2626',
+    color: '#e11d48',
+
     fontWeight: '800',
+
+    fontSize: 14,
   },
 
 });

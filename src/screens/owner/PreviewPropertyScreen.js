@@ -489,153 +489,226 @@ export default function PreviewPropertyScreen({
 
 // ================= STYLES =================
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   safe: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 10,
   },
+
+  /* TITLE */
 
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 20,
-  },
+    fontSize: 30,
+    fontWeight: '900',
+    color: COLORS.secondary,
 
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 18,
     marginBottom: 22,
 
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    letterSpacing: -0.8,
+  },
 
-    elevation: 4,
+  /* CARD */
+
+  card: {
+    backgroundColor: '#ffffff',
+
+    borderRadius: 30,
+
+    padding: 22,
+
+    marginBottom: 22,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 18,
+    fontSize: 22,
+
+    fontWeight: '900',
+
+    color: COLORS.secondary,
+
+    marginBottom: 20,
   },
+
+  /* DETAILS */
 
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
 
-    paddingVertical: 10,
+    paddingVertical: 14,
 
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: '#f4ebe3',
   },
 
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#64748B',
+    fontSize: 13,
+
+    fontWeight: '700',
+
+    color: COLORS.lightText,
   },
 
   value: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0F172A',
-    maxWidth: '60%',
+    fontSize: 14,
+
+    fontWeight: '700',
+
+    color: COLORS.secondary,
+
+    maxWidth: '58%',
+
     textAlign: 'right',
+
+    lineHeight: 22,
   },
 
   price: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#16A34A',
+    fontSize: 22,
+
+    fontWeight: '900',
+
+    color: COLORS.primary,
   },
 
+  /* DESCRIPTION */
+
   descBox: {
-    marginTop: 18,
+    marginTop: 20,
   },
 
   desc: {
-    marginTop: 8,
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#334155',
+    marginTop: 10,
+
+    fontSize: 14,
+
+    lineHeight: 24,
+
+    color: '#4b5563',
   },
 
-  imageTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 14,
+  /* FACILITIES */
+
+  facilityContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+
+    marginTop: 6,
   },
+
+  facilityChip: {
+    backgroundColor: '#fff1e8',
+
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+
+    borderRadius: 30,
+
+    marginRight: 10,
+    marginBottom: 10,
+
+    borderWidth: 1,
+    borderColor: '#ffe2cf',
+  },
+
+  facilityText: {
+    color: COLORS.primary,
+
+    fontWeight: '700',
+
+    fontSize: 13,
+  },
+
+  /* IMAGE TITLE */
+
+  imageTitle: {
+    fontSize: 24,
+
+    fontWeight: '900',
+
+    color: COLORS.secondary,
+
+    marginBottom: 18,
+
+    letterSpacing: -0.4,
+  },
+
+  /* IMAGE GRID */
 
   imageGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+
+    marginBottom: 14,
   },
 
   image: {
     width: '48%',
-    height: 140,
-    borderRadius: 16,
+    height: 170,
+
+    borderRadius: 24,
+
     marginBottom: 14,
-    backgroundColor: '#E2E8F0',
+
+    backgroundColor: '#ece7e2',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
+  /* BUTTON */
+
   button: {
-    backgroundColor: '#4338CA',
+    backgroundColor: COLORS.primary,
+
     paddingVertical: 18,
-    borderRadius: 16,
+
+    borderRadius: 22,
+
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
 
-    shadowColor: '#4338CA',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
+    marginTop: 18,
+    marginBottom: 50,
 
-    elevation: 5,
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.14,
+    shadowRadius: 6,
+    elevation: 3,
   },
 
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '700',
-  },
-  facilityContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 10,
+    color: '#ffffff',
+
+    fontSize: 15,
+
+    fontWeight: '900',
   },
 
-  facilityChip: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 10,
-    marginBottom: 10,
-  },
-
-  facilityText: {
-    color: '#4338CA',
-    fontWeight: '600',
-  },
 });

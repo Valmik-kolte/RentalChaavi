@@ -555,261 +555,368 @@ export default function LandingScreen({
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  textLight: '#6b7280',
+  border: '#eadfd3',
+  card: '#ffffff',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
   scroll: {
     paddingBottom: 40,
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+
     paddingHorizontal: 18,
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingVertical: 15,
+
+    borderRadius: 18,
+    backgroundColor: '#111111',
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   brand: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#fff',
+    letterSpacing: 0.2,
   },
 
   tag: {
-    marginTop: 4,
-    fontSize: 13,
-    color: '#64748B',
+    marginTop: 3,
+    color: '#d1d5db',
+    fontSize: 11,
+    fontWeight: '500',
   },
 
   loginBtn: {
-    backgroundColor: '#4338CA',
+    backgroundColor: COLORS.primary,
     paddingHorizontal: 18,
-    paddingVertical: 12,
+    paddingVertical: 11,
     borderRadius: 14,
   },
 
   loginTxt: {
     color: '#fff',
-    fontWeight: '800',
+    fontWeight: '700',
+    fontSize: 13,
   },
 
+  /* HERO */
+
   hero: {
-    backgroundColor: '#4338CA',
-    marginHorizontal: 18,
-    borderRadius: 26,
-    padding: 22,
-    marginTop: 8,
+    marginHorizontal: 16,
+    marginTop: 18,
+
+    borderRadius: 28,
+
+    paddingHorizontal: 24,
+    paddingVertical: 34,
+
+    backgroundColor: '#f5ede5',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
 
   heroTitle: {
-    fontSize: 30,
+    fontSize: 36,
+    lineHeight: 44,
     fontWeight: '900',
-    color: '#fff',
-    lineHeight: 38,
+    color: COLORS.secondary,
+    letterSpacing: -0.8,
   },
 
   heroSub: {
-    color: '#E0E7FF',
-    marginTop: 10,
+    marginTop: 16,
+
+    fontSize: 15,
+    lineHeight: 24,
+
+    color: '#4b5563',
+
+    width: '92%',
+    fontWeight: '500',
   },
 
   searchBox: {
-    backgroundColor: '#fff',
-    marginTop: 18,
-    borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-  },
-
-  searchIcon: {
-    color: '#4338CA',
-    fontSize: 18,
-    fontWeight: '900',
+    marginTop: 22,
   },
 
   input: {
-    flex: 1,
-    paddingVertical: 14,
-    marginLeft: 10,
-    color: '#0F172A',
-    fontWeight: '600',
+    backgroundColor: '#fff',
+
+    borderRadius: 16,
+
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+
+    fontSize: 14,
+    color: '#111827',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   searchBtn: {
-    backgroundColor: '#312E81',
-    marginTop: 14,
-    paddingVertical: 15,
+    marginTop: 22,
+
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 16,
+
     borderRadius: 16,
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   searchTxt: {
     color: '#fff',
     textAlign: 'center',
     fontWeight: '800',
+    fontSize: 15,
   },
+
+  /* SECTION */
 
   section: {
-    fontSize: 21,
-    fontWeight: '900',
+    fontSize: 24,
+    fontWeight: '800',
+    color: COLORS.secondary,
+
     marginHorizontal: 18,
-    marginTop: 26,
-    marginBottom: 14,
-    color: '#0F172A',
+    marginTop: 30,
+    marginBottom: 16,
   },
 
+  /* CATEGORY */
+
   horizontalWrap: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
   },
 
   catBtn: {
     backgroundColor: '#fff',
+
     paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingVertical: 11,
+
     borderRadius: 30,
+
     marginRight: 10,
+
     borderWidth: 1,
-    borderColor: '#E0E7FF',
+    borderColor: COLORS.border,
   },
 
   catTxt: {
-    color: '#4338CA',
+    color: COLORS.secondary,
     fontWeight: '700',
+    fontSize: 13,
   },
 
+  /* PROPERTY CARDS */
+
   cardWrap: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
   },
 
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.card,
+
     borderRadius: 24,
+
     marginBottom: 20,
+
     overflow: 'hidden',
-    elevation: 3,
+
+    borderWidth: 1,
+    borderColor: '#f1e5db',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   image: {
     width: '100%',
-    height: 210,
-    backgroundColor: '#E2E8F0',
+    height: 220,
+    backgroundColor: '#e5e7eb',
   },
 
   imageBox: {
     width: '100%',
-    height: 210,
-    backgroundColor: '#E2E8F0',
+    height: 220,
+
     justifyContent: 'center',
     alignItems: 'center',
+
+    backgroundColor: '#e5e7eb',
   },
 
   imageTxt: {
-    color: '#64748B',
+    color: '#6b7280',
     fontWeight: '700',
-    fontSize: 15,
+    fontSize: 14,
   },
 
   content: {
-    padding: 16,
+    padding: 18,
   },
 
   cardTitle: {
     fontSize: 20,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontWeight: '800',
+    color: COLORS.secondary,
   },
 
   price: {
+    marginTop: 10,
+
     fontSize: 22,
     fontWeight: '900',
-    color: '#4338CA',
-    marginTop: 10,
+
+    color: COLORS.primary,
   },
 
   location: {
     marginTop: 8,
-    color: '#64748B',
+
     fontSize: 14,
+    color: '#6b7280',
+
+    fontWeight: '500',
   },
 
   row: {
-    marginTop: 16,
+    marginTop: 18,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
 
   tagBox: {
-    backgroundColor: '#EEF2FF',
-    color: '#4338CA',
+    backgroundColor: '#fff1e8',
+
+    color: COLORS.primary,
+
     paddingHorizontal: 14,
     paddingVertical: 8,
+
     borderRadius: 12,
+
     fontWeight: '800',
+
     overflow: 'hidden',
+
     fontSize: 12,
   },
 
   btn: {
-    backgroundColor: '#4338CA',
+    backgroundColor: COLORS.secondary,
+
     paddingHorizontal: 18,
     paddingVertical: 10,
+
     borderRadius: 12,
   },
 
   btnTxt: {
     color: '#fff',
-    fontWeight: '800',
-    fontSize: 13,
+    fontWeight: '700',
+    fontSize: 12,
   },
 
   empty: {
     textAlign: 'center',
+
     marginTop: 60,
-    color: '#64748B',
-    fontSize: 16,
+
+    color: '#6b7280',
+
     fontWeight: '600',
+    fontSize: 15,
   },
 
+  /* CTA */
+
   cta: {
-    backgroundColor: '#fff',
-    marginHorizontal: 18,
-    marginTop: 18,
-    borderRadius: 22,
-    padding: 22,
-    alignItems: 'center',
+    marginHorizontal: 16,
+    marginTop: 22,
+
+    borderRadius: 24,
+
+    padding: 24,
+
+    backgroundColor: '#111111',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
 
   ctaTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#0F172A',
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '800',
   },
 
   ctaSub: {
-    color: '#64748B',
-    marginTop: 8,
-    textAlign: 'center',
-    lineHeight: 22,
+    color: '#d1d5db',
+
+    marginTop: 12,
+
+    fontSize: 15,
+    lineHeight: 24,
   },
 
   postBtn: {
-    backgroundColor: '#4338CA',
-    marginTop: 16,
-    paddingHorizontal: 26,
-    paddingVertical: 14,
-    borderRadius: 16,
+    marginTop: 22,
+
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    alignItems: 'center',
   },
 
   postTxt: {
     color: '#fff',
     fontWeight: '800',
+    fontSize: 15,
   },
 
 });

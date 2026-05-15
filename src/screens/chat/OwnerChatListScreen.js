@@ -520,32 +520,63 @@ export default function OwnerChatListScreen({
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
+
+  /* LOADER */
 
   loaderWrap: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.bg,
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 10,
+
     paddingHorizontal: 20,
     paddingVertical: 18,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 26,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 26,
+    fontWeight: '900',
+    color: COLORS.secondary,
+    letterSpacing: -0.5,
   },
+
+  /* EMPTY */
 
   emptyWrap: {
     flex: 1,
@@ -554,113 +585,175 @@ const styles = StyleSheet.create({
   },
 
   emptyTxt: {
-    fontSize: 16,
-    color: '#64748B',
+    fontSize: 15,
+    color: COLORS.lightText,
+    fontWeight: '600',
   },
 
+  /* CARD */
+
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: '#ffffff',
+
+    borderRadius: 28,
+
+    padding: 18,
+
+    marginBottom: 18,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
+
+  /* TOP ROW */
 
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
 
+  /* AVATAR */
+
   avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#4338CA',
+    width: 58,
+    height: 58,
+
+    borderRadius: 29,
+
+    backgroundColor: '#fff1e8',
+
     justifyContent: 'center',
     alignItems: 'center',
+
     marginRight: 14,
+
+    borderWidth: 2,
+    borderColor: '#ffe2cf',
   },
 
   avatarTxt: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '700',
+    color: COLORS.primary,
+
+    fontSize: 20,
+
+    fontWeight: '900',
   },
 
+  /* CHAT DETAILS */
+
   name: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 17,
+    fontWeight: '800',
+    color: COLORS.secondary,
   },
 
   message: {
-    marginTop: 4,
-    color: '#64748B',
+    marginTop: 5,
+
+    color: COLORS.lightText,
+
     fontSize: 13,
+
+    lineHeight: 20,
   },
 
+  /* STATUS */
+
   badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 50,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+
+    borderRadius: 30,
   },
 
   accepted: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: '#dcfce7',
   },
 
   rejected: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#ffe4e6',
   },
 
   pending: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#fff7ed',
   },
 
   badgeTxt: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontWeight: '800',
+    color: COLORS.secondary,
   },
+
+  /* ACTIONS */
 
   actionRow: {
     flexDirection: 'row',
-    marginTop: 18,
     alignItems: 'center',
+
+    marginTop: 20,
   },
 
   acceptBtn: {
-    backgroundColor: '#16A34A',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 10,
+    backgroundColor: '#16a34a',
+
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+
+    borderRadius: 16,
+
     marginRight: 10,
   },
 
   rejectBtn: {
-    backgroundColor: '#DC2626',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 10,
+    backgroundColor: '#e11d48',
+
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+
+    borderRadius: 16,
+
     marginRight: 10,
   },
 
   btnTxt: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: '#ffffff',
+
+    fontWeight: '800',
+
+    fontSize: 13,
   },
+
+  /* OPEN CHAT */
 
   chatBtn: {
     flex: 1,
-    backgroundColor: '#4338CA',
-    paddingVertical: 10,
-    borderRadius: 10,
+
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 12,
+
+    borderRadius: 16,
+
     justifyContent: 'center',
     alignItems: 'center',
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
 
   chatTxt: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: '#ffffff',
+
+    fontWeight: '800',
+
+    fontSize: 13,
   },
 
 });

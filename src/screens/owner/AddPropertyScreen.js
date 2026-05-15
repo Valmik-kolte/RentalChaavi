@@ -845,21 +845,142 @@ export default function AddPropertyScreen({ navigation }) {
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFF' },
+
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.bg,
+  },
+
+  scroll: {
+    paddingBottom: 120,
+  },
+
+  /* MAIN CARD */
 
   card: {
-    margin: 16,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 18,
+    marginHorizontal: 16,
+    marginTop: 14,
+    marginBottom: 20,
+
+    padding: 22,
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 32,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
+  /* TITLE */
+
   title: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
+    letterSpacing: -0.7,
+    marginBottom: 6,
   },
+
+  /* LABELS */
+
+  inputLabel: {
+    marginTop: 18,
+    marginBottom: 8,
+
+    fontSize: 14,
+
+    fontWeight: '700',
+
+    color: COLORS.secondary,
+  },
+
+  label: {
+    marginTop: 20,
+    marginBottom: 12,
+
+    fontSize: 15,
+
+    fontWeight: '800',
+
+    color: COLORS.secondary,
+  },
+
+  dropdownLabel: {
+    marginTop: 18,
+    marginBottom: 8,
+
+    fontSize: 14,
+
+    fontWeight: '700',
+
+    color: COLORS.secondary,
+  },
+
+  /* INPUT */
+
+  input: {
+    backgroundColor: '#faf7f2',
+
+    borderRadius: 18,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    paddingHorizontal: 18,
+    paddingVertical: 15,
+
+    color: COLORS.text,
+
+    fontSize: 14,
+  },
+
+  textArea: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+
+  descriptionBox: {
+    minHeight: 120,
+    textAlignVertical: 'top',
+  },
+
+  /* DROPDOWN */
+
+  dropdownContainer: {
+    backgroundColor: '#faf7f2',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    borderRadius: 18,
+
+    marginBottom: 4,
+
+    overflow: 'hidden',
+  },
+
+  picker: {
+    color: COLORS.secondary,
+  },
+
+  /* BUTTON ROW */
 
   row: {
     flexDirection: 'row',
@@ -869,111 +990,161 @@ const styles = StyleSheet.create({
 
   typeBtn: {
     width: '48%',
-    padding: 12,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 12,
-    marginTop: 10,
-    alignItems: 'center',
-  },
 
-  scroll: {
-    paddingBottom: 120, 
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+
+    backgroundColor: '#faf7f2',
+
+    borderRadius: 18,
+
+    marginTop: 10,
+
+    alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   activeBtn: {
-    backgroundColor: '#4338CA',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
 
   typeTxt: {
-    color: '#334155',
-    fontWeight: '800',
-  },
-
-    dropdownLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 8,
-    marginTop: 10,
-  },
-
-  dropdownContainer: {
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 14,
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-
-  picker: {
-    color: '#0F172A',
-  },
-
-  inputLabel: {
-    marginTop: 14,
-    marginBottom: 6,
-    fontSize: 14,
+    color: COLORS.secondary,
     fontWeight: '700',
-    color: '#1E293B',
+    fontSize: 13,
+    textAlign: 'center',
   },
 
-  textArea: {
-    minHeight: 70,
-    textAlignVertical: 'top',
-  },
-
-  descriptionBox: {
-    minHeight: 110,
-    textAlignVertical: 'top',
-  },
   activeTxt: {
-    color: '#fff',
+    color: '#ffffff',
   },
 
-  input: {
+  /* FACILITIES */
+
+  facilityContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+
     marginTop: 10,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 12,
-    padding: 12,
-    color: '#0F172A',
+    marginBottom: 10,
   },
+
+  facilityBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    borderRadius: 18,
+
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+
+    marginRight: 10,
+    marginBottom: 10,
+
+    backgroundColor: '#ffffff',
+  },
+
+  facilityBoxActive: {
+    backgroundColor: '#fff1e8',
+    borderColor: '#ffd7bd',
+  },
+
+  checkbox: {
+    width: 22,
+    height: 22,
+
+    borderRadius: 7,
+
+    borderWidth: 1.5,
+    borderColor: '#c7b8aa',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    marginRight: 10,
+  },
+
+  checkboxActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+
+  checkmark: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+
+  facilityText: {
+    color: COLORS.secondary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  facilityTextActive: {
+    color: COLORS.primary,
+    fontWeight: '700',
+  },
+
+  /* IMAGE SECTION */
 
   imageTitle: {
-    marginTop: 20,
+    marginTop: 24,
+
+    marginBottom: 14,
+
     fontWeight: '800',
-    color: '#0F172A',
+
+    color: COLORS.secondary,
+
+    fontSize: 16,
   },
 
   imageGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: 10,
   },
 
   imageBox: {
-    width: '30%',
-    height: 90,
-    borderWidth: 1,
+    width: '31%',
+    height: 110,
+
+    borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
+
+    borderColor: '#d9c8b8',
+
+    borderRadius: 20,
+
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor: '#F1F5F9',
+
+    marginBottom: 14,
+
+    backgroundColor: '#faf7f2',
+
     overflow: 'hidden',
   },
 
   uploadIcon: {
-    fontSize: 18,
-    color: '#64748B',
+    fontSize: 22,
+    color: COLORS.primary,
+    marginBottom: 6,
   },
 
   imageTxt: {
     fontSize: 11,
-    color: '#64748B',
+    color: COLORS.lightText,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 6,
   },
 
   imagePreview: {
@@ -981,83 +1152,31 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 
+  /* SUBMIT */
+
   submitBtn: {
-    marginTop: 20,
-    backgroundColor: '#4338CA',
-    padding: 16,
-    borderRadius: 14,
+    marginTop: 28,
+
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 18,
+
+    borderRadius: 22,
+
     alignItems: 'center',
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.14,
+    shadowRadius: 6,
+    elevation: 3,
   },
 
   submitTxt: {
-    color: '#fff',
+    color: '#ffffff',
+
     fontWeight: '900',
+
+    fontSize: 15,
   },
 
-  label: {
-  marginTop: 18,
-  marginBottom: 10,
-  fontSize: 16,
-  fontWeight: '700',
-  color: '#0F172A',
-},
-
-  facilityContainer: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  marginTop: 10,
-  marginBottom: 20,
-},
-
-facilityBox: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  borderWidth: 1,
-  borderColor: '#CBD5E1',
-  borderRadius: 12,
-  paddingVertical: 10,
-  paddingHorizontal: 14,
-  marginRight: 10,
-  marginBottom: 10,
-  backgroundColor: '#fff',
-},
-
-facilityBoxActive: {
-  backgroundColor: '#EEF2FF',
-  borderColor: '#4338CA',
-},
-
-checkbox: {
-  width: 20,
-  height: 20,
-  borderRadius: 6,
-  borderWidth: 1.5,
-  borderColor: '#94A3B8',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginRight: 8,
-},
-
-checkboxActive: {
-  backgroundColor: '#4338CA',
-  borderColor: '#4338CA',
-},
-
-checkmark: {
-  color: '#fff',
-  fontSize: 12,
-  fontWeight: 'bold',
-},
-
-facilityText: {
-  color: '#334155',
-  fontSize: 14,
-  fontWeight: '600',
-},
-
-facilityTextActive: {
-  color: '#4338CA',
-},
-
 });
-

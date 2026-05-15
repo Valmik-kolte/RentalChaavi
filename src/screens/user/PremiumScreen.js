@@ -187,11 +187,21 @@ export default function PremiumScreen({ navigation, route }) {
 
 /* ================= STYLES ================= */
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFF',
+    backgroundColor: COLORS.bg,
   },
 
   container: {
@@ -199,67 +209,129 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+
     paddingHorizontal: 18,
-    paddingVertical: 12,
+    paddingVertical: 16,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 24,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   back: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
   },
 
   title: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
+    letterSpacing: -0.4,
   },
+
+  /* CONTENT */
 
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+
+    paddingHorizontal: 24,
   },
 
+  /* QR CARD */
+
   qrContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    borderRadius: 24,
-    elevation: 5,
+    backgroundColor: '#ffffff',
+
+    padding: 26,
+
+    borderRadius: 34,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   qr: {
-    width: 220,
-    height: 220,
+    width: 240,
+    height: 240,
+
+    borderRadius: 20,
   },
+
+  /* INSTRUCTION */
 
   instructions: {
-    marginTop: 20,
+    marginTop: 28,
+
     textAlign: 'center',
-    color: '#64748B',
+
+    color: COLORS.lightText,
+
     fontSize: 14,
-    lineHeight: 20,
+
+    lineHeight: 24,
+
+    paddingHorizontal: 10,
   },
+
+  /* FOOTER */
 
   footer: {
-    padding: 18,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    paddingTop: 10,
   },
 
+  /* BUTTON */
+
   doneBtn: {
-    backgroundColor: '#1565FF',
-    paddingVertical: 16,
-    borderRadius: 16,
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 18,
+
+    borderRadius: 22,
+
     alignItems: 'center',
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.14,
+    shadowRadius: 6,
+    elevation: 3,
   },
 
   doneTxt: {
-    color: '#fff',
+    color: '#ffffff',
+
     fontWeight: '900',
-    fontSize: 16,
+
+    fontSize: 15,
+
+    letterSpacing: 0.3,
   },
+
 });

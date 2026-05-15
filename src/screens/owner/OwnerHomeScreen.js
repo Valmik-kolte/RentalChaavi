@@ -45,9 +45,9 @@ export default function OwnerHomeScreen() {
               Welcome back, Owner 👋
             </Text>
 
-            <Text style={styles.email}>
+            {/* <Text style={styles.email}>
               {userData?.email || 'owner@gmail.com'}
-            </Text>
+            </Text> */}
 
           </View>
 
@@ -220,67 +220,114 @@ export default function OwnerHomeScreen() {
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
   scroll: {
     paddingBottom: 40,
   },
 
+  /* HEADER */
+
   header: {
-    paddingHorizontal: 22,
-    paddingTop: 16,
+    marginHorizontal: 16,
+    marginTop: 12,
+
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 28,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   brand: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '900',
-    color: '#0F172A',
-    letterSpacing: 0.4,
+    color: COLORS.secondary,
+    letterSpacing: -0.6,
   },
 
   welcome: {
     marginTop: 6,
-    fontSize: 15,
-    color: '#475569',
+    fontSize: 14,
+    color: COLORS.lightText,
     fontWeight: '600',
   },
 
   email: {
     marginTop: 5,
-    color: '#6366F1',
+    color: COLORS.primary,
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 
   profileCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#4338CA',
+    width: 58,
+    height: 58,
+
+    borderRadius: 29,
+
+    backgroundColor: '#fff1e8',
+
     justifyContent: 'center',
     alignItems: 'center',
+
+    borderWidth: 2,
+    borderColor: '#ffe2cf',
   },
 
   profileLetter: {
-    color: '#fff',
-    fontSize: 20,
+    color: COLORS.primary,
+    fontSize: 22,
     fontWeight: '900',
   },
 
+  /* HERO CARD */
+
   heroCard: {
-    marginHorizontal: 22,
-    marginTop: 24,
-    backgroundColor: '#4338CA',
-    borderRadius: 30,
+    marginHorizontal: 16,
+    marginTop: 22,
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 32,
+
     padding: 26,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   heroTop: {
@@ -290,28 +337,31 @@ const styles = StyleSheet.create({
   },
 
   heroMini: {
-    color: '#C7D2FE',
+    color: COLORS.primary,
     fontSize: 11,
-    letterSpacing: 1.2,
-    fontWeight: '700',
+    letterSpacing: 1.1,
+    fontWeight: '800',
   },
 
   heroTitle: {
-    marginTop: 6,
-    color: '#fff',
+    marginTop: 8,
+    color: COLORS.secondary,
     fontSize: 32,
     fontWeight: '900',
+    letterSpacing: -0.8,
   },
 
   roleBadge: {
-    backgroundColor: '#312E81',
-    paddingHorizontal: 14,
+    backgroundColor: '#fff1e8',
+
+    paddingHorizontal: 15,
     paddingVertical: 8,
-    borderRadius: 14,
+
+    borderRadius: 30,
   },
 
   roleBadgeText: {
-    color: '#fff',
+    color: COLORS.primary,
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.5,
@@ -319,15 +369,15 @@ const styles = StyleSheet.create({
 
   heroSub: {
     marginTop: 18,
-    color: '#E0E7FF',
+    color: COLORS.lightText,
     lineHeight: 24,
     fontSize: 14,
   },
 
   heroDivider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    marginVertical: 20,
+    backgroundColor: '#f1e6dc',
+    marginVertical: 22,
   },
 
   heroBottom: {
@@ -340,105 +390,127 @@ const styles = StyleSheet.create({
   },
 
   heroInfoLabel: {
-    color: '#C7D2FE',
+    color: COLORS.lightText,
     fontSize: 12,
+    fontWeight: '600',
   },
 
   heroInfoValue: {
-    marginTop: 5,
-    color: '#fff',
+    marginTop: 6,
+    color: COLORS.secondary,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
   },
+
+  /* SECTION */
 
   sectionHeader: {
     marginTop: 32,
-    marginBottom: 16,
-    paddingHorizontal: 22,
+    marginBottom: 18,
+    paddingHorizontal: 18,
   },
 
   sectionTitle: {
-    fontSize: 23,
+    fontSize: 24,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
+    letterSpacing: -0.4,
   },
 
   sectionSub: {
-    marginTop: 5,
-    color: '#64748B',
+    marginTop: 6,
+    color: COLORS.lightText,
     fontSize: 13,
+    lineHeight: 20,
   },
 
+  /* FEATURE CARD */
+
   card: {
-    backgroundColor: '#fff',
-    marginHorizontal: 22,
-    marginBottom: 14,
-    borderRadius: 24,
-    padding: 20,
+    backgroundColor: '#ffffff',
+
+    marginHorizontal: 16,
+    marginBottom: 16,
+
+    borderRadius: 28,
+
+    padding: 22,
+
     flexDirection: 'row',
     alignItems: 'flex-start',
 
-    shadowColor: '#0F172A',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
 
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
     elevation: 2,
   },
 
   cardAccent: {
-    width: 5,
+    width: 6,
     height: '100%',
-    backgroundColor: '#4338CA',
+
+    backgroundColor: COLORS.primary,
+
     borderRadius: 10,
+
     marginRight: 16,
   },
 
   cardTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '800',
-    color: '#0F172A',
+    color: COLORS.secondary,
     marginBottom: 8,
   },
 
   cardText: {
-    color: '#64748B',
+    color: COLORS.lightText,
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 23,
   },
 
+  /* INFO CARD */
+
   infoCard: {
-    backgroundColor: '#EEF2FF',
-    marginHorizontal: 22,
-    marginTop: 8,
-    borderRadius: 26,
-    padding: 22,
+    backgroundColor: '#fff1e8',
+
+    marginHorizontal: 16,
+    marginTop: 10,
+
+    borderRadius: 28,
+
+    padding: 24,
+
+    borderWidth: 1,
+    borderColor: '#ffe2cf',
   },
 
   infoTitle: {
-    color: '#312E81',
-    fontSize: 18,
+    color: COLORS.secondary,
+    fontSize: 19,
     fontWeight: '900',
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
   infoText: {
-    color: '#475569',
-    lineHeight: 23,
+    color: '#4b5563',
+    lineHeight: 24,
     fontSize: 14,
   },
 
+  /* FOOTER */
+
   footer: {
-    marginTop: 30,
+    marginTop: 34,
     alignItems: 'center',
     paddingBottom: 20,
   },
 
   footerText: {
-    color: '#94A3B8',
+    color: '#94a3b8',
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.3,

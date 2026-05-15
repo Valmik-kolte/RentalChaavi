@@ -686,20 +686,32 @@ export default function RegisterScreen({
 
 /* ================= STYLES ================= */
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles =
   StyleSheet.create({
+
     container: {
       flex: 1,
-      backgroundColor:
-        '#F8FAFC',
+      backgroundColor: COLORS.bg,
     },
 
     scroll: {
       flexGrow: 1,
-      paddingHorizontal: 22,
-      paddingTop: 14,
+      paddingHorizontal: 20,
+      paddingTop: 10,
       paddingBottom: 30,
     },
+
+    /* TOP */
 
     top: {
       alignItems: 'center',
@@ -707,178 +719,251 @@ const styles =
     },
 
     logo: {
-      width: 88,
-      height: 88,
-      borderRadius: 44,
-      backgroundColor:
-        '#4338CA',
-      justifyContent:
-        'center',
-      alignItems:
-        'center',
+      width: 78,
+      height: 78,
+      borderRadius: 39,
+
+      backgroundColor: '#111111',
+
+      justifyContent: 'center',
+      alignItems: 'center',
+
+      shadowColor: '#000',
+      shadowOpacity: 0.08,
+      shadowRadius: 10,
+      elevation: 4,
     },
 
     logoTxt: {
-      color: '#fff',
-      fontSize: 28,
+      color: COLORS.primary,
+      fontSize: 24,
       fontWeight: '900',
+      letterSpacing: 1,
     },
 
     brand: {
-      marginTop: 14,
-      fontSize: 25,
-      fontWeight: '900',
-      color: '#0F172A',
+      marginTop: 16,
+      fontSize: 22,
+      fontWeight: '800',
+      color: COLORS.secondary,
+      letterSpacing: 0.2,
     },
 
     heading: {
       marginTop: 10,
-      fontSize: 28,
+      fontSize: 32,
       fontWeight: '900',
-      color: '#0F172A',
+      color: COLORS.secondary,
+      letterSpacing: -1,
     },
 
     sub: {
-      marginTop: 10,
-      color: '#64748B',
+      marginTop: 12,
+
+      color: COLORS.lightText,
+
       textAlign: 'center',
+
       fontSize: 14,
-      lineHeight: 22,
+      lineHeight: 24,
+
+      paddingHorizontal: 12,
     },
 
+    /* CARD */
+
     card: {
-      backgroundColor:
-        '#fff',
+      backgroundColor: '#ffffff',
+
       borderRadius: 28,
+
       padding: 22,
+
       borderWidth: 1,
-      borderColor:
-        '#EEF2FF',
+      borderColor: '#f3e7dc',
+
+      shadowColor: '#000',
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 3,
     },
 
     label: {
-      fontSize: 14,
-      fontWeight: '800',
-      color: '#0F172A',
-      marginTop: 12,
+      fontSize: 13,
+      fontWeight: '700',
+      color: COLORS.secondary,
+
+      marginTop: 14,
       marginBottom: 8,
     },
 
+    /* ROLE */
+
     roleRow: {
       flexDirection: 'row',
-      gap: 8,
+      gap: 10,
     },
 
     roleBtn: {
       flex: 1,
-      paddingVertical: 13,
-      borderRadius: 14,
-      backgroundColor:
-        '#EEF2FF',
+
+      paddingVertical: 14,
+
+      borderRadius: 16,
+
+      backgroundColor: '#faf7f2',
+
       alignItems: 'center',
+
+      borderWidth: 1,
+      borderColor: COLORS.border,
     },
 
     roleActive: {
-      backgroundColor:
-        '#4338CA',
+      backgroundColor: COLORS.primary,
+      borderColor: COLORS.primary,
     },
 
     roleTxt: {
-      color: '#334155',
-      fontWeight: '800',
+      color: COLORS.secondary,
+      fontWeight: '700',
+      fontSize: 14,
     },
 
     roleTxtActive: {
       color: '#fff',
     },
 
+    /* INPUT */
+
     input: {
-      backgroundColor:
-        '#F8FAFC',
+      backgroundColor: '#faf7f2',
+
       borderRadius: 16,
+
       borderWidth: 1,
-      borderColor:
-        '#E2E8F0',
-      paddingHorizontal: 14,
-      paddingVertical: 15,
-      color: '#111827',
+      borderColor: COLORS.border,
+
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+
+      color: COLORS.text,
+      fontSize: 14,
     },
 
     passWrap: {
       flexDirection: 'row',
-      alignItems:
-        'center',
-      backgroundColor:
-        '#F8FAFC',
+      alignItems: 'center',
+
+      backgroundColor: '#faf7f2',
+
       borderRadius: 16,
+
       borderWidth: 1,
-      borderColor:
-        '#E2E8F0',
-      paddingHorizontal: 14,
+      borderColor: COLORS.border,
+
+      paddingHorizontal: 16,
     },
 
     passInput: {
       flex: 1,
-      paddingVertical: 15,
-      color: '#111827',
+      paddingVertical: 16,
+      color: COLORS.text,
+      fontSize: 14,
     },
 
     showTxt: {
-      color: '#4338CA',
-      fontWeight: '800',
+      color: COLORS.primary,
+      fontWeight: '700',
+      fontSize: 13,
     },
 
+    /* MAIN BUTTON */
+
     btn: {
-      backgroundColor:
-        '#4338CA',
-      paddingVertical: 16,
-      borderRadius: 16,
-      marginTop: 26,
+      backgroundColor: COLORS.primary,
+
+      paddingVertical: 17,
+
+      borderRadius: 18,
+
+      marginTop: 28,
+
+      shadowColor: COLORS.primary,
+      shadowOpacity: 0.18,
+      shadowRadius: 8,
+      elevation: 3,
     },
 
     btnTxt: {
       color: '#fff',
+
       textAlign: 'center',
-      fontWeight: '900',
-      fontSize: 16,
+
+      fontWeight: '800',
+      fontSize: 15,
     },
 
-    bottomTxt: {
-      textAlign: 'center',
-      marginTop: 26,
-      color: '#64748B',
-      fontSize: 14,
-    },
+    /* OTP BUTTON */
 
-    link: {
-      color: '#4338CA',
-      fontWeight: '900',
-    },
     otpBtn: {
       height: 52,
-      backgroundColor: '#4338CA',
-      borderRadius: 14,
+
+      backgroundColor: COLORS.primary,
+
+      borderRadius: 16,
+
       justifyContent: 'center',
       alignItems: 'center',
+
       marginTop: 14,
+
+      shadowColor: COLORS.primary,
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 2,
     },
 
     otpBtnTxt: {
       color: '#fff',
-      fontSize: 15,
+      fontSize: 14,
       fontWeight: '700',
     },
 
     verifyBtn: {
       height: 52,
-      backgroundColor: '#0F172A',
-      borderRadius: 14,
+
+      backgroundColor: '#111111',
+
+      borderRadius: 16,
+
       justifyContent: 'center',
       alignItems: 'center',
+
       marginTop: 14,
     },
 
     verifiedBtn: {
       backgroundColor: '#16A34A',
     },
+
+    /* BOTTOM */
+
+    bottomTxt: {
+      textAlign: 'center',
+
+      marginTop: 28,
+
+      color: COLORS.lightText,
+
+      fontSize: 14,
+
+      marginBottom: 10,
+    },
+
+    link: {
+      color: COLORS.primary,
+      fontWeight: '800',
+    },
+
   });

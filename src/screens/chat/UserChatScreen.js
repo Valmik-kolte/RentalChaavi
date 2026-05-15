@@ -394,7 +394,7 @@ export default function UserChatScreen({
             false
           }
           contentContainerStyle={{
-            paddingBottom: 120,
+            // paddingBottom: 120,
             flexGrow: 1,
           }}
         >
@@ -583,13 +583,24 @@ export default function UserChatScreen({
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-    paddingBottom: 70,
+    backgroundColor: COLORS.bg,
   },
+
+  /* LOADER */
 
   loaderWrap: {
     flex: 1,
@@ -597,39 +608,53 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  /* HEADER */
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
 
+    marginHorizontal: 16,
+    marginTop: 10,
+
     paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingVertical: 15,
 
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
 
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderRadius: 22,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   back: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
 
-    color: '#0F172A',
+    color: COLORS.secondary,
 
-    marginRight: 16,
+    marginRight: 14,
   },
 
   ownerName: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 17,
+    fontWeight: '800',
+    color: COLORS.secondary,
   },
 
   propertyName: {
-    marginTop: 4,
-    color: '#64748B',
-    fontSize: 13,
+    marginTop: 3,
+    color: COLORS.lightText,
+    fontSize: 12,
   },
+
+  /* STATUS */
 
   statusRow: {
     flexDirection: 'row',
@@ -641,13 +666,14 @@ const styles = StyleSheet.create({
   },
 
   status: {
-    backgroundColor: '#EEF2FF',
-    color: '#4338CA',
+    backgroundColor: '#fff1e8',
+
+    color: COLORS.primary,
 
     paddingHorizontal: 12,
     paddingVertical: 6,
 
-    borderRadius: 10,
+    borderRadius: 30,
 
     overflow: 'hidden',
 
@@ -661,114 +687,127 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
+  /* CHAT BODY */
+
   chatBody: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingTop: 18,
   },
 
   emptyTxt: {
-    color: '#999',
+    color: COLORS.lightText,
     textAlign: 'center',
     marginTop: 40,
+    fontSize: 14,
   },
 
-  // messageBox: {
-  //   maxWidth: '80%',
+  /* MESSAGE */
 
-  //   paddingHorizontal: 14,
-  //   paddingVertical: 10,
+  messageBox: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
 
-  //   borderRadius: 18,
+    borderRadius: 22,
 
-  //   marginBottom: 14,
-  // },
+    marginBottom: 12,
+  },
 
-    messageBox: {
-
-    paddingHorizontal: 14,
-
-    paddingVertical: 10,
-
-    borderRadius: 18,
-
-    marginBottom: 10,
-
-    },
+  /* MY MESSAGE */
 
   myMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#4338CA',
+
+    backgroundColor: COLORS.primary,
+
     maxWidth: '78%',
-    borderBottomRightRadius: 6,
+
+    borderBottomRightRadius: 8,
+
     marginLeft: 50,
-    
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
+    elevation: 2,
   },
+
+  /* OWNER MESSAGE */
 
   ownerMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#fff',
+
+    backgroundColor: '#ffffff',
+
     maxWidth: '78%',
-    borderBottomLeftRadius: 6,
+
+    borderBottomLeftRadius: 8,
+
     marginRight: 50,
+
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.02,
+    shadowRadius: 3,
+    elevation: 1,
   },
 
+  /* MESSAGE TEXT */
+
   myMessageText: {
+    color: '#ffffff',
 
-    color: '#FFFFFF',
-
-    fontSize: 15,
+    fontSize: 14,
 
     lineHeight: 22,
-
   },
 
   ownerMessageText: {
+    color: COLORS.secondary,
 
-    color: '#0F172A',
-
-    fontSize: 15,
+    fontSize: 14,
 
     lineHeight: 22,
-
   },
 
+  /* TIME */
 
   myTime: {
+    color: 'rgba(255,255,255,0.75)',
 
-    color: 'rgba(255,255,255,0.7)',
+    fontSize: 10,
 
-    fontSize: 11,
-
-    marginTop: 4,
+    marginTop: 5,
 
     alignSelf: 'flex-end',
-
   },
 
   ownerTime: {
+    color: '#94a3b8',
 
-    color: '#64748B',
+    fontSize: 10,
 
-    fontSize: 11,
-
-    marginTop: 4,
+    marginTop: 5,
 
     alignSelf: 'flex-end',
-
   },
-  
+
+  /* TYPING */
+
   typing: {
-    color: '#999',
-    marginTop: 10,
+    color: COLORS.lightText,
+    marginTop: 8,
+    marginLeft: 4,
+    fontSize: 13,
   },
 
   pendingTxt: {
-    color: '#999',
+    color: COLORS.lightText,
     marginTop: 20,
     textAlign: 'center',
+    fontSize: 14,
   },
 
   rejectedTxt: {
@@ -776,72 +815,77 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'center',
     fontWeight: '700',
+    fontSize: 14,
   },
+
+  /* INPUT AREA */
 
   inputContainer: {
-
     flexDirection: 'row',
-
     alignItems: 'center',
 
-    paddingHorizontal: 12,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 18,
 
+    paddingHorizontal: 14,
     paddingVertical: 10,
 
-    backgroundColor: '#FFFFFF',
-
-    borderTopWidth: 1,
-
-    borderTopColor: '#E2E8F0',
-
-  },
-
-  input: {
-
-    flex: 1,
-
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#ffffff',
 
     borderRadius: 24,
 
-    paddingHorizontal: 18,
+    borderWidth: 1,
+    borderColor: COLORS.border,
 
-    paddingVertical: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
+  },
 
-    fontSize: 15,
+  /* INPUT */
 
-    color: '#0F172A',
+  input: {
+    flex: 1,
+
+    color: COLORS.secondary,
+
+    fontSize: 14,
+
+    paddingHorizontal: 6,
+    paddingVertical: 10,
 
     maxHeight: 120,
+  },
 
-    },
+  /* SEND BUTTON */
 
   sendBtn: {
+    width: 44,
+    height: 44,
+
+    borderRadius: 22,
+
+    backgroundColor: COLORS.primary,
+
+    justifyContent: 'center',
+    alignItems: 'center',
 
     marginLeft: 10,
 
-    backgroundColor: '#4338CA',
-
-    width: 48,
-
-    height: 48,
-
-    borderRadius: 24,
-
-    justifyContent: 'center',
-
-    alignItems: 'center',
-
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
 
   sendTxt: {
+    color: '#ffffff',
 
-    color: '#FFFFFF',
+    fontSize: 15,
 
-    fontSize: 20,
-
-    fontWeight: '700',
-
-    },
+    fontWeight: '900',
+  },
 
 });

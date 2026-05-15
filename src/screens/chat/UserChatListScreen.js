@@ -400,34 +400,60 @@ export default function UserChatListScreen({
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+
     paddingHorizontal: 18,
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingVertical: 16,
+
+    borderRadius: 24,
+
+    backgroundColor: '#111111',
 
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   back: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: '#ffffff',
   },
 
   title: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: 0.2,
   },
+
+  /* LOADER */
 
   loaderWrap: {
     flex: 1,
@@ -435,76 +461,106 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  /* EMPTY */
+
   empty: {
     textAlign: 'center',
-    marginTop: 40,
-    color: '#64748B',
-    fontSize: 16,
+
+    marginTop: 60,
+
+    color: COLORS.lightText,
+
+    fontSize: 15,
+
+    fontWeight: '600',
   },
+
+  /* CARD */
 
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    backgroundColor: '#ffffff',
 
-    marginBottom: 18,
+    borderRadius: 28,
 
-    overflow: 'hidden',
+    marginBottom: 16,
 
-    elevation: 3,
+    padding: 18,
 
-    padding: 16,
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
-  avatar: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
+  /* AVATAR */
 
-    backgroundColor: '#EEF2FF',
+  avatar: {
+    width: 58,
+    height: 58,
+
+    borderRadius: 29,
+
+    backgroundColor: '#fff1e8',
 
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   avatarTxt: {
-    color: '#4338CA',
+    color: COLORS.primary,
+
     fontWeight: '900',
-    fontSize: 22,
+
+    fontSize: 20,
   },
 
+  /* CHAT DETAILS */
+
   cardTitle: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: '800',
-    color: '#0F172A',
+    color: COLORS.secondary,
   },
 
   location: {
     marginTop: 6,
-    color: '#64748B',
-    lineHeight: 20,
+
+    color: '#6b7280',
+
+    lineHeight: 19,
+
+    fontSize: 13,
   },
 
   time: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: '#94a3b8',
+
+    fontSize: 10,
+
     fontWeight: '700',
+
+    marginLeft: 8,
   },
+
+  /* STATUS */
 
   statusBox: {
     alignSelf: 'flex-start',
 
-    marginTop: 16,
+    marginTop: 14,
 
-    paddingHorizontal: 14,
+    paddingHorizontal: 13,
     paddingVertical: 6,
 
-    borderRadius: 10,
-
-    backgroundColor: '#DCFCE7',
+    borderRadius: 30,
   },
 
   status: {
     fontWeight: '800',
+    fontSize: 12,
     color: '#166534',
   },
 

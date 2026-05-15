@@ -788,184 +788,269 @@ export default function MyListingsScreen({ navigation }) {
 
 // ================= STYLES =================
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
+  /* HEADER */
+
   header: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 10,
+
     paddingHorizontal: 18,
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingVertical: 16,
 
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 24,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   back: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
   },
 
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
+    letterSpacing: -0.3,
   },
 
+  /* TABS */
+
   tabWrapper: {
-    marginBottom: 10,
+    marginBottom: 14,
   },
 
   tabContainer: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
   },
 
   tabBtn: {
-    backgroundColor: '#E2E8F0',
+    backgroundColor: '#ffffff',
 
     paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingVertical: 11,
 
-    borderRadius: 12,
+    borderRadius: 18,
 
     marginRight: 10,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   activeTab: {
-    backgroundColor: '#4338CA',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
 
   tabTxt: {
-    color: '#334155',
+    color: COLORS.secondary,
     fontWeight: '700',
+    fontSize: 13,
   },
 
   activeTabTxt: {
-    color: '#fff',
+    color: '#ffffff',
   },
+
+  /* EMPTY */
 
   empty: {
     textAlign: 'center',
-    marginTop: 40,
-    color: '#64748B',
-    fontSize: 16,
+
+    marginTop: 60,
+
+    color: COLORS.lightText,
+
+    fontSize: 15,
+
+    fontWeight: '600',
   },
 
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+  /* CARD */
 
-    marginBottom: 18,
+  card: {
+    backgroundColor: '#ffffff',
+
+    borderRadius: 30,
+
+    marginBottom: 22,
 
     overflow: 'hidden',
 
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
+
+  /* IMAGE */
 
   image: {
     width: '100%',
-    height: 220,
+    height: 240,
+
+    backgroundColor: '#ece7e2',
   },
 
   imageBox: {
     width: '100%',
-    height: 220,
+    height: 240,
 
-    backgroundColor: '#CBD5E1',
+    backgroundColor: '#ece7e2',
 
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   imageTxt: {
-    color: '#334155',
+    color: COLORS.lightText,
     fontWeight: '700',
+    fontSize: 14,
   },
 
+  /* DETAILS */
+
   info: {
-    padding: 16,
+    padding: 20,
   },
 
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontSize: 22,
+    fontWeight: '900',
+    color: COLORS.secondary,
+    lineHeight: 30,
   },
 
   price: {
-    marginTop: 8,
-    fontSize: 22,
+    marginTop: 10,
+
+    fontSize: 28,
+
     fontWeight: '900',
-    color: '#4338CA',
+
+    color: COLORS.primary,
   },
 
   location: {
-    marginTop: 6,
-    color: '#64748B',
-    lineHeight: 20,
+    marginTop: 10,
+
+    color: COLORS.lightText,
+
+    lineHeight: 22,
+
+    fontSize: 14,
   },
+
+  /* STATUS */
 
   statusBox: {
     alignSelf: 'flex-start',
 
-    marginTop: 12,
+    marginTop: 16,
 
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 7,
 
-    borderRadius: 10,
+    borderRadius: 30,
   },
 
   status: {
     fontWeight: '800',
+    fontSize: 12,
   },
+
+  /* ACTIONS */
 
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
 
-    marginTop: 18,
+    marginTop: 22,
   },
 
   editBtn: {
     flex: 1,
 
-    backgroundColor: '#4338CA',
+    backgroundColor: COLORS.primary,
 
-    paddingVertical: 12,
+    paddingVertical: 15,
 
-    borderRadius: 12,
+    borderRadius: 18,
 
     alignItems: 'center',
 
-    marginRight: 8,
+    marginRight: 10,
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   editTxt: {
-    color: '#fff',
+    color: '#ffffff',
+
     fontWeight: '800',
+
+    fontSize: 14,
   },
 
   deleteBtn: {
     flex: 1,
 
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#fff1f2',
 
-    paddingVertical: 12,
+    paddingVertical: 15,
 
-    borderRadius: 12,
+    borderRadius: 18,
 
     alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: '#fecdd3',
   },
 
   deleteTxt: {
-    color: '#DC2626',
+    color: '#e11d48',
+
     fontWeight: '800',
+
+    fontSize: 14,
   },
 
 });

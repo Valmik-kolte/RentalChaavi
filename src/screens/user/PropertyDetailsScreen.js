@@ -792,44 +792,64 @@ export default function PropertyDetailsScreen({
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
   scroll: {
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
 
   loaderWrap: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
+
+  /* IMAGE */
 
   image: {
     width: '100%',
-    height: 260,
+    height: 320,
   },
 
   noImage: {
-    width: width - 36,
-    height: 260,
-    backgroundColor: '#E2E8F0',
+    width: width - 32,
+    height: 320,
+
+    backgroundColor: '#d6d3d1',
+
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 24,
+
+    borderRadius: 32,
+
     overflow: 'hidden',
-    marginLeft: 18,
+
+    marginLeft: 16,
   },
 
   noImageTxt: {
-    color: '#64748B',
+    color: '#6b7280',
     fontWeight: '700',
+    fontSize: 14,
   },
+
+  /* TOP BUTTON */
 
   topButtons: {
     position: 'absolute',
@@ -839,194 +859,333 @@ const styles = StyleSheet.create({
   },
 
   iconBtn: {
-    backgroundColor: '#FFFFFFDD',
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    backgroundColor: '#ffffffe8',
+
+    width: 48,
+    height: 48,
+
+    borderRadius: 24,
+
     justifyContent: 'center',
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
 
   iconTxt: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
   },
 
+  /* HERO */
+
   hero: {
-    backgroundColor: '#4338CA',
-    marginHorizontal: 18,
-    marginTop: -40,
-    borderRadius: 26,
-    padding: 22,
+    backgroundColor: '#ffffff',
+
+    marginHorizontal: 16,
+
+    marginTop: 18,
+
+    borderRadius: 30,
+
+    padding: 24,
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
 
   heroTitle: {
     fontSize: 28,
+    lineHeight: 36,
     fontWeight: '900',
-    color: '#fff',
+    color: COLORS.secondary,
+    letterSpacing: -0.8,
   },
 
   heroSub: {
-    color: '#E0E7FF',
-    marginTop: 8,
+    color: COLORS.lightText,
+
+    marginTop: 10,
+
+    fontSize: 14,
+
+    lineHeight: 22,
   },
 
   heroPrice: {
     marginTop: 18,
-    fontSize: 26,
+
+    fontSize: 30,
+
     fontWeight: '900',
-    color: '#fff',
+
+    color: COLORS.primary,
   },
 
+  /* SECTION */
+
   section: {
-    fontSize: 21,
-    fontWeight: '900',
+    fontSize: 24,
+    fontWeight: '800',
+
     marginHorizontal: 18,
-    marginTop: 28,
-    marginBottom: 14,
-    color: '#0F172A',
+    marginTop: 30,
+    marginBottom: 16,
+
+    color: COLORS.secondary,
   },
+
+  /* GRID */
 
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 18,
+
+    paddingHorizontal: 16,
   },
 
   gridCard: {
     width: '48%',
-    backgroundColor: '#fff',
-    borderRadius: 18,
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 22,
+
     padding: 18,
+
     marginBottom: 14,
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   gridLabel: {
-    color: '#64748B',
-    fontSize: 13,
+    color: COLORS.lightText,
+    fontSize: 12,
+    fontWeight: '600',
   },
 
   gridValue: {
-    marginTop: 8,
-    fontWeight: '900',
-    color: '#0F172A',
+    marginTop: 10,
+
+    fontWeight: '800',
+
+    color: COLORS.secondary,
+
     fontSize: 15,
+
+    lineHeight: 22,
   },
 
+  /* CARDS */
+
   cardWrap: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
   },
 
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 18,
+    backgroundColor: '#ffffff',
+
+    borderRadius: 24,
+
+    padding: 20,
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   loc: {
-    color: '#64748B',
-    lineHeight: 22,
+    color: '#4b5563',
+
+    lineHeight: 24,
+
+    fontSize: 14,
   },
 
+  /* OWNER */
+
   ownerCard: {
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 18,
+    backgroundColor: '#ffffff',
+
+    borderRadius: 24,
+
+    padding: 20,
+
     flexDirection: 'row',
     alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   avatar: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
-    backgroundColor: '#EEF2FF',
+    width: 64,
+    height: 64,
+
+    borderRadius: 32,
+
+    backgroundColor: '#fff1e8',
+
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+
+    marginRight: 16,
   },
 
   avatarTxt: {
-    color: '#4338CA',
+    color: COLORS.primary,
+
     fontWeight: '900',
-    fontSize: 20,
+
+    fontSize: 22,
   },
 
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.secondary,
   },
 
+  /* FACILITIES */
+
+  facilitiesWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+
+  facilityChip: {
+    backgroundColor: '#fff1e8',
+
+    paddingVertical: 11,
+    paddingHorizontal: 16,
+
+    borderRadius: 30,
+
+    marginRight: 10,
+    marginBottom: 10,
+  },
+
+  facilityTxt: {
+    color: COLORS.primary,
+
+    fontWeight: '700',
+
+    fontSize: 13,
+  },
+
+  /* CTA */
+
   cta: {
-    backgroundColor: '#fff',
-    marginHorizontal: 18,
-    marginTop: 24,
-    borderRadius: 24,
-    padding: 22,
+    backgroundColor: '#111111',
+
+    marginHorizontal: 16,
+
+    marginTop: 26,
+
+    borderRadius: 30,
+
+    padding: 26,
+
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+
+  chatBtn: {
+    backgroundColor: '#ffffff',
+
+    width: '100%',
+
+    marginBottom: 20,
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  chatBtnText: {
+    color: '#111111',
+
+    fontSize: 15,
+
+    fontWeight: '800',
   },
 
   ctaTitle: {
-    fontSize: 22,
+    fontSize: 26,
+
     fontWeight: '900',
-    color: '#0F172A',
+
+    color: '#ffffff',
+
+    textAlign: 'center',
   },
 
   ctaSub: {
-    color: '#64748B',
-    marginTop: 8,
+    color: '#d1d5db',
+
+    marginTop: 10,
+
     textAlign: 'center',
-    lineHeight: 22,
+
+    lineHeight: 24,
+
+    fontSize: 14,
   },
 
   postBtn: {
-    backgroundColor: '#4338CA',
-    marginTop: 18,
-    paddingHorizontal: 28,
-    paddingVertical: 15,
-    borderRadius: 16,
+    backgroundColor: COLORS.primary,
+
+    marginTop: 22,
+
+    paddingHorizontal: 30,
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 3,
   },
 
   postTxt: {
-    color: '#fff',
+    color: '#ffffff',
+
     fontWeight: '800',
+
     fontSize: 15,
   },
-  facilitiesWrap: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-},
-
-facilityChip: {
-  backgroundColor: '#EEF2FF',
-  paddingVertical: 10,
-  paddingHorizontal: 14,
-  borderRadius: 30,
-  marginRight: 10,
-  marginBottom: 10,
-},
-
-facilityTxt: {
-  color: '#4338CA',
-  fontWeight: '700',
-  fontSize: 13,
-},
-chatBtn: {
-  backgroundColor: '#2563EB',
-  marginTop: 18,
-  paddingVertical: 15,
-  borderRadius: 14,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-
-chatBtnText: {
-  color: '#fff',
-  fontSize: 16,
-  fontWeight: '800',
-},
 
 });

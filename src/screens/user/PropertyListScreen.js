@@ -643,238 +643,404 @@ export default function PropertyListScreen({ navigation }) {
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
+  /* HEADER */
+
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
+    marginHorizontal: 16,
+    marginTop: 10,
+
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+
+    borderRadius: 26,
+
+    backgroundColor: '#ffffff',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   brand: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 24,
+    fontWeight: '900',
+    color: COLORS.secondary,
+    letterSpacing: -0.5,
   },
 
   sub: {
-    color: '#64748B',
+    color: COLORS.lightText,
     marginTop: 4,
+    fontSize: 13,
+    fontWeight: '500',
   },
 
   filterBtn: {
-    backgroundColor: '#4338CA',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 10,
+    backgroundColor: COLORS.primary,
+
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+
+    borderRadius: 16,
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.14,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   filterTxt: {
-    color: '#fff',
-    fontWeight: '600',
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 13,
   },
 
+  /* SEARCH */
+
   searchWrap: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     marginTop: 20,
   },
 
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 50,
+    backgroundColor: '#ffffff',
+
+    borderRadius: 22,
+
+    paddingHorizontal: 20,
+
+    height: 58,
+
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: COLORS.border,
+
+    color: COLORS.text,
+
+    fontSize: 14,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
   },
+
+  /* FILTER CARD */
+
+  filterCard: {
+    backgroundColor: '#ffffff',
+
+    marginTop: 18,
+
+    borderRadius: 28,
+
+    padding: 20,
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+
+  filterHeading: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: COLORS.secondary,
+    marginBottom: 20,
+  },
+
+  filterInput: {
+    backgroundColor: '#faf7f2',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    borderRadius: 18,
+
+    paddingHorizontal: 18,
+
+    height: 54,
+
+    marginBottom: 16,
+
+    color: COLORS.text,
+
+    fontSize: 14,
+  },
+
+  /* TYPE BUTTONS */
+
+  typeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 14,
+  },
+
+  typeBtn: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+
+    borderRadius: 30,
+
+    marginRight: 10,
+    marginBottom: 10,
+
+    backgroundColor: '#ffffff',
+  },
+
+  typeTxt: {
+    color: COLORS.secondary,
+    fontWeight: '700',
+    fontSize: 12,
+  },
+
+  /* PRICE */
+
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  priceInput: {
+    width: '48%',
+
+    backgroundColor: '#faf7f2',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    borderRadius: 18,
+
+    paddingHorizontal: 18,
+
+    height: 54,
+
+    color: COLORS.text,
+
+    fontSize: 14,
+  },
+
+  /* FILTER ACTIONS */
+
+  filterActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+
+  clearBtn: {
+    flex: 1,
+
+    backgroundColor: '#ebe4dc',
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    marginRight: 10,
+
+    alignItems: 'center',
+  },
+
+  applyBtn: {
+    flex: 1,
+
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    alignItems: 'center',
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+
+  clearTxt: {
+    color: COLORS.secondary,
+    fontWeight: '800',
+    fontSize: 13,
+  },
+
+  applyTxt: {
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 13,
+  },
+
+  /* LIST */
 
   list: {
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 30,
   },
+
+  /* PROPERTY CARD */
 
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 12,
-    marginBottom: 18,
-    flexDirection: 'row',
-    gap: 14,
-    elevation: 3,
+    backgroundColor: '#ffffff',
+
+    borderRadius: 28,
+
+    marginBottom: 20,
+
+    overflow: 'hidden',
+
+    borderWidth: 1,
+    borderColor: '#f3e7dc',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
+  /* IMAGE */
+
   image: {
-    width: 110,
-    height: 110,
-    borderRadius: 14,
+    width: '100%',
+    height: 220,
+
+    backgroundColor: '#e5e7eb',
   },
 
   imageBox: {
-    width: 110,
-    height: 110,
-    borderRadius: 14,
-    backgroundColor: '#CBD5E1',
+    width: '100%',
+    height: 220,
+
+    backgroundColor: '#ece7e2',
+
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   imageTxt: {
-    color: '#334155',
-    fontWeight: '600',
+    color: COLORS.lightText,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+
+  /* DETAILS */
+
+  cardContent: {
+    padding: 18,
   },
 
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 21,
+    fontWeight: '800',
+    color: COLORS.secondary,
+    lineHeight: 28,
   },
 
   price: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#4338CA',
-    marginTop: 6,
+    fontSize: 24,
+    fontWeight: '900',
+    color: COLORS.primary,
+    marginTop: 12,
   },
 
   location: {
-    marginTop: 6,
-    color: '#64748B',
+    marginTop: 10,
+
+    color: COLORS.lightText,
+
+    fontSize: 13,
+
+    lineHeight: 21,
   },
 
   row: {
-    marginTop: 12,
+    marginTop: 18,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
 
   tag: {
-    backgroundColor: '#DBEAFE',
-    color: '#4338CA',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    fontWeight: '600',
+    backgroundColor: '#fff1e8',
+
+    color: COLORS.primary,
+
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+
+    borderRadius: 30,
+
+    fontWeight: '800',
+
+    fontSize: 12,
+
+    overflow: 'hidden',
   },
 
   btn: {
-    backgroundColor: '#4338CA',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+
+    borderRadius: 14,
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.14,
+    shadowRadius: 5,
+    elevation: 2,
   },
 
   btnTxt: {
-    color: '#fff',
-    fontWeight: '600',
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 13,
   },
+
+  /* EMPTY */
 
   empty: {
     textAlign: 'center',
-    marginTop: 40,
-    color: '#64748B',
-    fontSize: 16,
+
+    marginTop: 50,
+
+    color: COLORS.lightText,
+
+    fontSize: 15,
+
+    fontWeight: '600',
   },
-  filterCard: {
-  backgroundColor: '#FFFFFF',
-  marginHorizontal: 20,
-  marginTop: 16,
-  borderRadius: 18,
-  padding: 18,
-  elevation: 4,
-},
 
-filterHeading: {
-  fontSize: 18,
-  fontWeight: '700',
-  color: '#0F172A',
-  marginBottom: 16,
-},
-
-filterInput: {
-  backgroundColor: '#F8FAFC',
-  borderWidth: 1,
-  borderColor: '#E2E8F0',
-  borderRadius: 12,
-  paddingHorizontal: 14,
-  height: 50,
-  marginBottom: 14,
-  color: '#0F172A',
-},
-
-priceRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-},
-
-priceInput: {
-  width: '48%',
-  backgroundColor: '#F8FAFC',
-  borderWidth: 1,
-  borderColor: '#E2E8F0',
-  borderRadius: 12,
-  paddingHorizontal: 14,
-  height: 50,
-  color: '#0F172A',
-},
-
-filterActionRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 18,
-},
-
-clearBtn: {
-  flex: 1,
-  backgroundColor: '#E2E8F0',
-  paddingVertical: 14,
-  borderRadius: 12,
-  marginRight: 10,
-  alignItems: 'center',
-},
-
-applyBtn: {
-  flex: 1,
-  backgroundColor: '#4338CA',
-  paddingVertical: 14,
-  borderRadius: 12,
-  alignItems: 'center',
-},
-
-clearTxt: {
-  color: '#0F172A',
-  fontWeight: '700',
-},
-
-applyTxt: {
-  color: '#FFFFFF',
-  fontWeight: '700',
-},
-typeRow: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  marginBottom: 14,
-},
-
-typeBtn: {
-  borderWidth: 1,
-  borderColor: '#CBD5E1',
-  paddingHorizontal: 14,
-  paddingVertical: 10,
-  borderRadius: 10,
-  marginRight: 10,
-  marginBottom: 10,
-  backgroundColor: '#FFFFFF',
-},
-
-typeTxt: {
-  color: '#0F172A',
-  fontWeight: '600',
-},
 });

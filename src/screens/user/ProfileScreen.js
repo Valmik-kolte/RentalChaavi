@@ -180,135 +180,236 @@ export default function ProfileScreen({ navigation }) {
   );
 }
 
+const COLORS = {
+  primary: '#ff7a30',
+  secondary: '#132238',
+  bg: '#f8f3ed',
+  white: '#ffffff',
+  text: '#1f2937',
+  lightText: '#6b7280',
+  border: '#eadfd3',
+};
+
 const styles = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.bg,
   },
 
   scroll: {
     paddingBottom: 40,
   },
 
+  /* HEADER */
+
   header: {
-    paddingHorizontal: 20,
+    marginHorizontal: 16,
+    marginTop: 10,
+
+    paddingHorizontal: 18,
     paddingVertical: 16,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 24,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   back: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '900',
-    color: '#0F172A',
+    color: COLORS.secondary,
   },
 
   title: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#0F172A',
+    fontSize: 20,
+    fontWeight: '800',
+    color: COLORS.secondary,
+    letterSpacing: 0.3,
   },
 
+  /* PROFILE CARD */
+
   profileCard: {
-    marginHorizontal: 20,
-    marginTop: 10,
-    backgroundColor: '#4338CA',
+    marginHorizontal: 16,
+    marginTop: 20,
+
+    backgroundColor: '#ffffff',
+
     borderRadius: 30,
+
     paddingVertical: 34,
+
     alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   avatar: {
     width: 100,
     height: 100,
+
     borderRadius: 50,
-    backgroundColor: '#5B4DF1',
+
+    backgroundColor: '#fff1e8',
+
     justifyContent: 'center',
     alignItems: 'center',
+
+    borderWidth: 3,
+    borderColor: '#ffe2cf',
   },
 
   avatarTxt: {
-    color: '#fff',
+    color: COLORS.primary,
+
     fontSize: 34,
+
     fontWeight: '900',
   },
 
   name: {
     marginTop: 18,
+
     fontSize: 24,
+
     fontWeight: '900',
-    color: '#fff',
+
+    color: COLORS.secondary,
   },
 
   role: {
-    marginTop: 6,
-    color: '#E0E7FF',
+    marginTop: 8,
+
+    color: COLORS.lightText,
+
     fontSize: 14,
+
     fontWeight: '600',
   },
 
+  /* DETAILS CARD */
+
   detailsCard: {
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 20,
-    backgroundColor: '#fff',
-    borderRadius: 26,
+
+    backgroundColor: '#ffffff',
+
+    borderRadius: 28,
+
     padding: 22,
+
+    borderWidth: 1,
+    borderColor: COLORS.border,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#0F172A',
-    marginBottom: 18,
+    fontSize: 19,
+
+    fontWeight: '800',
+
+    color: COLORS.secondary,
+
+    marginBottom: 20,
   },
 
   detailRow: {
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
 
   label: {
     fontSize: 13,
-    color: '#64748B',
-    marginBottom: 6,
+
+    color: COLORS.lightText,
+
+    marginBottom: 8,
+
+    fontWeight: '600',
   },
 
   value: {
-    fontSize: 16,
+    fontSize: 15,
+
     fontWeight: '700',
-    color: '#0F172A',
+
+    color: COLORS.secondary,
+
+    lineHeight: 22,
   },
 
   divider: {
     height: 1,
-    backgroundColor: '#E2E8F0',
+
+    backgroundColor: '#f1e6dc',
+
     marginVertical: 14,
   },
 
+  /* LOGOUT BUTTON */
+
   logoutBtn: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    backgroundColor: '#DC2626',
+    marginHorizontal: 16,
+    marginTop: 24,
+
+    backgroundColor: COLORS.primary,
+
     paddingVertical: 18,
+
     borderRadius: 22,
+
     alignItems: 'center',
+
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.14,
+    shadowRadius: 6,
+    elevation: 3,
   },
 
   logoutTxt: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '900',
+    color: '#ffffff',
+
+    fontSize: 15,
+
+    fontWeight: '800',
   },
 
+  /* FOOTER */
+
   footer: {
-    marginTop: 28,
+    marginTop: 32,
     alignItems: 'center',
+    paddingBottom: 10,
   },
 
   footerText: {
-    color: '#94A3B8',
+    color: '#94a3b8',
+
     fontSize: 12,
+
     fontWeight: '600',
   },
 
