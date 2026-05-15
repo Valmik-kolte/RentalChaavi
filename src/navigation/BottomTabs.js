@@ -7,6 +7,11 @@ import { View, Text, Platform } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import ChatNavigator
 from './ChatNavigator';
+import {
+  getFocusedRouteNameFromRoute,
+} from '@react-navigation/native';
+
+
 /* USER SCREENS */
 import HomeScreen from '../screens/user/HomeScreen';
 import PropertyListScreen from '../screens/user/PropertyListScreen';
@@ -38,7 +43,7 @@ function TabIcon({ label, focused }) {
             width: 6,
             height: 6,
             borderRadius: 10,
-            backgroundColor: '#4338CA',
+            backgroundColor: '#ff7a30',
             marginBottom: 5,
           }}
         />
@@ -49,7 +54,7 @@ function TabIcon({ label, focused }) {
           width: 20,
           height: 20,
           borderRadius: 10,
-          backgroundColor: focused ? '#4338CA' : '#CBD5E1',
+          backgroundColor: focused ? '#ff7a30' : '#CBD5E1',
         }}
       />
 
@@ -58,7 +63,7 @@ function TabIcon({ label, focused }) {
           marginTop: 4,
           fontSize: 10,
           fontWeight: '700',
-          color: focused ? '#4338CA' : '#94A3B8',
+          color: focused ? '#ff7a30' : '#94A3B8',
         }}
       >
         {label}
@@ -172,14 +177,58 @@ export default function BottomTabs() {
         {!isAdmin && (
           <Tab.Screen
             name="ChatTab"
-            options={{
-              tabBarIcon: ({ focused }) => (
-                <TabIcon
-                  label="CHAT"
-                  focused={focused}
-                />
-              ),
-            }}
+            options={({ route }) => {
+
+  const routeName =
+    getFocusedRouteNameFromRoute(route) ?? '';
+
+  const hideTab =
+    routeName === 'UserChatScreen' ||
+    routeName === 'OwnerChatScreen';
+
+  return {
+
+    tabBarStyle: {
+      display: hideTab
+        ? 'none'
+        : 'flex',
+
+      position: 'absolute',
+      left: 12,
+      right: 12,
+      bottom: 12,
+      height:
+        Platform.OS === 'ios'
+          ? 82
+          : 72,
+
+      borderRadius: 24,
+      backgroundColor: '#FFFFFF',
+      borderTopWidth: 0,
+      paddingTop: 6,
+      paddingBottom:
+        Platform.OS === 'ios'
+          ? 18
+          : 10,
+
+      elevation: 14,
+      shadowColor: '#000',
+      shadowOpacity: 0.08,
+      shadowRadius: 10,
+      shadowOffset: {
+        width: 0,
+        height: 5,
+      },
+    },
+
+    tabBarIcon: ({ focused }) => (
+      <TabIcon
+        label="CHAT"
+        focused={focused}
+      />
+    ),
+  };
+}}
           >
             {() => (
               <ChatNavigator role={role} />

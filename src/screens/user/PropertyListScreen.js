@@ -17,7 +17,7 @@ import {getProperties, filterProperties,} from '../../api/propertyApi';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // const BASE_URL = 'http://192.168.1.6:8080';
-const BASE_URL = 'http://192.168.0.133:8080';
+const BASE_URL = 'http://10.10.1.210:8080';
 
 export default function PropertyListScreen({ navigation }) {
 
@@ -591,7 +591,7 @@ export default function PropertyListScreen({ navigation }) {
               )}
 
               {/* DETAILS */}
-              <View style={{ flex: 1 }}>
+              <View style={styles.cardContent}>
 
                 <Text style={styles.cardTitle}>
                   {item.title}
@@ -615,11 +615,11 @@ export default function PropertyListScreen({ navigation }) {
                     {item.bhkType || item.propertyType}
                   </Text>
 
-                  <TouchableOpacity style={styles.btn}>
+                  {/* <TouchableOpacity style={styles.btn}>
                     <Text style={styles.btnTxt}>
                       View
                     </Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
 
                 </View>
 

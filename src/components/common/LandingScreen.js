@@ -14,7 +14,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ImageBackground,
 } from 'react-native';
+
+import LinearGradient from 'react-native-linear-gradient';
 
 import {
   SafeAreaView,
@@ -27,7 +30,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BASE_URL =
-  'http://192.168.1.13:8080';
+  'http://10.10.1.210:8080';
 
 export default function LandingScreen({
   navigation,
@@ -263,7 +266,7 @@ export default function LandingScreen({
         </View>
 
         {/* HERO */}
-        <View style={styles.hero}>
+        {/* <View style={styles.hero}>
 
           <Text style={styles.heroTitle}>
             Find Verified
@@ -279,7 +282,7 @@ export default function LandingScreen({
             owners.
           </Text>
 
-          <View style={styles.searchBox}>
+          <View style={styles.searchBox}> */}
 
             {/* <Text style={styles.searchIcon}>
               ⌕
@@ -295,7 +298,7 @@ export default function LandingScreen({
               style={styles.input}
             /> */}
 
-          </View>
+          {/* </View>
 
           <TouchableOpacity
             style={styles.searchBtn}
@@ -310,7 +313,83 @@ export default function LandingScreen({
 
           </TouchableOpacity>
 
-        </View>
+        </View> */}
+
+        {/* HERO */}
+          <ImageBackground
+            source={require('../../assets/images/img4.jpg')}
+            style={styles.hero}
+            imageStyle={styles.heroImage}
+          >
+
+            <LinearGradient
+              colors={[
+                'rgba(248,243,237,0.96)',
+                'rgba(248,243,237,0.86)',
+                'rgba(248,243,237,0.55)',
+              ]}
+              style={styles.heroOverlay}
+            >
+
+              <View style={styles.badge}>
+
+                <Text style={styles.badgeTxt}>
+                  ⭐ No Brokerage Platform
+                </Text>
+
+              </View>
+
+              <Text style={styles.heroTitle}>
+                Find Your Dream{' '}
+                <Text style={styles.orange}>
+                  Home
+                </Text>
+              </Text>
+
+              <Text style={styles.heroTitle}>
+                Without Brokers
+              </Text>
+
+              <Text style={styles.heroSub}>
+                Save money, live better -
+                zero brokerage guaranteed
+              </Text>
+
+              <Text style={styles.heroDesc}>
+                Connect directly with property
+                owners. Browse verified listings
+                across Pune and PCMC.
+              </Text>
+
+              <View style={styles.heroBtnRow}>
+
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  style={styles.searchBtn}
+                  onPress={() =>
+                    navigation.navigate('Login')
+                  }
+                >
+
+                  <View style={styles.btnContent}>
+
+                    <Text style={styles.searchTxt}>
+                      Browse Properties
+                    </Text>
+
+                    {/* <Text style={styles.arrow}>
+                      →
+                    </Text> */}
+
+                  </View>
+
+                </TouchableOpacity>
+                                
+              </View>
+
+            </LinearGradient>
+
+          </ImageBackground>
 
         {/* CATEGORY */}
         {/* <Text style={styles.section}>
@@ -627,42 +706,167 @@ const styles = StyleSheet.create({
 
   /* HERO */
 
+  // hero: {
+  //   marginHorizontal: 16,
+  //   marginTop: 18,
+
+  //   borderRadius: 28,
+
+  //   paddingHorizontal: 24,
+  //   paddingVertical: 34,
+
+  //   backgroundColor: '#f5ede5',
+
+  //   shadowColor: '#000',
+  //   shadowOpacity: 0.05,
+  //   shadowRadius: 10,
+  //   elevation: 2,
+  // },
+
+  // heroTitle: {
+  //   fontSize: 36,
+  //   lineHeight: 44,
+  //   fontWeight: '900',
+  //   color: COLORS.secondary,
+  //   letterSpacing: -0.8,
+  // },
+
+  // heroSub: {
+  //   marginTop: 16,
+
+  //   fontSize: 15,
+  //   lineHeight: 24,
+
+  //   color: '#4b5563',
+
+  //   width: '92%',
+  //   fontWeight: '500',
+  // },
+
   hero: {
-    marginHorizontal: 16,
-    marginTop: 18,
+  marginHorizontal: 16,
+  marginTop: 18,
 
-    borderRadius: 28,
+  height: 620,
 
-    paddingHorizontal: 24,
-    paddingVertical: 34,
+  borderRadius: 34,
 
-    backgroundColor: '#f5ede5',
+  overflow: 'hidden',
 
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
+  backgroundColor: '#f5ede5',
+},
 
-  heroTitle: {
-    fontSize: 36,
-    lineHeight: 44,
-    fontWeight: '900',
-    color: COLORS.secondary,
-    letterSpacing: -0.8,
-  },
+heroImage: {
+  borderRadius: 34,
+},
 
-  heroSub: {
-    marginTop: 16,
+heroOverlay: {
+  flex: 1,
 
-    fontSize: 15,
-    lineHeight: 24,
+  paddingHorizontal: 26,
+  paddingVertical: 30,
 
-    color: '#4b5563',
+  justifyContent: 'center',
+},
 
-    width: '92%',
-    fontWeight: '500',
-  },
+badge: {
+  alignSelf: 'flex-start',
+
+  backgroundColor: '#fff1e8',
+
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+
+  borderRadius: 30,
+
+  marginBottom: 26,
+},
+
+badgeTxt: {
+  color: '#ff7a30',
+  fontWeight: '800',
+  fontSize: 13,
+},
+
+heroTitle: {
+  fontSize: 42,
+  lineHeight: 52,
+
+  fontWeight: '900',
+
+  color: '#132238',
+
+  letterSpacing: -1,
+},
+
+orange: {
+  color: '#ff7a30',
+},
+
+heroSub: {
+  marginTop: 22,
+
+  fontSize: 20,
+  lineHeight: 30,
+
+  color: '#ff7a30',
+
+  fontWeight: '800',
+},
+
+heroDesc: {
+  marginTop: 18,
+
+  fontSize: 16,
+  lineHeight: 28,
+
+  color: '#374151',
+
+  width: '90%',
+},
+
+heroBtnRow: {
+  flexDirection: 'row',
+
+  marginTop: 34,
+},
+
+searchBtn: {
+  backgroundColor: '#ff7a30',
+
+  paddingHorizontal: 24,
+  paddingVertical: 16,
+
+  borderRadius: 18,
+
+  marginRight: 14,
+},
+
+searchTxt: {
+  color: '#fff',
+
+  fontWeight: '800',
+  fontSize: 15,
+},
+
+secondaryBtn: {
+  borderWidth: 1,
+  borderColor: '#132238',
+
+  paddingHorizontal: 24,
+  paddingVertical: 16,
+
+  borderRadius: 18,
+
+  backgroundColor: 'rgba(255,255,255,0.55)',
+},
+
+secondaryTxt: {
+  color: '#132238',
+
+  fontWeight: '800',
+  fontSize: 15,
+},
 
   searchBox: {
     marginTop: 22,
@@ -683,27 +887,27 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
 
-  searchBtn: {
-    marginTop: 22,
+  // searchBtn: {
+  //   marginTop: 22,
 
-    backgroundColor: COLORS.primary,
+  //   backgroundColor: COLORS.primary,
 
-    paddingVertical: 16,
+  //   paddingVertical: 16,
 
-    borderRadius: 16,
+  //   borderRadius: 16,
 
-    shadowColor: COLORS.primary,
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    elevation: 3,
-  },
+  //   shadowColor: COLORS.primary,
+  //   shadowOpacity: 0.18,
+  //   shadowRadius: 8,
+  //   elevation: 3,
+  // },
 
-  searchTxt: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '800',
-    fontSize: 15,
-  },
+  // searchTxt: {
+  //   color: '#fff',
+  //   textAlign: 'center',
+  //   fontWeight: '800',
+  //   fontSize: 15,
+  // },
 
   /* SECTION */
 

@@ -30,7 +30,7 @@ import {
 
 const BASE_URL =
   // 'http://192.168.1.6:8080';
-  'http://192.168.0.133:8080';
+  'http://10.10.1.210:8080';
 
 export default function HomeScreen({
   navigation,

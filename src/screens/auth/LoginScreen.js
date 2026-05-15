@@ -249,11 +249,11 @@ export default function LoginScreen({
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Text style={styles.forgot}>
                 Forgot Password?
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.loginBtn}

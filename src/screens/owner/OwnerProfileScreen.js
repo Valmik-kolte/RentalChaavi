@@ -121,7 +121,7 @@ export default function OwnerProfileScreen({ navigation }) {
 
           </View>
 
-          <View style={styles.divider} />
+          {/* <View style={styles.divider} />
 
           <View style={styles.detailRow}>
 
@@ -135,7 +135,7 @@ export default function OwnerProfileScreen({ navigation }) {
 
           </View>
 
-          <View style={styles.divider} />
+          <View style={styles.divider} /> */}
 
           <View style={styles.detailRow}>
 

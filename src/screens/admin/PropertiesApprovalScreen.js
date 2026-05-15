@@ -12,6 +12,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Image } from 'react-native';
+import {
+  BASE_URL,
+} from '../../api/axios';
 import api from '../../api/axiosConfig';
 
 export default function PropertiesApprovalScreen({ navigation }) {
@@ -138,7 +141,7 @@ export default function PropertiesApprovalScreen({ navigation }) {
                 source={{
                   uri:
                     item.imageUrls?.[0]
-                      ? `http://192.168.0.133:8080/uploads/${item.imageUrls[0]}`
+                      ? `http://10.10.1.210:8080/uploads/${item.imageUrls[0]}`
                       : 'https://via.placeholder.com/300'
                 }}
                 style={styles.imageBox}
